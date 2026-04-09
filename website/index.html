@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陈少辉 | 全栈开发工程师</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Microsoft YaHei", "微软雅黑", -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .title {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+        .info {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .info-item {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            width: 70px;
+            color: #666;
+            font-size: 14px;
+        }
+        .info-value {
+            flex: 1;
+            color: #333;
+            font-size: 14px;
+        }
+        .info-value a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .skill {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn-outline {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        .projects {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .project {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .project-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .project-desc {
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="avatar">👨‍💻</div>
+            <h1>陈少辉</h1>
+            <p class="title">全栈开发工程师</p>
+            
+            <div class="skills">
+                <span class="skill">Vue.js</span>
+                <span class="skill">Element UI</span>
+                <span class="skill">Spring Boot</span>
+                <span class="skill">MySQL</span>
+                <span class="skill">Axure RP</span>
+            </div>
+            
+            <div class="info">
+                <div class="info-item">
+                    <span class="info-label">手机</span>
+                    <span class="info-value">1350257953</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">邮箱</span>
+                    <span class="info-value">3048008201@qq.com</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">地区</span>
+                    <span class="info-value">广东省珠海市金湾区</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">学校</span>
+                    <span class="info-value">广东科学技术职业学院</span>
+                </div>
+            </div>
+            
+            <div class="projects">
+                <div class="project">
+                    <div class="project-name">🏆 MES制造执行系统开发</div>
+                    <div class="project-desc">2025省赛二等奖 | Vue.js + Spring Boot + 数据可视化</div>
+                </div>
+                <div class="project">
+                    <div class="project-name">岐青乡望App</div>
+                    <div class="project-desc">uni-app志愿者小程序</div>
+                </div>
+            </div>
+            
+            <div>
+                <a class="btn" href="tel:1350257953">📱 电话联系</a>
+                <a class="btn btn-outline" href="mailto:3048008201@qq.com">✉️ 发送邮件</a>
+            </div>
+            
+            <p style="margin-top: 30px; color: #999; font-size: 12px;">
+                欢迎访问我的个人主页 👆
+            </p>
+        </div>
+    </div>
+</body>
+</html>
