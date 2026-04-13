@@ -23,4 +23,4 @@
 
 ## 在线访问
 
-部署后访问：`https://diolessglow.github.io/resume_portfolio/`
+部署后访问：`https://你的用户名.github.io/仓库名`
