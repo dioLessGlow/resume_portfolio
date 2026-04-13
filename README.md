@@ -1,26 +1,28 @@
-# 我的个人简历主页
+# 陈少辉 | 全栈开发工程师
 
-📱 扫码访问：陈少辉的个人在线简历
+📱 扫码访问：[https://diolessglow.github.io/resume_portfolio/](https://diolessglow.github.io/resume_portfolio/)
+
+![QR Code](images/qrcode.png)
+
+---
 
 ## 技术栈
 
 - HTML5 + CSS3
 - 响应式设计，移动端优先
+- 动态组件加载
 
 ## 内容
 
-- 个人基本信息
-- 技能展示
-- 项目经验
-- 联系方式
-
-## 如何部署
-
-1. 上传 `index.html` 到 GitHub 仓库
-2. 进入 Settings → Pages
-3. Source 选择 `main branch`
-4. 保存后会获得访问链接
+- 首页 - 个人简介、座右铭、综合素质
+- 简介 - 教育背景、专业技能、项目经验、荣誉奖励、实践经历
+- 作品集 - CSS/HTML 练习作品
 
 ## 在线访问
 
-部署后访问：`https://diolessglow.github.io/resume_portfolio/`
+- 网站：[https://diolessglow.github.io/resume_portfolio/](https://diolessglow.github.io/resume_portfolio/)
+- GitHub：[https://github.com/dioLessGlow/resume_portfolio](https://github.com/dioLessGlow/resume_portfolio)
+
+---
+
+© 2026 陈少辉
