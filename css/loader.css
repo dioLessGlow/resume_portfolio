@@ -1,0 +1,43 @@
+/* Loader 动画 */
+:root {
+    --fs-4xl: clamp(86px, 10vw, 96px);
+    --color-bg: #0d1117;
+    --color-primary: #2ecc71;
+}
+
+.loader {
+    position: fixed;
+    inset: 0;
+    background: var(--color-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-text {
+    font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
+    font-size: var(--fs-4xl);
+    font-weight: 900;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse 1.5s infinite, loaderGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes loaderGlow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(46, 204, 113, 0.5)); }
+    50% { filter: drop-shadow(0 0 40px rgba(46, 204, 113, 0.8)); }
+}
