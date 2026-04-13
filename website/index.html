@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陈少辉 | 全栈开发工程师</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+    <div class="loader">
+        <div class="loader-content">
+            <span class="loader-text">CSH</span>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="welcome.html" class="logo">CSH</a>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link active">首页</a>
+                <a href="intro.html" class="nav-link">简介</a>
+                <a href="works.html" class="nav-link">作品集</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <div class="container home-hero">
+            <h1>陈少辉</h1>
+            <p class="subtitle">全栈开发工程师</p>
+            <p class="desc">珠海 · 广东科学技术职业学院</p>
+            
+            <div class="home-btns">
+                <a href="intro.html" class="home-btn">查看简介 →</a>
+                <a href="works.html" class="home-btn">查看作品集 →</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-inner">
+                <a href="tel:1350257953" class="footer-link">📱 1350257953</a>
+                <a href="mailto:3048008201@qq.com" class="footer-link">✉️ 3048008201@qq.com</a>
+                <a href="https://github.com/dioLessGlow" target="_blank" class="footer-link">💻 GitHub | github.com/dioLessGlow</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('load', () => {
+            document.querySelector('.loader')?.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
