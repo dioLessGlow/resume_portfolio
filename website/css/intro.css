@@ -1,0 +1,304 @@
+/* ===== 简介页样式 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: #0d1117;
+    color: #fff;
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0d1117;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+.loader.hidden { opacity: 0; visibility: hidden; }
+
+.loader-text {
+    font-size: 72px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+    z-index: 100;
+    padding: 15px 0;
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2ecc71;
+    text-decoration: none;
+}
+
+.header-nav { display: flex; gap: 30px; }
+
+.nav-link {
+    color: #95a5a6;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 25px;
+    transition: all 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.main-wrapper {
+    padding-top: 80px;
+    min-height: 100vh;
+    padding-bottom: 100px;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+.section-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.title-index { color: #2ecc71; font-size: 20px; font-weight: 500; }
+
+/* 项目卡片 */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.project-card {
+    background: rgba(46, 204, 113, 0.05);
+    border: 1px solid rgba(46, 204, 113, 0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    border-color: #2ecc71;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.project-image {
+    height: 150px;
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-icon { font-size: 50px; }
+
+.project-content { padding: 20px; }
+
+.project-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+    margin-bottom: 12px;
+}
+
+.project-content h3 { font-size: 18px; margin-bottom: 8px; }
+
+.project-content p {
+    color: #95a5a6;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.project-tech span {
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    font-size: 12px;
+    color: #95a5a6;
+}
+
+/* 关于 */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 40px;
+    align-items: start;
+    margin-bottom: 50px;
+}
+
+.about-text p {
+    font-size: 16px;
+    color: #95a5a6;
+    margin-bottom: 15px;
+    line-height: 1.8;
+}
+
+.about-text strong { color: #fff; }
+
+.about-card {
+    background: rgba(46, 204, 113, 0.05);
+    border: 1px solid rgba(46, 204, 113, 0.15);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+}
+
+.about-card .card-icon {
+    font-size: 50px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.about-card h3 { font-size: 20px; margin-bottom: 5px; }
+
+.about-card p { color: #95a5a6; font-size: 14px; }
+
+.about-card .location { color: #2ecc71; font-size: 14px; }
+
+/* 技能 */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+.skill-card {
+    background: rgba(46, 204, 113, 0.05);
+    border: 1px solid rgba(46, 204, 113, 0.15);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.skill-card:hover {
+    transform: translateY(-5px);
+    border-color: #2ecc71;
+}
+
+.skill-icon { font-size: 36px; display: block; margin-bottom: 12px; }
+
+.skill-card h3 { font-size: 16px; margin-bottom: 8px; }
+
+.skill-card > p { color: #95a5a6; font-size: 13px; margin-bottom: 12px; }
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+}
+
+.skill-tags span {
+    padding: 4px 10px;
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border-radius: 15px;
+    font-size: 11px;
+}
+
+/* 荣誉 */
+.awards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.award-card {
+    background: rgba(46, 204, 113, 0.05);
+    border: 1px solid rgba(46, 204, 113, 0.15);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.award-card:hover {
+    transform: translateY(-5px);
+    border-color: #2ecc71;
+}
+
+.award-icon { font-size: 36px; }
+
+.award-info h3 { font-size: 14px; margin-bottom: 4px; }
+
+.award-info p { color: #95a5a6; font-size: 13px; margin-bottom: 4px; }
+
+.award-year { font-size: 12px; color: #2ecc71; }
+
+/* Footer */
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(13, 17, 23, 0.95);
+    border-top: 1px solid rgba(46, 204, 113, 0.2);
+    padding: 25px 0;
+    z-index: 100;
+}
+
+.footer-inner { display: flex; justify-content: center; gap: 40px; }
+
+.footer-link { color: #95a5a6; font-size: 14px; text-decoration: none; }
+
+.footer-link:hover { color: #2ecc71; }
+
+@media (max-width: 1024px) {
+    .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    .awards-grid { grid-template-columns: repeat(2, 1fr); }
+    .about-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .header-nav { gap: 15px; }
+    .projects-grid, .skills-grid, .awards-grid { grid-template-columns: 1fr; }
+    .section-title { font-size: 28px; }
+}
