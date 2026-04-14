@@ -20,10 +20,10 @@
     --space-2xl: clamp(40px, 6vw, 80px);
     
     /* 颜色 */
-    --color-primary: #0fd850;
-    --color-bg: #e8fbe8;
+    --color-primary: #2d7a2d;
+    --color-bg: #fdfbf7;
     --color-text: #1a5f1a;
-    --color-text-muted: #2d8a2d;
+    --color-text-muted: #5a9a5a;
 
 body {
     font-family: 'Space Grotesk', sans-serif;
