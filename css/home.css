@@ -21,10 +21,10 @@
     --space-2xl: clamp(40px, 6vw, 80px);
     
     /* 颜色 */
-    --color-primary: #0fd850;
-    --color-bg: #e8fbe8;
+    --color-primary: #2d7a2d;
+    --color-bg: #fdfbf7;
     --color-text: #1a5f1a;
-    --color-text-muted: #2d8a2d;
+    --color-text-muted: #5a9a5a;
 
 body {
     font-family: 'Space Grotesk', sans-serif;
@@ -102,6 +102,17 @@ body {
     padding: 0 clamp(12px, 3vw, 20px); 
 }
 
+/* Avatar */
+.avatar-container {
+    margin-bottom: var(--space-lg);
+}
+
+.avatar-svg {
+    width: clamp(80px, 20vw, 150px);
+    height: auto;
+    display: inline-block;
+}
+
 /* Hero */
 .home-hero {
     text-align: center;
@@ -160,13 +171,18 @@ body {
 
 .home-btn {
     padding: var(--space-sm) var(--space-xl);
-    background: rgba(255, 111, 97, 0.1);
-    border: 1px solid rgba(255, 111, 97, 0.3);
+    background: rgba(45, 122, 45, 0.1);
+    border: 1px solid rgba(45, 122, 45, 0.3);
     border-radius: 30px;
-    color: #00838f;
+    color: #2d7a2d;
     text-decoration: none;
     transition: all 0.3s;
     font-size: var(--fs-sm);
+}
+
+.home-btn:hover {
+    background: #2d7a2d;
+    color: #fff;
 }
 
 .home-btn:hover {
