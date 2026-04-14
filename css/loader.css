@@ -2,7 +2,7 @@
 :root {
     --fs-4xl: clamp(86px, 10vw, 96px);
     --color-bg: #fdfbf7;
-    --color-primary: #0fd850;
+    --color-primary: #2d7a2d;
 }
 
 .loader {
@@ -22,65 +22,22 @@
     pointer-events: none;
 }
 
-/* 字体炫酷动画 */
-.loader-text {
-    display: flex;
-    gap: 5px;
+/* SVG 动画容器 */
+#logo-anim {
+    width: 80vw;
+    max-width: 400px;
+    overflow: visible;
 }
 
-.char {
-    font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
-    font-size: var(--fs-4xl);
-    font-weight: 900;
-    color: var(--color-primary);
-    display: inline-block;
-    opacity: 0;
-    text-shadow: 0 0 20px rgba(15, 216, 80, 0.5);
+/* 字母颜色 */
+#s-path {
+    stroke: var(--color-primary) !important;
 }
 
-.char:nth-child(1) {
-    animation: pop1 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-.char:nth-child(2) {
-    animation: pop2 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-.char:nth-child(3) {
-    animation: pop3 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+#v-shape {
+    fill: var(--color-primary) !important;
 }
 
-@keyframes pop1 {
-    0% { opacity: 0; transform: scale(0) rotate(-180deg); }
-    60% { opacity: 1; transform: scale(1.2) rotate(10deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
-}
-
-@keyframes pop2 {
-    0% { opacity: 0; transform: scale(0) rotate(180deg); }
-    60% { opacity: 1; transform: scale(1.2) rotate(-10deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
-}
-
-@keyframes pop3 {
-    0% { opacity: 0; transform: scale(0) rotate(-90deg); }
-    60% { opacity: 1; transform: scale(1.2) rotate(5deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
-}
-
-/* 底部波浪线 */
-.loader::after {
-    content: '';
-    position: absolute;
-    bottom: 25%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-    border-radius: 2px;
-    animation: linePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes linePulse {
-    0%, 100% { opacity: 0.3; width: 80px; }
-    50% { opacity: 0.8; width: 150px; }
+#g-path {
+    stroke: var(--color-primary) !important;
 }
