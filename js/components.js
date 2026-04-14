@@ -1,5 +1,19 @@
+// 加载 GSAP
+function loadGSAP() {
+    return new Promise((resolve) => {
+        if (typeof gsap !== 'undefined') {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
+        script.onload = resolve;
+        document.head.appendChild(script);
+    });
+}
+
 // 公共组件加载
-document.addEventListener('DOMContentLoaded', () => {
+async function initComponents() {
     // 获取当前页面
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
 
@@ -24,10 +38,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // 加载 loader
     const loaderContainer = document.getElementById('loader-container');
     if (loaderContainer) {
+        await loadGSAP();
+        
         fetch('loader.html')
             .then(response => response.text())
             .then(html => {
                 loaderContainer.innerHTML = html;
+                
+                // 运行 loader 动画
+                const tl = gsap.timeline();
+                tl.from('#c', {
+                    x: -60,
+                    y: -30,
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: 'back.out(1.7)'
+                })
+                .from('#s', {
+                    scale: 0,
+                    opacity: 0,
+                    duration: 0.4,
+                    ease: 'back.out(2)'
+                }, '-=0.3')
+                .from('#h', {
+                    x: 60,
+                    y: -30,
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: 'back.out(1.7)'
+                }, '-=0.2');
+                
                 // 根据页面设置隐藏时间（welcome 2秒，其他 1秒）
                 const isWelcome = window.location.pathname.includes('welcome');
                 const hideTime = isWelcome ? 2000 : 500;
@@ -49,4 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(err => console.error('Footer 加载失败:', err));
     }
-});
+}
+
+// 立即执行
+initComponents();
