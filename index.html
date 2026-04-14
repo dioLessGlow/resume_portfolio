@@ -117,15 +117,15 @@
             const avatar = document.querySelector('.avatar-svg');
             if (!avatar) return;
             
-            // 先隐藏整个头像，设置初始状态
-            gsap.set(avatar, { opacity: 0, y: 80 });
+            // 先隐藏整个头像，设置初始状态（从下方弹入）
+            gsap.set(avatar, { opacity: 0, y: 100 });
             
-            // 人物弹入动画 - 带有弹性效果
+            // 人物弹入动画 - 弹跳效果
             gsap.to(avatar, {
-                duration: 1.5,
+                duration: 1.8,
                 opacity: 1,
                 y: 0,
-                ease: 'elastic.out(1, 0.5)'
+                ease: 'bounce.out'
             });
             
             // 头部弹入动画
