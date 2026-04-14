@@ -45,32 +45,95 @@ async function initComponents() {
             .then(html => {
                 loaderContainer.innerHTML = html;
                 
-                // 运行 loader 动画
+                // CSH 动画 timeline
                 const tl = gsap.timeline();
-                tl.from('#c', {
-                    x: -60,
-                    y: -30,
-                    opacity: 0,
-                    duration: 0.5,
+                
+                // C 字母 - 从左飞入 + 弹跳
+                tl.to('#c', {
+                    opacity: 1,
+                    duration: 0.01
+                })
+                .from('#c', {
+                    x: -80,
+                    y: -40,
+                    rotation: -20,
+                    duration: 0.6,
                     ease: 'back.out(1.7)'
+                })
+                .to('#c', {
+                    rotation: 0,
+                    duration: 0.3,
+                    ease: 'elastic.out(1, 0.5)'
+                }, '-=0.2')
+                
+                // S 字母 - 缩放弹入
+                .to('#s', {
+                    opacity: 1,
+                    duration: 0.01
                 })
                 .from('#s', {
                     scale: 0,
-                    opacity: 0,
-                    duration: 0.4,
-                    ease: 'back.out(2)'
-                }, '-=0.3')
-                .from('#h', {
-                    x: 60,
-                    y: -30,
-                    opacity: 0,
                     duration: 0.5,
-                    ease: 'back.out(1.7)'
-                }, '-=0.2');
+                    ease: 'back.out(2)'
+                })
                 
-                // 根据页面设置隐藏时间（welcome 2秒，其他 1秒）
+                // H 字母 - 从右飞入 + 弹跳
+                .to('#h', {
+                    opacity: 1,
+                    duration: 0.01
+                })
+                .from('#h', {
+                    x: 80,
+                    y: -40,
+                    rotation: 20,
+                    duration: 0.6,
+                    ease: 'back.out(1.7)'
+                })
+                .to('#h', {
+                    rotation: 0,
+                    duration: 0.3,
+                    ease: 'elastic.out(1, 0.5)'
+                }, '-=0.2')
+                
+                // 装饰线条动画
+                .to('#decor', {
+                    opacity: 1,
+                    duration: 0.01
+                })
+                .from('.line-1', {
+                    strokeDasharray: 100,
+                    strokeDashoffset: 100,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                }, '-=0.5')
+                .from('.line-2', {
+                    strokeDasharray: 80,
+                    strokeDashoffset: 80,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                }, '-=0.4')
+                
+                // 爆炸粒子
+                .to('#burst', {
+                    opacity: 1,
+                    duration: 0.01
+                })
+                .from('#burst circle', {
+                    scale: 0,
+                    duration: 0.3,
+                    ease: 'back.out(2)',
+                    stagger: 0.05
+                })
+                .to('#burst circle', {
+                    scale: 0,
+                    duration: 0.2,
+                    ease: 'power2.in',
+                    stagger: 0.03
+                }, '+=0.2');
+                
+                // 根据页面设置隐藏时间（welcome 2.5秒，其他 1秒）
                 const isWelcome = window.location.pathname.includes('welcome');
-                const hideTime = isWelcome ? 2000 : 500;
+                const hideTime = isWelcome ? 2500 : 800;
                 setTimeout(() => {
                     const loader = loaderContainer.querySelector('.loader');
                     if (loader) loader.classList.add('hidden');

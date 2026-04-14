@@ -1,12 +1,32 @@
 <div class="loader">
-    <svg id="logo-anim" viewBox="0 0 200 80">
-    <!-- C 字母 -->
-    <text x="5" y="65" font-family="Space Grotesk, sans-serif" font-size="75" font-weight="900" fill="#2d7a2d">C</text>
-    
-    <!-- S 字母 -->
-    <text x="65" y="65" font-family="Space Grotesk, sans-serif" font-size="75" font-weight="900" fill="#2d7a2d">S</text>
-    
-    <!-- H 字母 -->
-    <text x="130" y="65" font-family="Space Grotesk, sans-serif" font-size="75" font-weight="900" fill="#2d7a2d">H</text>
-</svg>
+    <svg id="logo-anim" viewBox="0 0 300 100">
+        <!-- C 字母 -->
+        <g id="c" opacity="0">
+            <path d="M60,30 C30,30 15,50 15,65 C15,85 35,95 60,95 C45,95 35,85 35,70 L50,70 C50,80 55,85 60,85 C75,85 80,75 80,65 C80,55 70,45 55,43 L45,43 C40,35 30,30 15,30 Z M40,50 C45,40 55,38 65,38 C80,38 85,48 85,53 C85,63 75,71 65,73 C55,75 40,73 40,53 Z" fill="#2d7a2d"/>
+        </g>
+        
+        <!-- S 字母 -->
+        <g id="s" opacity="0">
+            <path d="M145,30 C110,25 95,45 95,60 L110,60 C110,50 120,45 135,48 C150,51 155,60 155,70 C155,85 145,90 125,93 C100,97 85,105 85,120 C85,140 105,150 130,150 L135,135 C115,135 100,128 100,115 C100,105 115,100 135,98 C155,95 165,85 165,70 C165,50 150,40 125,37" fill="#2d7a2d"/>
+        </g>
+        
+        <!-- H 字母 -->
+        <g id="h" opacity="0">
+            <path d="M200,30 L200,100 M200,55 L235,55 M235,30 L235,100" fill="none" stroke="#2d7a2d" stroke-width="14" stroke-linecap="round"/>
+        </g>
+        
+        <!-- 装饰线条 -->
+        <g id="decor" opacity="0">
+            <path class="line-1" d="M10,80 Q50,20 100,50" fill="none" stroke="#96d1d1" stroke-width="3" stroke-linecap="round"/>
+            <path class="line-2" d="M250,70 Q280,30 290,80" fill="none" stroke="#e2a3bd" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        
+        <!-- 爆炸粒子 -->
+        <g id="burst" opacity="0">
+            <circle cx="50" cy="20" r="4" fill="#9d86be"/>
+            <circle cx="280" cy="25" r="3" fill="#b0bee2"/>
+            <circle cx="30" cy="75" r="3" fill="#efe5a7"/>
+            <circle cx="290" cy="70" r="4" fill="#96d1d1"/>
+        </g>
+    </svg>
 </div>
