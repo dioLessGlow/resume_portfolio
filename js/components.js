@@ -48,88 +48,81 @@ async function initComponents() {
                 // CSH 动画 timeline
                 const tl = gsap.timeline();
                 
-                // C 字母 - 从左飞入 + 弹跳
+                // 设置初始状态
+                gsap.set(['#c', '#s', '#h'], { opacity: 0 });
+                gsap.set(['#decor path', '#burst circle'], { opacity: 0 });
+                
+                // C 字母 - 从左飞入
                 tl.to('#c', {
                     opacity: 1,
-                    duration: 0.01
+                    duration: 0.3
                 })
                 .from('#c', {
-                    x: -80,
-                    y: -40,
-                    rotation: -20,
+                    x: -100,
                     duration: 0.6,
                     ease: 'back.out(1.7)'
                 })
-                .to('#c', {
-                    rotation: 0,
-                    duration: 0.3,
-                    ease: 'elastic.out(1, 0.5)'
-                }, '-=0.2')
                 
-                // S 字母 - 缩放弹入
+                // S 字母 - 弹入
                 .to('#s', {
                     opacity: 1,
-                    duration: 0.01
-                })
+                    duration: 0.3
+                }, '-=0.4')
                 .from('#s', {
                     scale: 0,
                     duration: 0.5,
                     ease: 'back.out(2)'
-                })
+                }, '-=0.3')
                 
-                // H 字母 - 从右飞入 + 弹跳
+                // H 字母 - 从右飞入
                 .to('#h', {
                     opacity: 1,
-                    duration: 0.01
-                })
+                    duration: 0.3
+                }, '-=0.4')
                 .from('#h', {
-                    x: 80,
-                    y: -40,
-                    rotation: 20,
+                    x: 100,
                     duration: 0.6,
                     ease: 'back.out(1.7)'
-                })
-                .to('#h', {
-                    rotation: 0,
-                    duration: 0.3,
-                    ease: 'elastic.out(1, 0.5)'
-                }, '-=0.2')
+                }, '-=0.3')
                 
-                // 装饰线条动画
-                .to('#decor', {
+                // 装饰线条
+                .to('.line-1', {
                     opacity: 1,
-                    duration: 0.01
-                })
+                    duration: 0.3
+                }, '-=0.2')
                 .from('.line-1', {
-                    strokeDasharray: 100,
-                    strokeDashoffset: 100,
+                    scaleX: 0,
                     duration: 0.5,
                     ease: 'power2.out'
-                }, '-=0.5')
+                }, '-=0.3')
+                
+                .to('.line-2', {
+                    opacity: 1,
+                    duration: 0.3
+                }, '-=0.3')
                 .from('.line-2', {
-                    strokeDasharray: 80,
-                    strokeDashoffset: 80,
+                    scaleX: 0,
                     duration: 0.5,
                     ease: 'power2.out'
-                }, '-=0.4')
+                }, '-=0.3')
                 
                 // 爆炸粒子
-                .to('#burst', {
+                .to('#burst circle', {
                     opacity: 1,
-                    duration: 0.01
-                })
+                    duration: 0.2,
+                    stagger: 0.05
+                }, '-=0.3')
                 .from('#burst circle', {
                     scale: 0,
                     duration: 0.3,
                     ease: 'back.out(2)',
                     stagger: 0.05
-                })
+                }, '-=0.2')
                 .to('#burst circle', {
                     scale: 0,
                     duration: 0.2,
-                    ease: 'power2.in',
                     stagger: 0.03
-                }, '+=0.2');
+                }, '+=0.3');
                 
                 // 根据页面设置隐藏时间（welcome 2.5秒，其他 1秒）
                 const isWelcome = window.location.pathname.includes('welcome');
