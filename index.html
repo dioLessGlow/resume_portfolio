@@ -117,94 +117,74 @@
             const avatar = document.querySelector('.avatar-svg');
             if (!avatar) return;
             
-            // 设置初始状态
-            gsap.set('.avatar-svg .me', { opacity: 1 });
+            // 先隐藏整个头像，设置初始状态
+            gsap.set(avatar, { opacity: 0, y: 80 });
             
-            // 人物弹入动画
-            gsap.from('.avatar-svg', {
-                duration: 1.2,
-                y: 50,
-                opacity: 0,
-                ease: 'elastic.out(0.5, 0.4)'
+            // 人物弹入动画 - 带有弹性效果
+            gsap.to(avatar, {
+                duration: 1.5,
+                opacity: 1,
+                y: 0,
+                ease: 'elastic.out(1, 0.5)'
             });
             
-            // 头部动画
+            // 头部弹入动画
             gsap.from('.avatar-svg .head', {
                 duration: 1,
-                y: 15,
-                ease: 'elastic.out(0.58, 0.25)',
-                delay: 0.3
+                y: 20,
+                ease: 'elastic.out(0.8, 0.3)',
+                delay: 0.2
             });
             
-            // 耳朵动画
-            gsap.from('.avatar-svg .ear-right', {
-                duration: 1,
-                rotation: 40,
-                y: 10,
-                ease: 'elastic.out(0.5, 0.2)',
-                delay: 0.4
+            // 耳朵弹入动画
+            gsap.from('.avatar-svg .ear', {
+                duration: 0.8,
+                scale: 0,
+                opacity: 0,
+                ease: 'elastic.out(1, 0.5)',
+                delay: 0.3,
+                stagger: 0.1
             });
             
-            gsap.from('.avatar-svg .ear-left', {
-                duration: 1,
-                rotation: -40,
-                y: 10,
-                ease: 'elastic.out(0.5, 0.2)',
-                delay: 0.4
-            });
-            
-            // 眼睛动画
+            // 眼睛弹入动画
             gsap.from('.avatar-svg .eye', {
-                duration: 0.8,
+                duration: 0.6,
                 scaleY: 0,
-                ease: 'elastic.out(0.5, 0.3)',
-                delay: 0.5
-            });
-            
-            // 眉毛动画
-            gsap.from('.avatar-svg [class*="eyebrow"]', {
-                duration: 0.8,
-                y: 30,
-                ease: 'elastic.out(0.5, 0.2)',
+                ease: 'elastic.out(1, 0.5)',
                 delay: 0.4
             });
             
-            // 眨眼动画 - 每5秒眨一次
+            // 眨眼动画 - 每4秒眨一次
             setInterval(function() {
                 gsap.to('.avatar-svg .eye', {
-                    duration: 0.1,
+                    duration: 0.08,
                     scaleY: 0.1,
-                    transformOrigin: 'center top',
-                    onComplete: function() {
-                        gsap.to('.avatar-svg .eye', {
-                            duration: 0.1,
-                            scaleY: 1
-                        });
-                    }
+                    transformOrigin: 'center center',
+                    yoyo: true,
+                    repeat: 1
                 });
-            }, 5000);
+            }, 4000);
             
-            // 鼠标移动时脸部轻微跟随
+            // 鼠标移动时脸部跟随
             const face = document.querySelector('.avatar-svg .face');
             const eyes = document.querySelectorAll('.avatar-svg .eye');
             
-            if (avatar && face) {
+            if (face) {
                 avatar.addEventListener('mousemove', function(e) {
                     const rect = avatar.getBoundingClientRect();
                     const x = (e.clientX - rect.left) / rect.width - 0.5;
                     const y = (e.clientY - rect.top) / rect.height - 0.5;
                     
                     gsap.to(face, {
-                        duration: 0.3,
-                        x: x * 10,
-                        y: y * 10,
+                        duration: 0.4,
+                        x: x * 8,
+                        y: y * 8,
                         ease: 'power2.out'
                     });
                     
                     gsap.to(eyes, {
-                        duration: 0.3,
-                        x: x * 5,
-                        y: y * 5,
+                        duration: 0.4,
+                        x: x * 4,
                         ease: 'power2.out'
                     });
                 });
