@@ -113,6 +113,35 @@ body {
     display: inline-block;
 }
 
+/* CSS Grid 艺术字：陈少辉 */
+.name-art {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: var(--space-lg);
+}
+
+.name-art .char {
+    display: grid;
+    grid-template-columns: repeat(6, 8px);
+    grid-template-rows: repeat(7, 8px);
+    gap: 2px;
+}
+
+.name-art .char > div {
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    .name-art .char {
+        grid-template-columns: repeat(6, 6px);
+        grid-template-rows: repeat(7, 6px);
+        gap: 1px;
+    }
+}
+
 /* Hero */
 .home-hero {
     text-align: center;
