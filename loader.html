@@ -1,24 +1,18 @@
 <div class="loader">
     <svg id="logo-anim" viewBox="0 0 300 120">
-    <defs>
-        <clipPath id="clip-path-c">
-            <path d="M40,30 h50 v60 h-50 Z" />
-        </clipPath>
-    </defs>
-    
     <!-- C 字母 -->
     <g id="c">
-        <path id="c-path" d="M75,45 a25,25 0 1,0 0,35 a25,25 0 1,0 0,-35" fill="none" stroke="#2d7a2d" stroke-width="12" stroke-linecap="round" />
+        <path id="c-path" d="M90,35 C70,35 55,45 55,60 C55,80 70,90 90,90 C75,90 65,80 65,60 C65,45 75,35 90,35" fill="none" stroke="#2d7a2d" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
     
     <!-- S 字母 -->
-    <g id="s">
-        <path id="s-path" d="M130,50 a20,20 0 1,1 0,0.1 M130,80 a20,20 0 1,0 0,0.1" fill="none" stroke="#2d7a2d" stroke-width="12" stroke-linecap="round" />
+    <g id="s" transform="translate(110, 0)">
+        <path id="s-path" d="M45,45 C30,40 20,50 20,60 C20,75 30,75 45,80 C60,85 60,95 45,95 C30,95 20,90 20,80" fill="none" stroke="#2d7a2d" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
     
     <!-- H 字母 -->
-    <g id="h">
-        <path id="h-path" d="M180,30 v35 M210,30 v35 M180,52.5 h30" fill="none" stroke="#2d7a2d" stroke-width="12" stroke-linecap="round" />
+    <g id="h" transform="translate(210, 0)">
+        <path id="h-path" d="M15,30 L15,65 M15,48 L45,48 L45,95" fill="none" stroke="#2d7a2d" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
 </svg>
 </div>
@@ -31,34 +25,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // C 字母 - 从左上飞入 + 弹跳
     tl.from('#c', {
-        x: -80,
-        y: -40,
+        x: -60,
+        y: -30,
         opacity: 0,
         duration: 0.5,
         ease: 'back.out(1.7)'
     })
     
-    // S 字母 - 描边动画
-    .from('#s-path', {
-        strokeDasharray: 200,
-        strokeDashoffset: 200,
-        duration: 0.6,
-        ease: 'power2.out'
-    }, '-=0.3')
+    // S 字母 - 弹入
     .from('#s', {
         scale: 0,
         opacity: 0,
         duration: 0.4,
         ease: 'back.out(2)'
-    }, '-=0.5')
+    }, '-=0.3')
     
     // H 字母 - 从右上飞入 + 弹跳
     .from('#h', {
-        x: 80,
-        y: -40,
+        x: 60,
+        y: -30,
         opacity: 0,
         duration: 0.5,
         ease: 'back.out(1.7)'
-    }, '-=0.3');
+    }, '-=0.2');
 });
 </script>
