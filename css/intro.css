@@ -20,14 +20,19 @@
     --space-2xl: clamp(40px, 6vw, 80px);
     
     /* 颜色 */
-    --color-primary: #2ecc71;
-    --color-bg: #0d1117;
-    --color-text: #fff;
-    --color-text-muted: #95a5a6;
-}
+    --color-primary: #0fd850;
+    --color-bg: #e8fbe8;
+    --color-text: #1a5f1a;
+    --color-text-muted: #2d8a2d;
 
 body {
     font-family: 'Space Grotesk', sans-serif;
+    background: #fdfbf7;
+    color: var(--color-text);
+    font-size: var(--fs-base);
+    line-height: 1.6;
+    min-height: 100vh;
+}
     background: var(--color-bg);
     color: var(--color-text);
     font-size: var(--fs-base);
@@ -40,9 +45,9 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    background: rgba(13, 17, 23, 0.95);
+    background: rgba(200, 230, 201, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+    border-bottom: 1px solid rgba(15, 216, 80, 0.3);
     z-index: 100;
     padding: clamp(10px, 2vw, 15px) 0;
 }
@@ -60,7 +65,7 @@ body {
     font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
     font-size: var(--fs-lg);
     font-weight: 700;
-    color: var(--color-primary);
+    color: #fff;
     text-decoration: none;
 }
 
@@ -76,7 +81,7 @@ body {
 }
 
 .nav-link:hover, .nav-link.active {
-    background: rgba(46, 204, 113, 0.1);
+    background: rgba(15, 216, 80, 0.1);
     color: var(--color-primary);
 }
 
@@ -114,8 +119,8 @@ body {
 }
 
 .project-card {
-    background: rgba(46, 204, 113, 0.05);
-    border: 1px solid rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.05);
+    border: 1px solid rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     overflow: hidden;
     transition: all 0.3s;
@@ -129,7 +134,7 @@ body {
 
 .project-image {
     height: clamp(100px, 15vw, 150px);
-    background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.15));
+    background: linear-gradient(135deg, rgba(15, 216, 80, 0.1), rgba(39, 174, 96, 0.15));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,7 +147,7 @@ body {
 .project-tag {
     display: inline-block;
     padding: var(--space-xs) var(--space-sm);
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    background: linear-gradient(135deg, #00838f, #27ae60);
     border-radius: 20px;
     font-size: var(--fs-xs);
     color: white;
@@ -193,8 +198,8 @@ body {
 .about-text strong { color: var(--color-text); }
 
 .about-card {
-    background: rgba(46, 204, 113, 0.05);
-    border: 1px solid rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.05);
+    border: 1px solid rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     padding: var(--space-lg);
     text-align: center;
@@ -221,8 +226,8 @@ body {
 }
 
 .skill-card {
-    background: rgba(46, 204, 113, 0.05);
-    border: 1px solid rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.05);
+    border: 1px solid rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     padding: var(--space-lg);
     text-align: center;
@@ -257,7 +262,7 @@ body {
 
 .skill-tags span {
     padding: var(--space-xs) var(--space-sm);
-    background: rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.15);
     color: var(--color-primary);
     border-radius: 15px;
     font-size: var(--fs-xs);
@@ -271,8 +276,8 @@ body {
 }
 
 .award-card {
-    background: rgba(46, 204, 113, 0.05);
-    border: 1px solid rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.05);
+    border: 1px solid rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     padding: var(--space-md);
     display: flex;
@@ -300,8 +305,8 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(13, 17, 23, 0.95);
-    border-top: 1px solid rgba(46, 204, 113, 0.2);
+    background: rgba(200, 230, 201, 0.95);
+    border-top: 1px solid rgba(15, 216, 80, 0.3);
     padding: clamp(8px, 2vw, 20px) var(--space-sm);
     z-index: 100;
 }
@@ -324,13 +329,13 @@ body {
     text-decoration: none;
     padding: var(--space-xs);
     border-radius: 15px;
-    background: rgba(46, 204, 113, 0.05);
+    background: rgba(15, 216, 80, 0.05);
     transition: all 0.3s;
     white-space: nowrap;
 }
 
 .footer-link:hover {
-    background: rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.15);
     color: var(--color-primary);
 }
 
@@ -360,8 +365,8 @@ body {
 }
 
 .practice-card {
-    background: rgba(46, 204, 113, 0.05);
-    border: 1px solid rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.05);
+    border: 1px solid rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     padding: var(--space-lg);
     display: flex;
@@ -397,8 +402,8 @@ body {
 
 /* 自我评价 */
 .self评价-card {
-    background: rgba(46, 204, 113, 0.05);
-    border: 1px solid rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.05);
+    border: 1px solid rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     padding: var(--space-xl);
     text-align: center;
@@ -421,7 +426,7 @@ body {
 
 .stat-item {
     padding: var(--space-xs) var(--space-md);
-    background: rgba(46, 204, 113, 0.15);
+    background: rgba(15, 216, 80, 0.15);
     border-radius: 20px;
     font-size: var(--fs-sm);
     color: var(--color-primary);

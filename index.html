@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>陈少辉 | 全栈开发工程师</title>
+    <script>
+        // 如果是从 welcome 来的，显示正常内容；否则重定向到 welcome
+        if (!sessionStorage.getItem('visited')) {
+            location.href = 'welcome.html';
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">

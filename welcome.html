@@ -16,17 +16,19 @@
 
 <body>
     <div id="loader-container"></div>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
-
+    
+    <!-- 漂浮的彩色圆球 -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    
     <div class="welcome-content">
         <h1 class="welcome-text">欢迎来到我的</h1>
         <h1 class="welcome-text">小世界<img src="images/icons/欢迎.png" alt="欢迎" class="welcome-icon"></h1>
         <p class="sub-text">这里记录了我的成长</p>
         <p class="hint">Click below to enter →</p>
 
-        <a href="index.html" class="enter-btn">
+        <a href="index.html" class="enter-btn" onclick="sessionStorage.setItem('visited', 'true')">
             <span>请进</span>
             <span class="arrow">→</span>
         </a>
