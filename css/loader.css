@@ -1,14 +1,8 @@
-/* Loader 动画 */
-:root {
-    --fs-4xl: clamp(86px, 10vw, 96px);
-    --color-bg: #fdfbf7;
-    --color-primary: #2d7a2d;
-}
-
+/* CSS Grid 艺术字：CSH */
 .loader {
     position: fixed;
     inset: 0;
-    background: var(--color-bg);
+    background: #fdfbf7;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,22 +16,29 @@
     pointer-events: none;
 }
 
-/* SVG 动画容器 */
-#logo-anim {
-    width: 80vw;
-    max-width: 400px;
-    overflow: visible;
+.csh-art {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
 
-/* 字母颜色 */
-#s-path {
-    stroke: var(--color-primary) !important;
+.csh-art .char {
+    display: grid;
+    grid-template-columns: repeat(5, 10px);
+    grid-template-rows: repeat(7, 10px);
+    gap: 2px;
 }
 
-#v-shape {
-    fill: var(--color-primary) !important;
+.csh-art .char > div {
+    background: #2d7a2d;
+    border-radius: 1px;
 }
 
-#g-path {
-    stroke: var(--color-primary) !important;
+/* 响应式 */
+@media (max-width: 480px) {
+    .csh-art .char {
+        grid-template-columns: repeat(5, 7px);
+        grid-template-rows: repeat(7, 7px);
+        gap: 1px;
+    }
 }
