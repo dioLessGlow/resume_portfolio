@@ -47,7 +47,7 @@
                   </defs>
                   <path class="bg" d="M39 153.73s31.57 19.71 77.26 15.21 90.18-37.23 90.36-72.33-10.51-57-35.28-63-50.22 17-76.31 20-60.12-15.88-78.32 2.51S-4.88 125.2 39 153.73z" fill="rgb(111, 220, 191)" />
                   <g clip-path="url(#background-clip)">
-                    <g class="me" opacity="0">
+                    <g class="me">
                       <g class="body">
                         <path class="shadow" d="M129.86,48.47s6.76,4.91,10,12.07,7,29.06,11.71,39.82,9.06,22.5,9.91,26.42,1.57,5-2.52,10.2-14.63,12-14.63,12l-11.47,6.8s14.87,9.67,17.68,19.32a71.16,71.16,0,0,1,4.34,18.79l-21.39,4.54L113.2,164.85l-13-11.1L90.31,75.37Z" opacity="0.09" style="isolation: isolate" />
                         <path class="shadow" d="M69.44,54A23.64,23.64,0,0,0,58.91,64.27c-4.39,7.87-4.1,30.52-7.61,41.23S40.76,124.26,41.93,135s2.64,12.27,2.64,12.27a66.65,66.65,0,0,1,14.93,1.88c7,1.89,18.42,5.48,18.42,5.48S63.6,166.53,61.84,176a67.23,67.23,0,0,0-2.34,18.26l20.89,1.9,16.19-34,11.42-12L109.91,75Z" opacity="0.09" style="isolation: isolate" />
@@ -117,13 +117,12 @@
             const avatar = document.querySelector('.avatar-svg');
             if (!avatar) return;
             
-            // 先隐藏整个头像，设置初始状态（从下方弹入）
-            gsap.set(avatar, { opacity: 0, y: 100 });
+            // 设置初始状态（从下方弹入）
+            gsap.set(avatar, { y: 100 });
             
             // 人物弹入动画 - 弹跳效果
             gsap.to(avatar, {
                 duration: 1.8,
-                opacity: 1,
                 y: 0,
                 ease: 'bounce.out'
             });
@@ -140,7 +139,6 @@
             gsap.from('.avatar-svg .ear', {
                 duration: 0.8,
                 scale: 0,
-                opacity: 0,
                 ease: 'elastic.out(1, 0.5)',
                 delay: 0.3,
                 stagger: 0.1
