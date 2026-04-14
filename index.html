@@ -29,7 +29,7 @@
         <div class="container home-hero">
             <!-- SVG头像 -->
             <div class="avatar-container">
-                <svg class="avatar-svg" viewBox="0 10 211.73 180" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="avatar-svg" viewBox="0 10 211.73 180" stroke-linecap="round" stroke-linejoin="round" width="150" height="130">
                   <defs>
                     <clipPath id="background-clip">
                       <path d="M39 153.73s31.57 19.71 77.26 15.21 90.18-37.23 90.36-72.33-8.82-80.28-33.59-86.29C136.84-6.57 114.13-5.82 88-2.82S34.73 11.45 16.71 48.24C-1.5 66.64-4.88 125.2 39 153.73z" fill="none" />
@@ -113,46 +113,48 @@
     
     <!-- SVG动画 -->
     <script>
-        // 等待页面加载完成后执行动画
-        window.addEventListener('load', function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatar = document.querySelector('.avatar-svg');
+            if (!avatar) return;
+            
             // 设置初始状态
-            gsap.set('.avatar-svg', { opacity: 1 });
-            gsap.set('.avatar-svg svg .me', { opacity: 1 });
+            gsap.set('.avatar-svg .me', { opacity: 1 });
             
             // 人物弹入动画
             gsap.from('.avatar-svg', {
                 duration: 1.2,
-                yPercent: 100,
+                y: 50,
+                opacity: 0,
                 ease: 'elastic.out(0.5, 0.4)'
             });
             
             // 头部动画
-            gsap.from('.avatar-svg svg .head, .avatar-svg svg .hair', {
+            gsap.from('.avatar-svg .head', {
                 duration: 1,
-                yPercent: 20,
+                y: 15,
                 ease: 'elastic.out(0.58, 0.25)',
                 delay: 0.3
             });
             
             // 耳朵动画
-            gsap.from('.avatar-svg svg .ear-right', {
+            gsap.from('.avatar-svg .ear-right', {
                 duration: 1,
-                rotate: 40,
-                yPercent: 10,
+                rotation: 40,
+                y: 10,
                 ease: 'elastic.out(0.5, 0.2)',
                 delay: 0.4
             });
             
-            gsap.from('.avatar-svg svg .ear-left', {
+            gsap.from('.avatar-svg .ear-left', {
                 duration: 1,
-                rotate: -40,
-                yPercent: 10,
+                rotation: -40,
+                y: 10,
                 ease: 'elastic.out(0.5, 0.2)',
                 delay: 0.4
             });
             
             // 眼睛动画
-            gsap.from('.avatar-svg svg .eye', {
+            gsap.from('.avatar-svg .eye', {
                 duration: 0.8,
                 scaleY: 0,
                 ease: 'elastic.out(0.5, 0.3)',
@@ -160,21 +162,21 @@
             });
             
             // 眉毛动画
-            gsap.from('.avatar-svg svg [class*="eyebrow"]', {
+            gsap.from('.avatar-svg [class*="eyebrow"]', {
                 duration: 0.8,
-                yPercent: 300,
+                y: 30,
                 ease: 'elastic.out(0.5, 0.2)',
                 delay: 0.4
             });
             
             // 眨眼动画 - 每5秒眨一次
             setInterval(function() {
-                gsap.to('.avatar-svg svg .eye', {
+                gsap.to('.avatar-svg .eye', {
                     duration: 0.1,
                     scaleY: 0.1,
                     transformOrigin: 'center top',
                     onComplete: function() {
-                        gsap.to('.avatar-svg svg .eye', {
+                        gsap.to('.avatar-svg .eye', {
                             duration: 0.1,
                             scaleY: 1
                         });
@@ -183,9 +185,8 @@
             }, 5000);
             
             // 鼠标移动时脸部轻微跟随
-            const avatar = document.querySelector('.avatar-svg');
-            const face = document.querySelector('.avatar-svg svg .face');
-            const eyes = document.querySelectorAll('.avatar-svg svg .eye');
+            const face = document.querySelector('.avatar-svg .face');
+            const eyes = document.querySelectorAll('.avatar-svg .eye');
             
             if (avatar && face) {
                 avatar.addEventListener('mousemove', function(e) {
