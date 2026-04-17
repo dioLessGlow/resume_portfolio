@@ -7,14 +7,17 @@ function loadGSAP() {
         }
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
-        script.onload = resolve;
+        script.onload = () => {
+            console.log('GSAP loaded successfully');
+            resolve();
+        };
+        script.onerror = () => console.error('Failed to load GSAP');
         document.head.appendChild(script);
     });
 }
 
 // 公共组件加载
 async function initComponents() {
-    // 获取当前页面
     const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
 
     // 加载 header
@@ -24,7 +27,6 @@ async function initComponents() {
             .then(response => response.text())
             .then(html => {
                 headerContainer.innerHTML = html;
-                // 设置 active 状态
                 const navLinks = headerContainer.querySelectorAll('.nav-link');
                 navLinks.forEach(link => {
                     if (link.dataset.page === currentPage) {
@@ -39,43 +41,32 @@ async function initComponents() {
     const loaderContainer = document.getElementById('loader-container');
     if (loaderContainer) {
         await loadGSAP();
-        
+
         fetch('loader.html')
             .then(response => response.text())
             .then(html => {
                 loaderContainer.innerHTML = html;
-                
-                // CSS Grid 动画
-                const tl = gsap.timeline();
-                gsap.set('.csh-art .char > div', { opacity: 0 });
-                
-                // C 字母
-                tl.to('.csh-art .char.c > div', {
-                    opacity: 1,
-                    duration: 0.3,
-                    stagger: 0.03,
-                    ease: 'power2.out'
-                })
-                // S 字母
-                .to('.csh-art .char.s > div', {
-                    opacity: 1,
-                    duration: 0.3,
-                    stagger: 0.03,
-                    ease: 'power2.out'
-                }, '-=0.5')
-                // H 字母
-                .to('.csh-art .char.h > div', {
-                    opacity: 1,
-                    duration: 0.3,
-                    stagger: 0.03,
-                    ease: 'power2.out'
-                }, '-=0.5');
-                
+
+                // 强制显示 loader
+                const loader = loaderContainer.querySelector('.loader');
+                if (loader) loader.style.display = 'flex';
+
+                // 检查元素
+                const textEl = loaderContainer.querySelector('.csh-text');
+                if (!textEl) {
+                    console.error('.csh-text not found!');
+                    return;
+                }
+
+                // CSS动画已处理，无需GSAP
+                console.log('Loader ready, CSS animation will play');
+
                 // 根据页面设置隐藏时间
                 const isWelcome = window.location.pathname.includes('welcome');
-                const hideTime = isWelcome ? 2000 : 800;
+                const hideTime = isWelcome ? 2000 : 1000;
+                console.log('Hide time:', hideTime);
+
                 setTimeout(() => {
-                    const loader = loaderContainer.querySelector('.loader');
                     if (loader) loader.classList.add('hidden');
                 }, hideTime);
             })

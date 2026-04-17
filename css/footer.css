@@ -1,0 +1,85 @@
+/* ===== Footer 样式 ===== */
+:root {
+    --color-primary: #2d7a2d;
+    --color-text-muted: #5a9a5a;
+    --fs-xs: clamp(10px, 1.2vw, 12px);
+    --space-xs: clamp(4px, 0.5vw, 8px);
+    --space-sm: clamp(8px, 1vw, 12px);
+}
+
+/* Footer 容器 - 收起状态 */
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    background: rgba(200, 230, 201, 0.95);
+    border-top: 1px solid rgba(15, 216, 80, 0.3);
+    z-index: 100;
+    transition: height 0.8s ease;
+}
+
+/* 悬停展开 */
+.site-footer:hover {
+    height: 70px;
+}
+
+/* 收起时显示文字 */
+.site-footer::after {
+    content: '联系方式';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: var(--color-text-muted);
+    transition: opacity 0.3s;
+}
+
+.site-footer:hover::after {
+    opacity: 0;
+}
+
+/* 内部布局 */
+.footer-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 2vw, 50px);
+    flex-wrap: wrap;
+    padding: 25px var(--space-sm) 10px;
+    transition: opacity 0.5s ease;
+}
+
+/* 收起时隐藏 */
+.site-footer:not(:hover) .footer-inner {
+    opacity: 0;
+}
+
+.footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-muted);
+    font-size: clamp(10px, 2vw, var(--fs-xs));
+    text-decoration: none;
+    padding: var(--space-xs);
+    border-radius: 15px;
+    background: rgba(46, 204, 113, 0.05);
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.footer-link:hover {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--color-primary);
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .site-footer:hover {
+        height: 90px;
+    }
+}

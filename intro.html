@@ -6,7 +6,10 @@
     <title>简介 | 陈少辉</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link href="//christieclee.github.io/highalo/starry/starry.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/intro.css">
     <link rel="stylesheet" href="css/loader.css">
 </head>
@@ -22,9 +25,9 @@
             <div class="about-grid">
                 <div class="about-text">
                     <p><strong>广东科学技术职业学院</strong> | 计算机工程技术学院</p>
-                    <p>移动应用开发 (web全栈产业开发班)</p>
-                    <p>2024.09 - 2027.06 | 大专 | 综测成绩院系第二</p>
-                    <p class="muted">web全栈产业开发班：年级仅30人入选 | 学校就业率：97.5%+</p>
+                    <p>移动应用开发 (web全栈产业开发班：年级仅30人入选)</p>
+                    <p>2024.09 - 2027.06 | 全日制专科 | GPA：4/5</p>
+                    <p class="muted"><strong>主修课程</strong>：Java程序设计、Vue.js开发、Spring Boot框架、数据库原理、UI设计、移动应用开发、计算机网络、数据结构与算法</p>
                 </div>
                 <div class="about-card">
                     <span class="card-icon">🎓</span>
@@ -36,34 +39,82 @@
 
             <!-- 02. 专业技能 -->
             <h2 class="section-title"><span class="title-index">02.</span> 专业技能</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <span class="skill-icon">✅</span>
-                    <h3>精通</h3>
-                    <p>Vue.js / Element UI / Spring Boot / MySQL / Axure RP</p>
+            
+            <!-- 精通 -->
+            <div class="skill-level">
+                <div class="level-header">
+                    <span class="level-icon">✅</span>
+                    <span>精通</span>
+                    <span class="level-label">可独立负责项目架构与开发</span>
                 </div>
-                <div class="skill-card">
-                    <span class="skill-icon">🔧</span>
-                    <h3>熟练</h3>
-                    <p>HTML / CSS / JavaScript / uni-app / 平面设计</p>
+                <div class="skill-tags">
+                    <span class="skill-tag" data-info="组件化开发、Vuex/Pinia 状态管理、性能优化">Vue.js</span>
+                    <span class="skill-tag" data-info="企业级中后台系统、表单与表格组件二次封装">Element UI/Plus</span>
+                    <span class="skill-tag" data-info="RESTful API、微服务、Spring Security 权限控制">Spring Boot</span>
+                    <span class="skill-tag" data-info="数据库设计、索引优化、复杂 SQL 与事务处理">MySQL</span>
+                    <span class="skill-tag" data-info="高保真原型、动态面板、变量与函数交互">Axure RP</span>
                 </div>
-                <div class="skill-card">
-                    <span class="skill-icon">📚</span>
-                    <h3>了解</h3>
-                    <p>AI辅助编程、云原生、低代码平台</p>
+                <div class="typewriter-info"></div>
+            </div>
+
+            <!-- 熟练 -->
+            <div class="skill-level">
+                <div class="level-header">
+                    <span class="level-icon">🔧</span>
+                    <span>熟练</span>
+                    <span class="level-label">胜任日常开发与设计工作</span>
                 </div>
+                <div class="skill-tags">
+                    <span class="skill-tag" data-info="语义化标签、Flex/Grid 布局、响应式设计">HTML5/CSS3</span>
+                    <span class="skill-tag" data-info="ES6+ 语法、异步编程、模块化开发">JavaScript</span>
+                    <span class="skill-tag" data-info="跨平台小程序、App 与 H5 多端发布">uni-app</span>
+                    <span class="skill-tag" data-info="Python 异步框架、自动 API 文档、依赖注入">FastAPI</span>
+                    <span class="skill-tag" data-info="数据处理、脚本自动化、爬虫基础">Python</span>
+                    <span class="skill-tag" data-info="视觉设计、品牌物料、UI 界面设计">PS / AI</span>
+                </div>
+                <div class="typewriter-info"></div>
+            </div>
+
+            <!-- 关注趋势 -->
+            <div class="skill-level">
+                <div class="level-header">
+                    <span class="level-icon">🚀</span>
+                    <span>了解</span>
+                    <span class="level-label">全栈开发与智能化方向</span>
+                </div>
+                <div class="skill-tags">
+                    <span class="skill-tag" data-info="GitHub Copilot、ChatGPT 代码生成、AI 辅助调试提效">AI辅助编程</span>
+                    <span class="skill-tag" data-info="Docker、Kubernetes、DevOps 流水线与自动化部署">云原生</span>
+                    <span class="skill-tag" data-info="钉钉宜搭、腾讯微搭、OutSystems 企业级快速交付">低代码平台</span>
+                    <span class="skill-tag" data-info="函数计算、事件驱动架构、按需扩展与成本优化">Serverless</span>
+                    <span class="skill-tag" data-info="GraphQL、API 网关、微服务间高效通信协议">现代API技术</span>
+                    <span class="skill-tag" data-info="大模型应用开发、RAG 检索增强、智能体 Agent 构建">LLM应用开发</span>
+                </div>
+                <div class="typewriter-info"></div>
             </div>
 
             <!-- 03. 项目经验 -->
             <h2 class="section-title"><span class="title-index">03.</span> 项目经验</h2>
             <div class="projects-grid">
                 <article class="project-card">
+                    <div class="project-image"><span class="project-icon">🤖</span></div>
+                    <div class="project-content">
+                        <span class="project-tag">计算机设计大赛</span>
+                        <h3>信购AI - 电商可信核验平台</h3>
+                        <p>中国大学生计算机设计大赛参赛作品</p>
+                        <p class="project-desc">智能商品爬取、货不对板检测（Chinese-CLIP）、色差检测（解决服装退货率70-90%）、AI智能分析（豆包大模型）</p>
+                        <div class="project-tech">
+                            <span>Vue3</span><span>Element Plus</span><span>Spring Boot</span><span>FastAPI</span><span>PyTorch</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="project-card">
                     <div class="project-image"><span class="project-icon">🏭</span></div>
                     <div class="project-content">
                         <span class="project-tag">省赛作品</span>
                         <h3>MES制造执行系统</h3>
-                        <p>2025省赛二等奖，企业级生产管理系统</p>
-                        <p class="project-desc">使用Axure RP完成产品原型设计，负责三端Nginx部署，开发数据可视化大屏</p>
+                        <p>2025省赛二等奖</p>
+                        <p class="project-desc">使用Axure RP完成产品原型设计，三端Nginx部署，开发数据可视化大屏</p>
                         <div class="project-tech">
                             <span>Vue.js</span><span>Element UI</span><span>Spring Boot</span><span>MySQL</span><span>Nginx</span>
                         </div>
@@ -73,20 +124,10 @@
                     <div class="project-image"><span class="project-icon">❤️</span></div>
                     <div class="project-content">
                         <span class="project-tag">小程序</span>
-                        <h3>岐青乡望App</h3>
-                        <p>志愿服务类微信小程序</p>
-                        <p class="project-desc">义教报名、志愿者签到、志愿服务时长记录、团队管理</p>
+                        <h3>岐青乡望小程序</h3>
+                        <p>志愿服务平台</p>
+                        <p class="project-desc">义教报名、志愿者签到、服务时长记录、团队管理</p>
                         <div class="project-tech"><span>uni-app</span><span>Vue.js</span><span>uniCloud</span></div>
-                    </div>
-                </article>
-                <article class="project-card">
-                    <div class="project-image"><span class="project-icon">🔐</span></div>
-                    <div class="project-content">
-                        <span class="project-tag">Web开发</span>
-                        <h3>验证界面设计</h3>
-                        <p>登录/注册流程设计与实现</p>
-                        <p class="project-desc">用户身份认证功能开发</p>
-                        <div class="project-tech"><span>Vue.js</span><span>JWT</span></div>
                     </div>
                 </article>
             </div>
@@ -101,14 +142,21 @@
                             <span class="award-icon">🏆</span>
                             <div class="award-info">
                                 <h3>广东省技能大赛</h3>
-                                <p>应用软件系统开发 省二等奖</p>
+                                <p>应用软件系统开发 <strong>省二等奖</strong></p>
+                            </div>
+                        </div>
+                        <div class="award-card">
+                            <span class="award-icon">🥈</span>
+                            <div class="award-info">
+                                <h3>智慧书海竞赛</h3>
+                                <p>银翼奖（<strong>全国第二</strong>）</p>
                             </div>
                         </div>
                         <div class="award-card">
                             <span class="award-icon">📊</span>
                             <div class="award-info">
                                 <h3>综测成绩</h3>
-                                <p>院专业排名第二</p>
+                                <p>院专业<strong>排名第二</strong></p>
                             </div>
                         </div>
                     </div>
@@ -117,26 +165,45 @@
                     <h3 class="year-title">大一 (2024)</h3>
                     <div class="awards-grid">
                         <div class="award-card">
-                            <span class="award-icon">📜</span>
+                            <span class="award-icon">📊</span>
                             <div class="award-info">
                                 <h3>综测成绩</h3>
-                                <p>校荣获第二</p>
+                                <p>院<strong>排名第二</strong></p>
                             </div>
                         </div>
                         <div class="award-card">
-                            <span class="award-icon">🔐</span>
+                            <span class="award-icon">🏺</span>
                             <div class="award-info">
-                                <h3>深信服认证</h3>
-                                <p>助理工程师</p>
+                                <h3>三灶鹤舞</h3>
+                                <p>校级<strong>三等奖</strong></p>
                             </div>
                         </div>
-                        <div class="award-card">
-                            <span class="award-icon">📝</span>
-                            <div class="award-info">
-                                <h3>英语CET-4</h3>
-                                <p>证书</p>
-                            </div>
-                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 04.5 技能证书 -->
+            <h2 class="section-title"><span class="title-index">04.</span> 技能证书</h2>
+            <div class="certificates-grid">
+                <div class="cert-card">
+                    <span class="cert-icon">🔐</span>
+                    <div class="cert-info">
+                        <h3>深信服认证</h3>
+                        <p>助理工程师</p>
+                    </div>
+                </div>
+                <div class="cert-card">
+                    <span class="cert-icon">📝</span>
+                    <div class="cert-info">
+                        <h3>英语CET-4</h3>
+                        <p>证书</p>
+                    </div>
+                </div>
+                <div class="cert-card">
+                    <span class="cert-icon">💻</span>
+                    <div class="cert-info">
+                        <h3>计算机等级考试</h3>
+                        <p>二级</p>
                     </div>
                 </div>
             </div>
@@ -145,19 +212,23 @@
             <h2 class="section-title"><span class="title-index">05.</span> 实践经历</h2>
             <div class="practice-grid">
                 <div class="practice-card">
-                    <span class="practice-icon">🏛️</span>
+                    <span class="practice-icon">📣</span>
                     <div class="practice-content">
-                        <h3>党建中心 | 勤工助学岗</h3>
-                        <p class="practice-time">2024.11 - 2025.07</p>
-                        <p>负责值班开窗、桌椅管理、接待来访师生</p>
+                        <h3>岐青年宣传部 | 教育公益成员</h3>
+                        <p class="practice-time">2025.07 - 至今</p>
+                        <p>服务家乡学子，助力乡村教育</p>
+                        <p class="practice-desc">设计荣誉证书、邀请函等活动物料 | 协调物料采购与供应商对接</p>
+                        <p class="practice-result">直播吸引2437名观众，点赞2.1万+</p>
                     </div>
                 </div>
                 <div class="practice-card">
-                    <span class="practice-icon">🤝</span>
+                    <span class="practice-icon">💡</span>
                     <div class="practice-content">
-                        <h3>志愿者活动</h3>
-                        <p>金湾颐养园敬老爱老服务</p>
-                        <p>三灶镇志愿者协会活动</p>
+                        <h3>三雄极光 | 平面设计学习</h3>
+                        <p class="practice-time">2024.06 - 至今</p>
+                        <p>中国照明行业领先品牌</p>
+                        <p class="practice-desc">品牌视觉设计、产品海报、喷绘广告 | 参与客户需求沟通与方案汇报</p>
+                        <p class="practice-result">培养UI设计与需求分析能力</p>
                     </div>
                 </div>
             </div>
@@ -167,5 +238,52 @@
     <div id="footer-container"></div>
 
     <script src="js/components.js"></script>
+    <script>
+        // ===== 技能标签打字机效果 =====
+        let typewriterTimer = null;
+
+        function typeText(element, text, speed = 40) {
+            if (typewriterTimer) clearTimeout(typewriterTimer);
+            element.innerHTML = '<span></span>';
+            element.classList.add('active');
+            
+            const span = element.querySelector('span');
+            let index = 0;
+            
+            function type() {
+                if (index < text.length) {
+                    span.textContent += text.charAt(index);
+                    index++;
+                    typewriterTimer = setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // 技能卡片悬停事件
+        document.querySelectorAll('.skill-tag').forEach(tag => {
+            tag.addEventListener('mouseenter', function () {
+                const info = this.dataset.info;
+                const container = this.closest('.skill-level');
+                const typewriter = container ? container.querySelector('.typewriter-info') : null;
+                if (info && typewriter) {
+                    typeText(typewriter, info, 40);
+                }
+            });
+
+            tag.addEventListener('mouseleave', function () {
+                if (typewriterTimer) {
+                    clearTimeout(typewriterTimer);
+                    typewriterTimer = null;
+                }
+                const container = this.closest('.skill-level');
+                const typewriter = container ? container.querySelector('.typewriter-info') : null;
+                if (typewriter) {
+                    typewriter.innerHTML = '<span></span>';
+                    typewriter.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

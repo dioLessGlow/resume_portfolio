@@ -1,0 +1,59 @@
+/* ===== Header 样式 ===== */
+:root {
+    --color-primary: #2d7a2d;
+    --color-text-muted: #5a9a5a;
+    --fs-xs: clamp(10px, 1.2vw, 12px);
+    --fs-sm: clamp(12px, 1.5vw, 14px);
+    --fs-lg: clamp(20px, 3vw, 24px);
+    --space-xs: clamp(4px, 0.5vw, 8px);
+    --space-md: clamp(12px, 1.5vw, 20px);
+}
+
+/* Header */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(200, 230, 201, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(15, 216, 80, 0.3);
+    z-index: 100;
+    padding: clamp(10px, 2vw, 15px) 0;
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 clamp(12px, 3vw, 20px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+}
+
+.header-nav { 
+    display: flex; 
+    gap: clamp(10px, 2vw, 30px); 
+}
+
+.nav-link {
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+    text-decoration: none;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 25px;
+    transition: all 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(15, 216, 80, 0.1);
+    color: var(--color-primary);
+}

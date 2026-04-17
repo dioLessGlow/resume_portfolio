@@ -1,0 +1,248 @@
+/* ===== 首页样式 ===== */
+:root {
+    --color-primary: #2d7a2d;
+    --color-bg: #fdfbf7;
+    --color-text: #1a5f1a;
+}
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.main-wrapper {
+    padding-top: 80px;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+.container { 
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0 20px; 
+    text-align: center;
+}
+
+.home-hero {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.home-hero h1 {
+    font-size: 36px;
+    margin: 0;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.divider {
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--color-primary), transparent);
+    opacity: 0.3;
+    margin: 10px 0;
+}
+
+/* 蜂巢布局容器 */
+.honeycomb-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0;
+}
+
+/* 卡片行 */
+.honeycomb-row {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.avatar-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 六边形卡片 */
+.hex-card {
+    width: 80px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s;
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(45, 122, 45, 0.15), rgba(45, 122, 45, 0.08));
+    border: 2px solid rgba(45, 122, 45, 0.3);
+    border-radius: 10px;
+}
+
+.hex-card:hover {
+    transform: translateY(-4px);
+    background: linear-gradient(135deg, rgba(45, 122, 45, 0.25), rgba(45, 122, 45, 0.15));
+    border-color: rgba(45, 122, 45, 0.5);
+}
+
+.hex-card .card-icon {
+    font-size: 20px;
+}
+
+.hex-card .card-label {
+    font-size: 10px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+/* 下划线 */
+.hex-card .card-underline {
+    width: 30px;
+    height: 2px;
+    background: var(--color-primary);
+    opacity: 0;
+    transition: all 0.3s;
+    margin-top: 2px;
+}
+
+.hex-card:hover .card-underline {
+    opacity: 1;
+    width: 50px;
+}
+
+/* 按钮下方打字信息 */
+.typewriter-info {
+    font-size: 12px;
+    color: var(--color-primary);
+    min-height: 36px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* 按钮区域 */
+.home-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--color-primary), #3d9a3d);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(45, 122, 45, 0.3);
+}
+
+.home-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(45, 122, 45, 0.4);
+}
+
+.home-btn .arrow {
+    transition: transform 0.3s ease;
+}
+
+.home-btn:hover .arrow {
+    transform: translateX(4px);
+}
+
+.btn-underline {
+    width: 60px;
+    height: 2px;
+    background: var(--color-primary);
+    opacity: 0.3;
+}
+
+/* 移动端 */
+@media (max-width: 480px) {
+    .main-wrapper {
+        padding-top: 60px;
+        padding-bottom: 60px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .container {
+        padding: 0 10px;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .hex-card {
+        width: 65px;
+        height: 55px;
+        flex-shrink: 0;
+    }
+    
+    .hex-card .card-icon {
+        font-size: 16px;
+    }
+    
+    .hex-card .card-label {
+        font-size: 8px;
+        white-space: nowrap;
+    }
+    
+    .honeycomb-row {
+        gap: 8px;
+    }
+    
+    .avatar-row {
+        gap: 8px;
+    }
+    
+    .home-hero h1 {
+        font-size: 26px;
+    }
+    
+    .avatar-svg {
+        width: 70px !important;
+        height: 60px !important;
+    }
+    
+    .home-btns {
+        width: 100%;
+    }
+    
+    .btn-row {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .home-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 10px 16px;
+        font-size: 12px;
+        box-sizing: border-box;
+    }
+}

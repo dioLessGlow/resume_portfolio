@@ -1,9 +1,9 @@
-/* CSS Grid 艺术字：CSH */
+/* 加载动画 - CSH 字母分别从不同方向弹入 */
 .loader {
     position: fixed;
     inset: 0;
     background: #fdfbf7;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     z-index: 10000;
@@ -16,29 +16,98 @@
     pointer-events: none;
 }
 
-.csh-art {
+.csh-text {
     display: flex;
-    justify-content: center;
-    gap: 15px;
+    gap: 20px;
+    font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
+    font-size: 86px;
+    font-weight: bold;
+    color: #2d7a2d;
 }
 
-.csh-art .char {
-    display: grid;
-    grid-template-columns: repeat(5, 10px);
-    grid-template-rows: repeat(7, 10px);
-    gap: 2px;
+.csh-text div {
+    display: inline-block;
+    opacity: 0;
 }
 
-.csh-art .char > div {
-    background: #2d7a2d;
-    border-radius: 1px;
+/* C - 从左边弹入 */
+.char-c {
+    animation: bounceInLeft 0.8s ease-out forwards;
+    animation-delay: 0s;
 }
 
-/* 响应式 */
+/* S - 从上边弹入 */
+.char-s {
+    animation: bounceInTop 0.8s ease-out forwards;
+    animation-delay: 0.2s;
+}
+
+/* H - 从右边弹入 */
+.char-h {
+    animation: bounceInRight 0.8s ease-out forwards;
+    animation-delay: 0.4s;
+}
+
+/* 从左边弹入 */
+@keyframes bounceInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-80px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(10px);
+    }
+    80% {
+        transform: translateX(-5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 从上边弹入 */
+@keyframes bounceInTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-80px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+    80% {
+        transform: translateY(-5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 从右边弹入 */
+@keyframes bounceInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(80px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(-10px);
+    }
+    80% {
+        transform: translateX(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @media (max-width: 480px) {
-    .csh-art .char {
-        grid-template-columns: repeat(5, 7px);
-        grid-template-rows: repeat(7, 7px);
-        gap: 1px;
+    .csh-text {
+        font-size: 86px;
+        gap: 12px;
     }
 }
