@@ -10,8 +10,168 @@
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/works.css">
+    <link rel="stylesheet" href="css/intro.css">
     <link rel="stylesheet" href="css/loader.css">
+    <style>
+        /* 多边形卡片 - 枯树形状 */
+        .poly-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 60px 0;
+        }
+        
+        /* 树干 */
+        .poly-grid::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 30px;
+            bottom: 30px;
+            width: 3px;
+            background: linear-gradient(to bottom, 
+                transparent 0%,
+                var(--color-text-muted) 5%,
+                var(--color-text-muted) 100%
+            );
+            transform: translateX(-50%);
+        }
+        
+        .poly-card {
+            --s: -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: calc(100vh / 7);
+            min-height: 140px;
+            transform: translateX(calc(var(--s) * 30%));
+            position: relative;
+        }
+        
+        /* 弯折的树枝连接线 */
+        .poly-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: var(--color-text-muted);
+            opacity: 0.3;
+            transform: translateY(-50%);
+        }
+        
+        /* 奇数行左倾 */
+        .poly-card:nth-child(odd)::before {
+            left: 15%;
+            right: 25%;
+            transform: translateY(-50%) rotate(-5deg);
+        }
+        
+        /* 偶数行右倾 */
+        .poly-card:nth-child(even)::before {
+            left: 25%;
+            right: 15%;
+            transform: translateY(-50%) rotate(5deg);
+        }
+        
+        .poly-card:nth-child(2n) {
+            --s: 1;
+            flex-direction: row-reverse;
+        }
+        
+        .poly-card h3 {
+            order: var(--s);
+            font-size: var(--fs-lg);
+            font-weight: 600;
+            color: var(--color-text);
+            width: 40%;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .poly-card .poly-icon {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-primary), #27ae60);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            filter: drop-shadow(2px 2px 4px rgba(15, 216, 80, 0.3));
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .poly-card:nth-child(2n) .poly-icon {
+            clip-path: polygon(50% 100%, 0% 62%, 18% 0%, 82% 0%, 100% 62%);
+        }
+        
+        .poly-card .poly-icon:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+        
+        .poly-card .poly-icon img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        
+        .poly-card .poly-icon span {
+            font-size: 2.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .poly-card {
+                transform: translateX(0);
+                min-height: 90px;
+            }
+            .poly-card:nth-child(2n) {
+                flex-direction: row;
+            }
+            .poly-card h3 {
+                font-size: 10px;
+                width: 28%;
+                padding: 4px;
+            }
+            .poly-card:nth-child(odd) h3 {
+                margin-left: 3%;
+                text-align: left;
+            }
+            .poly-card:nth-child(even) h3 {
+                margin-right: 3%;
+                text-align: right;
+            }
+            .poly-card .poly-icon {
+                width: 45px;
+                height: 45px;
+            }
+            .poly-card:nth-child(odd) .poly-icon {
+                margin-right: 3%;
+            }
+            .poly-card:nth-child(even) .poly-icon {
+                margin-left: 3%;
+            }
+            .poly-card .poly-icon span {
+                font-size: 1rem;
+            }
+            .poly-card .poly-icon img {
+                width: 24px;
+                height: 24px;
+            }
+            /* 树枝缩短 */
+            .poly-card::before {
+                left: 35%;
+                right: 35%;
+            }
+            .poly-grid::before {
+                width: 2px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -21,26 +181,35 @@
 
     <div class="main-wrapper">
         <div class="container">
-            <!-- CSS练习 -->
-            <h2 class="section-title"><span class="title-index">01.</span> CSS 练习作品</h2>
-            <div class="works-grid">
-                <div class="work-item"><span class="icon">🎯</span><span class="name">CSS 按钮</span></div>
-                <div class="work-item"><span class="icon">📦</span><span class="name">CSS 卡片</span></div>
-                <div class="work-item"><span class="icon">🎨</span><span class="name">CSS 动画</span></div>
-                <div class="work-item"><span class="icon">📱</span><span class="name">响应式布局</span></div>
-                <div class="work-item"><span class="icon">🌈</span><span class="name">渐变效果</span></div>
-                <div class="work-item"><span class="icon">✨</span><span class="name">过渡效果</span></div>
-            </div>
-
-            <!-- HTML练习 -->
-            <h2 class="section-title"><span class="title-index">02.</span> HTML 练习作品</h2>
-            <div class="works-grid">
-                <div class="work-item"><span class="icon">📄</span><span class="name">表单页面</span></div>
-                <div class="work-item"><span class="icon">📊</span><span class="name">表格布局</span></div>
-                <div class="work-item"><span class="icon">🗺️</span><span class="name">语义化标签</span></div>
-                <div class="work-item"><span class="icon">🔗</span><span class="name">导航菜单</span></div>
-                <div class="work-item"><span class="icon">📝</span><span class="name">文章页面</span></div>
-                <div class="work-item"><span class="icon">🏢</span><span class="name">企业页面</span></div>
+            <h2 class="section-title" style="text-align: center; margin-bottom: 30px;">
+                请点击多边形卡片
+            </h2>
+            
+            <div class="poly-grid">
+                <article class="poly-card">
+                    <h3>实战项目</h3>
+                    <div class="poly-icon"><img src="images/icons/项目.png" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>益智小游戏</h3>
+                    <div class="poly-icon"><img src="images/icons/游戏.png" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>UI设计作品</h3>
+                    <div class="poly-icon"><img src="images/icons/UI.png" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>平面设计作品</h3>
+                    <div class="poly-icon"><img src="images/icons/设计.png" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>荣誉墙</h3>
+                    <div class="poly-icon"><img src="images/icons/荣誉证书.png" alt=""></div>
+                </article>
             </div>
         </div>
     </div>
@@ -48,6 +217,46 @@
     <div id="footer-container"></div>
 
     <script src="js/components.js"></script>
+    <script>
+        setTimeout(() => {
+            const loader = document.getElementById('loader-container');
+            if (loader) loader.style.display = 'none';
+        }, 1000);
+        
+        // 点击多边形卡片跳转
+        document.querySelectorAll('.poly-icon').forEach((icon, index) => {
+            icon.addEventListener('click', function() {
+                const card = this.closest('.poly-card');
+                const title = card.querySelector('h3').textContent;
+                
+                // 添加旋转动画类
+                this.style.transform = 'rotate(180deg) scale(1.1)';
+                
+                // 动画结束后跳转
+                setTimeout(() => {
+                    switch(title) {
+                        case '荣誉墙':
+                            window.location.href = 'works-honors.html';
+                            break;
+                        case '平面设计作品':
+                            window.location.href = 'works-design.html';
+                            break;
+                        case 'UI设计作品':
+                            window.location.href = 'works-ui.html';
+                            break;
+                        case '益智小游戏':
+                            window.location.href = 'works-games.html';
+                            break;
+                        case '实战项目':
+                            window.location.href = 'works-projects.html';
+                            break;
+                        default:
+                            window.location.href = 'intro.html';
+                    }
+                }, 500);
+            });
+        });
+    </script>
 </body>
 
 </html>

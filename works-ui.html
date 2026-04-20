@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI设计作品 | 陈少辉</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/intro.css">
+    <link rel="stylesheet" href="css/loader.css">
+    <style>
+        * {
+            border: 0;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --hue: 223deg;
+            --gray1: hsl(var(--hue) 10% 95%);
+            --gray9: hsl(var(--hue) 10% 15%);
+            --black: hsl(0 0% 0%);
+            --trans-dur: 0.3s;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid rgba(15, 216, 80, 0.2);
+        }
+        .page-header h1 {
+            font-size: var(--fs-xl);
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: var(--color-text-muted);
+        }
+        
+        .works-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .work-item {
+            background: rgba(15, 216, 80, 0.05);
+            border: 1px solid rgba(15, 216, 80, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .work-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-primary);
+        }
+        .work-item .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .work-item h3 {
+            font-size: var(--fs-md);
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+        .work-item p {
+            font-size: var(--fs-sm);
+            color: var(--color-text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader-container"></div>
+    <div id="header-container"></div>
+    
+    <div class="main-wrapper">
+        
+        <div class="page-header">
+            <h1>UI设计作品</h1>
+            <p>Axure RP 原型设计、交互设计</p>
+        </div>
+        
+        <div class="works-container">
+            <div class="works-grid">
+                <article class="work-item">
+                    <span class="icon">📱</span>
+                    <h3>移动端原型</h3>
+                    <p>APP原型设计、交互流程</p>
+                </article>
+                
+                <article class="work-item">
+                    <span class="icon">💻</span>
+                    <h3>后台管理系统</h3>
+                    <p>数据看板、权限管理、CRUD</p>
+                </article>
+                
+                <article class="work-item">
+                    <span class="icon">🛒</span>
+                    <h3>电商详情页</h3>
+                    <p>商品展示、购物车、订单流程</p>
+                </article>
+                
+                <article class="work-item">
+                    <span class="icon">📊</span>
+                    <h3>仪表盘设计</h3>
+                    <p>数据可视化、大屏展示</p>
+                </article>
+                
+                <article class="work-item">
+                    <span class="icon">🎯</span>
+                    <h3>登录注册页</h3>
+                    <p>表单设计、验证逻辑</p>
+                </article>
+                
+                <article class="work-item">
+                    <span class="icon">📋</span>
+                    <h3>列表与详情</h3>
+                    <p>表格布局、详情页设计</p>
+                </article>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer-container"></div>
+    
+    <script src="js/components.js"></script>
+</body>
+
+</html>

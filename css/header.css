@@ -37,6 +37,23 @@
     font-weight: 700;
     color: #fff;
     text-decoration: none;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: clamp(16px, 5vw, 20px);
+    }
+    
+    .header-nav {
+        gap: clamp(6px, 2vw, 12px);
+    }
+    
+    .nav-link {
+        padding: var(--space-xs) clamp(6px, 2vw, 12px);
+        font-size: clamp(10px, 3vw, 12px);
+    }
 }
 
 .header-nav { 

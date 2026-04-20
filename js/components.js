@@ -67,7 +67,13 @@ async function initComponents() {
                 console.log('Hide time:', hideTime);
 
                 setTimeout(() => {
-                    if (loader) loader.classList.add('hidden');
+                    if (loader) {
+                        loader.classList.add('hidden');
+                        // 强制隐藏作为备份
+                        loader.style.display = 'none';
+                        loader.style.opacity = '0';
+                        loader.style.visibility = 'hidden';
+                    }
                 }, hideTime);
             })
             .catch(err => console.error('Loader 加载失败:', err));
@@ -80,6 +86,14 @@ async function initComponents() {
             .then(response => response.text())
             .then(html => {
                 footerContainer.innerHTML = html;
+                
+                // footer 点击展开（移动端）
+                const footer = footerContainer.querySelector('.site-footer');
+                if (footer) {
+                    footer.addEventListener('click', function(e) {
+                        this.classList.toggle('expanded');
+                    });
+                }
             })
             .catch(err => console.error('Footer 加载失败:', err));
     }

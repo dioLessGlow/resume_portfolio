@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>益智小游戏 | 陈少辉</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/intro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+    <style>
+        * {
+            border: 0;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --hue: 223deg;
+            --gray1: hsl(var(--hue) 10% 95%);
+            --gray9: hsl(var(--hue) 10% 15%);
+            --black: hsl(0 0% 0%);
+            --primary5: hsl(var(--hue) 90% 55%);
+            --primary6: hsl(var(--hue) 90% 45%);
+            --trans-dur: 0.3s;
+            --wheel-max: 600px;
+            --wheel-width: min(90vw, var(--wheel-max));
+            --item-size-min: 70px;
+            --item-size-vw: 15vw;
+            --item-size-max: 100px;
+        }
+        
+body {
+            background: var(--color-bg);
+        }
+        
+        .game-wheel-section {
+            position: relative;
+            margin: 60px auto;
+            width: var(--wheel-width);
+            aspect-ratio: 1 / 1;
+            overflow: visible;
+            touch-action: none;
+        }
+        
+        .game-wheel {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            transform-origin: 50% 50%;
+            will-change: transform;
+        }
+        
+        .game-wheel .game-item {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: clamp(var(--item-size-min), var(--item-size-vw), var(--item-size-max));
+            aspect-ratio: 1 / 1;
+            transform-origin: 0 0;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .game-wheel .game-item:hover {
+            transform: scale(1.15);
+        }
+        
+        .game-wheel .game-item .icon {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--color-primary), #27ae60);
+            border-radius: 50%;
+            color: #fff;
+        }
+        
+        .game-wheel .game-item .name {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--fs-xs);
+            color: var(--color-text);
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+        }
+        
+        .wheel-center h2 {
+            font-size: var(--fs-xl);
+            color: var(--color-text);
+            margin: 0;
+        }
+        
+        .wheel-center p {
+            font-size: var(--fs-sm);
+            color: var(--color-text-muted);
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .game-wheel .game-item {
+                --item-size-min: 50px;
+                --item-size-vw: 18vw;
+                --item-size-max: 70px;
+            }
+            .game-wheel .game-item .icon {
+                font-size: 1.8rem;
+            }
+            .game-wheel .game-item .name {
+                font-size: 10px;
+            }
+            .wheel-center h2 {
+                font-size: var(--fs-lg);
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .game-wheel {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader-container"></div>
+    <div id="header-container"></div>
+    
+    <div class="main-wrapper">
+        
+        <div class="container">
+            <section class="game-wheel-section" data-speed="0.2" data-direction="right" data-radius="65" data-radius-mobile="55">
+                <div class="game-wheel">
+                    <div class="game-item" data-name="拼图游戏">
+                        <div class="icon">🧩</div>
+                        <span class="name">拼图游戏</span>
+                    </div>
+                    <div class="game-item" data-name="贪吃蛇">
+                        <div class="icon">🐍</div>
+                        <span class="name">贪吃蛇</span>
+                    </div>
+                    <div class="game-item" data-name="弹球游戏">
+                        <div class="icon">⛹️</div>
+                        <span class="name">弹球游戏</span>
+                    </div>
+                    <div class="game-item" data-name="记忆翻牌">
+                        <div class="icon">🃏</div>
+                        <span class="name">记忆翻牌</span>
+                    </div>
+                    <div class="game-item" data-name="乒乓球">
+                        <div class="icon">🏓</div>
+                        <span class="name">乒乓球</span>
+                    </div>
+                    <div class="game-item" data-name="更多游戏">
+                        <div class="icon">🎮</div>
+                        <span class="name">更多游戏</span>
+                    </div>
+                </div>
+                
+                <div class="wheel-center">
+                    <h2>益智小游戏</h2>
+                    <p>点击开始游戏</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <div id="footer-container"></div>
+    
+    <script src="js/components.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        (() => {
+            const sections = document.querySelectorAll('.game-wheel-section');
+            const ACTIVE = [];
+            
+            function computeRadiusPx(section, items) {
+                const rect = section.getBoundingClientRect();
+                const half = Math.min(rect.width, rect.height) / 2;
+                
+                // 检测移动端
+                const isMobile = window.innerWidth <= 768;
+                const raw = isMobile 
+                    ? (section.dataset.radiusMobile || '55').toString().trim().toLowerCase()
+                    : (section.dataset.radius || '65').toString().trim().toLowerCase();
+                const pct = Number(raw);
+                return (isFinite(pct) ? pct : 65) / 100 * half;
+            }
+            
+            function createWheel(section) {
+                const wheel = section.querySelector('.game-wheel');
+                const items = [...wheel.querySelectorAll('.game-item')];
+                
+                const parsed = parseFloat(section.dataset.speed);
+                let speedDeg = Number.isFinite(parsed) ? parsed : 0.2;
+                
+                let dirAttr = String(section.dataset.direction || 'right').toLowerCase();
+                let dir = (dirAttr === 'left') ? -1 : 1;
+                
+                let radius = 0;
+                let angles = [];
+                let reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                let paused = false;
+                
+                function layout(init = false) {
+                    const rect = section.getBoundingClientRect();
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+                    radius = computeRadiusPx(section, items);
+                    
+                    const n = items.length;
+                    if (init || angles.length !== n) {
+                        angles = Array.from({ length: n }, (_, i) => (360 / n) * i);
+                    }
+                    
+                    for (let i = 0; i < n; i++) {
+                        const deg = angles[i];
+                        const rad = deg * Math.PI / 180;
+                        const x = cx + radius * Math.cos(rad);
+                        const y = cy + radius * Math.sin(rad);
+                        
+                        gsap.set(items[i], {
+                            position: 'absolute',
+                            left: 0, top: 0,
+                            x, y, xPercent: -50, yPercent: -50
+                        });
+                    }
+                }
+                
+                function tick(dt) {
+                    if (reduced || paused) return;
+                    const step = dir * speedDeg * dt;
+                    for (let i = 0; i < angles.length; i++) {
+                        angles[i] = (angles[i] + step) % 360;
+                    }
+                    layout(false);
+                }
+                
+                function bindUI() {
+                    section.addEventListener('mouseenter', () => { paused = true; });
+                    section.addEventListener('mouseleave', () => { paused = false; });
+                    
+                    items.forEach(item => {
+                        item.addEventListener('click', function() {
+                            const name = this.dataset.name;
+                            alert(name + ' - 建设中...');
+                        });
+                    });
+                    
+                    const stepper = () => {
+                        const dt = gsap.ticker.deltaRatio(60);
+                        tick(dt);
+                    };
+                    gsap.ticker.add(stepper);
+                    section._wheelStepper = stepper;
+                }
+                
+                function onResize() { layout(false); }
+                
+                return {
+                    init() {
+                        layout(true);
+                        bindUI();
+                    },
+                    destroy() {
+                        if (section._wheelStepper) gsap.ticker.remove(section._wheelStepper);
+                    },
+                    onResize
+                };
+            }
+            
+            async function initAll(root = document) {
+                const sections = root.querySelectorAll('.game-wheel-section');
+                for (const sec of sections) {
+                    const inst = createWheel(sec);
+                    inst.init();
+                    ACTIVE.push(inst);
+                }
+            }
+            
+            window.addEventListener('resize', () => {
+                ACTIVE.forEach(i => i.onResize());
+            });
+            
+            initAll(document);
+        })();
+    </script>
+</body>
+
+</html>

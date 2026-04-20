@@ -8,12 +8,17 @@
     justify-content: center;
     z-index: 10000;
     transition: opacity 0.5s, visibility 0.5s;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
-.loader.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+.loader.hidden,
+.loader.hide {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    display: none !important;
 }
 
 .csh-text {

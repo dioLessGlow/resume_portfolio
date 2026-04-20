@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实战项目 | 陈少辉</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/intro.css">
+    <link rel="stylesheet" href="css/loader.css">
+    <style>
+        .page-header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid rgba(15, 216, 80, 0.2);
+        }
+        .page-header h1 {
+            font-size: var(--fs-xl);
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: var(--color-text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader-container"></div>
+    <div id="header-container"></div>
+    
+    <div class="main-wrapper">
+        
+        <div class="container">
+            <div class="page-header">
+                <h1>实战项目</h1>
+                <p>完整项目经验</p>
+            </div>
+            
+            <h2 class="section-title" style="margin-top: 40px;"><span class="title-index">01.</span> 项目经验</h2>
+            <div class="projects-grid">
+                <article class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #5878c6, #6b9bc8);">
+                        <span class="project-icon">🤖</span>
+                    </div>
+                    <div class="project-content">
+                        <span class="project-tag">计算机设计大赛</span>
+                        <h3>信购AI - 电商可信核验平台</h3>
+                        <p>中国大学生计算机设计大赛参赛作品</p>
+                        <p class="project-desc">智能商品爬取、货不对板检测（Chinese-CLIP）、色差检测、AI智能分析（豆包大模型）</p>
+                        <div class="project-tech">
+                            <span>Vue3</span><span>Element Plus</span><span>Spring Boot</span><span>FastAPI</span><span>PyTorch</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <article class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #a1beae, #a3bea1);">
+                        <span class="project-icon">🏭</span>
+                    </div>
+                    <div class="project-content">
+                        <span class="project-tag">省赛二等奖</span>
+                        <h3>MES制造执行系统</h3>
+                        <p>2025省赛作品</p>
+                        <p class="project-desc">产品原型设计、三端Nginx部署、数据可视化大屏</p>
+                        <div class="project-tech">
+                            <span>Vue.js</span><span>Element UI</span><span>Spring Boot</span><span>MySQL</span><span>Nginx</span>
+                        </div>
+                    </div>
+                </article>
+                
+                <article class="project-card">
+                    <div class="project-image" style="background: linear-gradient(135deg, #c89696, #dcb4b4);">
+                        <span class="project-icon">❤️</span>
+                    </div>
+                    <div class="project-content">
+                        <span class="project-tag">小程序</span>
+                        <h3>岐青乡望小程序</h3>
+                        <p>志愿服务平台</p>
+                        <p class="project-desc">义教报名、志愿者签到、服务时长记录、团队管理</p>
+                        <div class="project-tech">
+                            <span>uni-app</span><span>Vue.js</span><span>uniCloud</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer-container"></div>
+    
+    <script src="js/components.js"></script>
+</body>
+
+</html>
