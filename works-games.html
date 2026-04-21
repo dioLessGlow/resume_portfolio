@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>益智小游戏 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
@@ -18,14 +19,17 @@
             padding: 0;
         }
 
-        :root {
-            --hue: 223deg;
-            --gray1: hsl(var(--hue) 10% 95%);
-            --gray9: hsl(var(--hue) 10% 15%);
-            --black: hsl(0 0% 0%);
-            --primary5: hsl(var(--hue) 90% 55%);
-            --primary6: hsl(var(--hue) 90% 45%);
-            --trans-dur: 0.3s;
+:root {
+            --color-primary: #2d7a2d;
+            --color-bg: #fdfbf7;
+            --color-text: #1a5f1a;
+            --color-text-muted: #5a9a5a;
+            --fs-xs: 10px;
+            --fs-sm: 12px;
+            --fs-base: 14px;
+            --fs-md: 16px;
+            --fs-lg: 20px;
+            --fs-xl: 28px;
             --wheel-max: 600px;
             --wheel-width: min(90vw, var(--wheel-max));
             --item-size-min: 70px;
@@ -33,14 +37,25 @@
             --item-size-max: 100px;
         }
         
-body {
+        body {
             background: var(--color-bg);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .main-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 80px;
+            padding-bottom: 20px;
         }
         
         .game-wheel-section {
             position: relative;
-            margin: 60px auto;
+            margin: 0 auto;
             width: var(--wheel-width);
+            max-width: 600px;
             aspect-ratio: 1 / 1;
             overflow: visible;
             touch-action: none;
@@ -117,19 +132,34 @@ body {
         }
         
         @media (max-width: 768px) {
-            .game-wheel .game-item {
-                --item-size-min: 50px;
-                --item-size-vw: 18vw;
-                --item-size-max: 70px;
+            :root {
+                --wheel-width: min(90vw, 320px);
+                --item-size-min: 40px;
+                --item-size-vw: 14vw;
+                --item-size-max: 50px;
+                --fs-xl: 20px;
+                --fs-sm: 10px;
+            }
+            .main-wrapper {
+                padding-top: 60px;
+                padding-bottom: 16px;
+            }
+            .game-wheel-section {
+                margin: 30px auto;
+                max-width: 320px;
             }
             .game-wheel .game-item .icon {
-                font-size: 1.8rem;
+                font-size: 1.3rem;
             }
             .game-wheel .game-item .name {
-                font-size: 10px;
+                font-size: 8px;
+                bottom: -20px;
             }
             .wheel-center h2 {
                 font-size: var(--fs-lg);
+            }
+            .wheel-center p {
+                font-size: 9px;
             }
         }
         
@@ -142,7 +172,6 @@ body {
 </head>
 
 <body>
-    <div id="loader-container"></div>
     <div id="header-container"></div>
     
     <div class="main-wrapper">
@@ -187,6 +216,7 @@ body {
     <div id="footer-container"></div>
     
     <script src="js/components.js"></script>
+        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script>
         (() => {
