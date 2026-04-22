@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Circle Gallery</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.bunny.net/css?family=just-me-again-down-here:400" rel="stylesheet">
+
+    <style>
+        /* ========================================
+       LAYERS
+    ======================================== */
+        @layer base, mouse, demo;
+
+        /* ========================================
+       DEMO LAYER - Core Gallery Logic
+    ======================================== */
+        @layer demo {
+            @property --rotate {
+                syntax: "<number>";
+                inherits: true;
+                initial-value: 0;
+            }
+
+            body {
+                height: 1200svh;
+                margin: 0;
+
+                animation: --page-rotate 1s linear;
+                animation-timeline: scroll(nearest block);
+                animation-timing-function: steps(var(--cards));
+
+                /* 卡片总数，需与 HTML 中卡片数量一致 */
+                --cards: 20;
+            }
+
+            @keyframes --page-rotate {
+                to {
+                    --rotate: 1;
+                }
+            }
+
+            .wrapper {
+                --card-border-radius: 14px;
+                --cards: sibling-count();
+                --card-width: max(150px, 20vw);
+                --card-height: calc(var(--card-width) * 6 / 4);
+                /* 半径足够大，防止卡片重叠 */
+                --radius: calc(var(--card-width) * var(--cards) / (2 * 3.1416));
+
+                font-family: 'Just Me Again Down Here', handwriting;
+                position: fixed;
+                width: calc(var(--radius) * 2);
+                height: calc(var(--radius) * 2);
+
+                /* 圆心定位：使顶部卡片可见 */
+                top: calc(50% + var(--radius) + var(--card-height) * 2);
+                left: 50%;
+                transform-origin: center center;
+                transform: translateX(-50%) rotate(calc(var(--rotate) * 360deg));
+                transition: transform 300ms linear;
+
+                &>div {
+                    --card-i: sibling-index();
+
+                    /* 卡片在圆形路径上的位置 */
+                    --card-offset-radius: circle(var(--radius) at 50% 50%);
+                    --card-offset-distance: calc((var(--card-i) - 1) / var(--cards) * 100%);
+
+                    /* 相对于焦点的位置计算 */
+                    --card-phase: calc((var(--card-i) - 1) / var(--cards) - 0.75);
+                    --card-pos: mod(calc(var(--card-phase) + var(--rotate) + 1), 1);
+                    --card-dist: min(var(--card-pos), calc(1 - var(--card-pos)));
+
+                    /* 灰度：离焦点越远越灰 */
+                    --card-grayscale: clamp(0, calc(var(--card-dist) * var(--cards)), 1);
+                    /* 透明度 */
+                    --card-opacity: calc(1 - (var(--card-dist) / 0.15));
+
+                    /* 模糊效果 */
+                    --card-focus-range: .1;
+                    --card-max-blur: 7px;
+                    --card-norm-dist: min(var(--card-dist), var(--card-focus-range));
+                    --card-blur-progress: calc(var(--card-norm-dist) / var(--card-focus-range));
+                    --card-blur: calc(var(--card-blur-progress) * var(--card-max-blur));
+
+                    /* 标题动画 */
+                    --caption-active: clamp(0, 1 - (var(--card-dist) / 0.001), 1);
+                    --caption-opacity: var(--caption-active);
+                    --caption-y: calc(-150px * (1 - var(--caption-active)));
+
+                    filter: blur(var(--card-blur)) grayscale(var(--card-grayscale));
+                    opacity: var(--card-opacity);
+                    container: size;
+
+                    offset-path: var(--card-offset-radius);
+                    offset-distance: var(--card-offset-distance);
+                    offset-rotate: auto;
+                    offset-anchor: 50% 100%;
+
+                    position: absolute;
+                    width: var(--card-width);
+                    aspect-ratio: 4/6;
+                    object-fit: cover;
+                    border-radius: var(--card-border-radius);
+                    transition: all 300ms ease-in-out;
+                    transform-origin: center calc(var(--card-height) * 2 * -1);
+
+                    &::after {
+                        content: attr(data-title);
+                        position: absolute;
+                        top: 100%;
+                        left: 1rem;
+                        opacity: var(--caption-opacity);
+                        translate: 0 var(--caption-y);
+                        font-size: clamp(1rem, 2vw + 0.045rem, 1.6rem);
+                        z-index: -1;
+                        transition: opacity 300ms ease-in-out, translate 300ms ease-in-out;
+                    }
+
+                    &>img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: inherit;
+                    }
+                }
+            }
+        }
+
+        /* ========================================
+       MOUSE LAYER - Scroll Hint Icon
+    ======================================== */
+        @layer mouse {
+            .mouse {
+                position: fixed;
+                bottom: 1rem;
+                left: 50%;
+                translate: -50% 0;
+                display: none;
+                width: 50px;
+                height: 50px;
+                opacity: 1;
+                color: var(--mouse-color, currentColor);
+
+                animation-name: mouse-fade;
+                animation-duration: 1s;
+                animation-timing-function: linear;
+                animation-fill-mode: forwards;
+                animation-timeline: scroll(nearest block);
+
+                @supports (animation-timeline: scroll()) {
+                    display: block;
+                }
+            }
+
+            @keyframes mouse-fade {
+                75% {
+                    opacity: 1;
+                }
+
+                100% {
+                    opacity: 0;
+                }
+            }
+        }
+
+        /* ========================================
+       BASE LAYER - General Styling
+    ======================================== */
+        @layer base {
+            * {
+                box-sizing: border-box;
+            }
+
+            :root {
+                color-scheme: light dark;
+                --bg-dark: rgb(16, 24, 40);
+                --bg-light: rgb(248, 244, 238);
+                --txt-light: rgb(10, 10, 10);
+                --txt-dark: rgb(245, 245, 245);
+                --line-light: rgba(0 0 0 / .25);
+                --line-dark: rgba(255 255 255 / .25);
+
+                --clr-bg: light-dark(var(--bg-light), var(--bg-dark));
+                --clr-txt: light-dark(var(--txt-light), var(--txt-dark));
+                --clr-lines: light-dark(var(--line-light), var(--line-dark));
+            }
+
+            body {
+                background-color: var(--clr-bg);
+                color: var(--clr-txt);
+                min-height: 100svh;
+                margin: 0;
+                padding: 2rem;
+                font-family: system-ui, sans-serif;
+                font-size: 1rem;
+                line-height: 1.5;
+                display: grid;
+                place-items: center;
+                gap: 2rem;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+
+            /* 浏览器不支持提示 */
+            @supports not (animation-timeline: scroll()) {
+                body::before {
+                    content: "Sorry, your browser doesn't support animation-timeline";
+                    position: fixed;
+                    top: 2rem;
+                    left: 50%;
+                    translate: -50% 0;
+                    font-size: 0.8rem;
+                    padding: 0.5rem 1rem;
+                    background: rgba(255, 0, 0, 0.1);
+                    border: 1px solid rgba(255, 0, 0, 0.3);
+                    border-radius: 8px;
+                    z-index: 100;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Gallery Wrapper -->
+    <section class="wrapper">
+        <div data-title="A misty Morning">
+            <img src="https://picsum.photos/id/634/1200/1200" alt="A misty Morning">
+        </div>
+        <div data-title="Harvest">
+            <img src="https://picsum.photos/id/228/1200/1200" alt="Harvest">
+        </div>
+        <div data-title="Waiting">
+            <img src="https://picsum.photos/id/661/1200/1200" alt="Waiting">
+        </div>
+        <div data-title="Time for Everything">
+            <img src="https://picsum.photos/id/380/1200/1200" alt="Time for Everything">
+        </div>
+        <div data-title="Cross over">
+            <img src="https://picsum.photos/id/392/1200/1200" alt="Cross over">
+        </div>
+        <div data-title="In The City">
+            <img src="https://picsum.photos/id/238/1200/1200" alt="In The City">
+        </div>
+        <div data-title="A Boat Trip">
+            <img src="https://picsum.photos/id/469/1200/1200" alt="A Boat Trip">
+        </div>
+        <div data-title="Waiting">
+            <img src="https://picsum.photos/id/311/1200/1200" alt="Waiting">
+        </div>
+        <div data-title="Stories to tell">
+            <img src="https://picsum.photos/id/515/1200/1200" alt="Stories to tell">
+        </div>
+        <div data-title="A Perfect Day">
+            <img src="https://picsum.photos/id/521/1200/1200" alt="A Perfect Day">
+        </div>
+        <div data-title="Riding the Curve">
+            <img src="https://picsum.photos/id/549/1200/1200" alt="Riding the Curve">
+        </div>
+        <div data-title="Raindrops">
+            <img src="https://picsum.photos/id/178/1200/1200" alt="Raindrops">
+        </div>
+        <div data-title="Gone Sailing">
+            <img src="https://picsum.photos/id/637/1200/1200" alt="Gone Sailing">
+        </div>
+        <div data-title="The Watch Tower">
+            <img src="https://picsum.photos/id/641/1200/1200" alt="The Watch Tower">
+        </div>
+        <div data-title="Leaving">
+            <img src="https://picsum.photos/id/669/1200/1200" alt="Leaving">
+        </div>
+        <div data-title="Above the Clouds">
+            <img src="https://picsum.photos/id/685/1200/1200" alt="Above the Clouds">
+        </div>
+        <div data-title="Urban Escape">
+            <img src="https://picsum.photos/id/505/1200/1200" alt="Urban Escape">
+        </div>
+        <div data-title="Golden Hour">
+            <img src="https://picsum.photos/id/699/1200/1200" alt="Golden Hour">
+        </div>
+        <div data-title="Silent Path">
+            <img src="https://picsum.photos/id/513/1200/1200" alt="Silent Path">
+        </div>
+        <div data-title="Contemplation!">
+            <img src="https://picsum.photos/id/773/1200/1200" alt="Contemplation!">
+        </div>
+    </section>
+
+    <!-- Scroll Hint Icon -->
+    <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 40" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mouse">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M6 3m0 4a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-4a4 4 0 0 1 -4 -4z" />
+            <path d="M12 7l0 4" />
+            <path d="M8 26l4 4l4 -4">
+                <animateTransform attributeType="XML" attributeName="transform" type="translate" values="0 0; 0 4; 0 0"
+                    dur="1s" repeatCount="indefinite" />
+            </path>
+        </svg>
+    </div>
+
+</body>
+
+</html>

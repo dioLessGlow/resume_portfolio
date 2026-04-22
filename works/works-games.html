@@ -5,11 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>益智小游戏 | 陈少辉</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/intro.css">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link
+        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/intro.css">
     <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
     <style>
         * {
@@ -19,7 +21,7 @@
             padding: 0;
         }
 
-:root {
+        :root {
             --color-primary: #2d7a2d;
             --color-bg: #fdfbf7;
             --color-text: #1a5f1a;
@@ -36,12 +38,12 @@
             --item-size-vw: 15vw;
             --item-size-max: 100px;
         }
-        
+
         body {
             background: var(--color-bg);
             font-family: 'Space Grotesk', sans-serif;
         }
-        
+
         .main-wrapper {
             min-height: 100vh;
             display: flex;
@@ -50,7 +52,7 @@
             padding-top: 80px;
             padding-bottom: 20px;
         }
-        
+
         .game-wheel-section {
             position: relative;
             margin: 0 auto;
@@ -60,7 +62,7 @@
             overflow: visible;
             touch-action: none;
         }
-        
+
         .game-wheel {
             position: absolute;
             inset: 0;
@@ -69,7 +71,7 @@
             transform-origin: 50% 50%;
             will-change: transform;
         }
-        
+
         .game-wheel .game-item {
             position: absolute;
             left: 50%;
@@ -82,11 +84,11 @@
             cursor: pointer;
             transition: transform 0.3s;
         }
-        
+
         .game-wheel .game-item:hover {
             transform: scale(1.15);
         }
-        
+
         .game-wheel .game-item .icon {
             font-size: 2.5rem;
             display: flex;
@@ -98,7 +100,7 @@
             border-radius: 50%;
             color: #fff;
         }
-        
+
         .game-wheel .game-item .name {
             position: absolute;
             bottom: -25px;
@@ -109,7 +111,7 @@
             white-space: nowrap;
             font-weight: 600;
         }
-        
+
         .wheel-center {
             position: absolute;
             top: 50%;
@@ -118,19 +120,19 @@
             text-align: center;
             z-index: 2;
         }
-        
+
         .wheel-center h2 {
             font-size: var(--fs-xl);
             color: var(--color-text);
             margin: 0;
         }
-        
+
         .wheel-center p {
             font-size: var(--fs-sm);
             color: var(--color-text-muted);
             margin-top: 5px;
         }
-        
+
         @media (max-width: 768px) {
             :root {
                 --wheel-width: min(90vw, 320px);
@@ -140,29 +142,35 @@
                 --fs-xl: 20px;
                 --fs-sm: 10px;
             }
+
             .main-wrapper {
                 padding-top: 60px;
                 padding-bottom: 16px;
             }
+
             .game-wheel-section {
                 margin: 30px auto;
                 max-width: 320px;
             }
+
             .game-wheel .game-item .icon {
                 font-size: 1.3rem;
             }
+
             .game-wheel .game-item .name {
                 font-size: 8px;
                 bottom: -20px;
             }
+
             .wheel-center h2 {
                 font-size: var(--fs-lg);
             }
+
             .wheel-center p {
                 font-size: 9px;
             }
         }
-        
+
         @media (prefers-reduced-motion: reduce) {
             .game-wheel {
                 animation: none !important;
@@ -173,11 +181,12 @@
 
 <body>
     <div id="header-container"></div>
-    
+
     <div class="main-wrapper">
-        
+
         <div class="container">
-            <section class="game-wheel-section" data-speed="0.2" data-direction="right" data-radius="65" data-radius-mobile="55">
+            <section class="game-wheel-section" data-speed="0.2" data-direction="right" data-radius="65"
+                data-radius-mobile="55">
                 <div class="game-wheel">
                     <div class="game-item" data-name="拼图游戏">
                         <div class="icon">🧩</div>
@@ -204,7 +213,7 @@
                         <span class="name">更多游戏</span>
                     </div>
                 </div>
-                
+
                 <div class="wheel-center">
                     <h2>益智小游戏</h2>
                     <p>点击开始游戏</p>
@@ -212,62 +221,62 @@
             </section>
         </div>
     </div>
-    
+
     <div id="footer-container"></div>
-    
-    <script src="js/components.js"></script>
-        
+
+    <script src="../js/components.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script>
         (() => {
             const sections = document.querySelectorAll('.game-wheel-section');
             const ACTIVE = [];
-            
+
             function computeRadiusPx(section, items) {
                 const rect = section.getBoundingClientRect();
                 const half = Math.min(rect.width, rect.height) / 2;
-                
+
                 // 检测移动端
                 const isMobile = window.innerWidth <= 768;
-                const raw = isMobile 
+                const raw = isMobile
                     ? (section.dataset.radiusMobile || '55').toString().trim().toLowerCase()
                     : (section.dataset.radius || '65').toString().trim().toLowerCase();
                 const pct = Number(raw);
                 return (isFinite(pct) ? pct : 65) / 100 * half;
             }
-            
+
             function createWheel(section) {
                 const wheel = section.querySelector('.game-wheel');
                 const items = [...wheel.querySelectorAll('.game-item')];
-                
+
                 const parsed = parseFloat(section.dataset.speed);
                 let speedDeg = Number.isFinite(parsed) ? parsed : 0.2;
-                
+
                 let dirAttr = String(section.dataset.direction || 'right').toLowerCase();
                 let dir = (dirAttr === 'left') ? -1 : 1;
-                
+
                 let radius = 0;
                 let angles = [];
                 let reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 let paused = false;
-                
+
                 function layout(init = false) {
                     const rect = section.getBoundingClientRect();
                     const cx = rect.width / 2;
                     const cy = rect.height / 2;
                     radius = computeRadiusPx(section, items);
-                    
+
                     const n = items.length;
                     if (init || angles.length !== n) {
                         angles = Array.from({ length: n }, (_, i) => (360 / n) * i);
                     }
-                    
+
                     for (let i = 0; i < n; i++) {
                         const deg = angles[i];
                         const rad = deg * Math.PI / 180;
                         const x = cx + radius * Math.cos(rad);
                         const y = cy + radius * Math.sin(rad);
-                        
+
                         gsap.set(items[i], {
                             position: 'absolute',
                             left: 0, top: 0,
@@ -275,7 +284,7 @@
                         });
                     }
                 }
-                
+
                 function tick(dt) {
                     if (reduced || paused) return;
                     const step = dir * speedDeg * dt;
@@ -284,18 +293,18 @@
                     }
                     layout(false);
                 }
-                
+
                 function bindUI() {
                     section.addEventListener('mouseenter', () => { paused = true; });
                     section.addEventListener('mouseleave', () => { paused = false; });
-                    
+
                     items.forEach(item => {
-                        item.addEventListener('click', function() {
+                        item.addEventListener('click', function () {
                             const name = this.dataset.name;
                             alert(name + ' - 建设中...');
                         });
                     });
-                    
+
                     const stepper = () => {
                         const dt = gsap.ticker.deltaRatio(60);
                         tick(dt);
@@ -303,9 +312,9 @@
                     gsap.ticker.add(stepper);
                     section._wheelStepper = stepper;
                 }
-                
+
                 function onResize() { layout(false); }
-                
+
                 return {
                     init() {
                         layout(true);
@@ -317,7 +326,7 @@
                     onResize
                 };
             }
-            
+
             async function initAll(root = document) {
                 const sections = root.querySelectorAll('.game-wheel-section');
                 for (const sec of sections) {
@@ -326,11 +335,11 @@
                     ACTIVE.push(inst);
                 }
             }
-            
+
             window.addEventListener('resize', () => {
                 ACTIVE.forEach(i => i.onResize());
             });
-            
+
             initAll(document);
         })();
     </script>

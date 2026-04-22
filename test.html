@@ -1,662 +1,680 @@
-<template>
-    <section class="slider" ref="sliderEl" :style="{ backgroundColor: currentSlide.color }">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODEPEN '26 — NR.2</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- GSAP -->
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+
+    <style>
+        /* ========================================
+       RESET
+    ======================================== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: "Instrument Sans", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========================================
+       SLIDER CONTAINER
+    ======================================== */
+        .slider {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========================================
+       HEADER
+    ======================================== */
+        .slider__header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 24px 32px;
+            flex-shrink: 0;
+        }
+
+        .slider__label {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            display: none;
+        }
+
+        /* ========================================
+       BODY (Left + Right)
+    ======================================== */
+        .slider__body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 32px 40px;
+            min-height: 0;
+            position: relative;
+        }
+
+        /* --- Left: Title + Footer --- */
+        .slider__left {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            z-index: 4;
+        }
+
+        .slider__title {
+            font-size: clamp(64px, 15vw, 200px);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            overflow: hidden;
+            position: relative;
+            margin-top: 0;
+            margin-bottom: auto;
+        }
+
+        .slider__title span {
+            display: inline-block;
+            will-change: transform;
+        }
+
+        .slider__footer {
+            flex-shrink: 0;
+            margin-top: 32px;
+        }
+
+        .slider__description {
+            font-size: 10px;
+            letter-spacing: 1.2px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            text-transform: uppercase;
+        }
+
+        .slider__location {
+            font-size: 10px;
+            letter-spacing: 1.2px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            text-transform: uppercase;
+            margin-top: 12px;
+        }
+
+        /* --- Right: Image Stack --- */
+        .slider__right {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .slider__images {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slider__slide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 55%;
+            aspect-ratio: 1.4;
+            overflow: hidden;
+            will-change: transform, filter, opacity;
+            contain: layout style;
+        }
+
+        .slider__slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.9);
+        }
+
+        /* ========================================
+       RESPONSIVE
+    ======================================== */
+        @media screen and (min-width: 768px) {
+            .slider__header {
+                padding: 40px 56px;
+            }
+
+            .slider__label {
+                display: flex;
+            }
+
+            .slider__body {
+                padding: 0 56px 56px;
+            }
+
+            .slider__footer {
+                margin-top: 48px;
+            }
+
+            .slider__slide {
+                width: 60%;
+            }
+        }
+
+        @media screen and (min-width: 1024px) {
+            .slider__body {
+                flex-direction: row;
+            }
+
+            .slider__left {
+                width: 55%;
+                flex-shrink: 0;
+                z-index: auto;
+            }
+
+            .slider__title {
+                margin-top: auto;
+                margin-bottom: auto;
+            }
+
+            .slider__right {
+                position: static;
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 0;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .slider__slide {
+                width: 68%;
+            }
+        }
+
+        /* ========================================
+       REDUCED MOTION
+    ======================================== */
+        @media (prefers-reduced-motion: reduce) {
+
+            .slider__slide,
+            .slider__title span {
+                will-change: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="slider">
         <!-- Header -->
         <div class="slider__header">
-            <span class="slider__label">电商可信核验 — 产业痛点</span>
+            <span class="slider__label">CODEPEN '26 — NR.2</span>
         </div>
 
         <!-- Body -->
         <div class="slider__body">
             <!-- Left: Title + Info -->
             <div class="slider__left">
-                <h2 class="slider__title" aria-live="polite" ref="titleEl">
-                    <div class="title-line" ref="titleLineRef">
-                        <span v-for="(char, i) in currentSlide.name.split('')" :key="i">
-                            {{ char === ' ' ? '\u00A0' : char }}
-                        </span>
-                    </div>
-                </h2>
+                <h2 class="slider__title" aria-live="polite"></h2>
                 <div class="slider__footer">
                     <div class="slider__info">
                         <p class="slider__description">
-                            行业核心问题<br>
-                            <span class="highlight">{{ currentSlide.severity }}% 严重程度</span>
+                            A CODEPEN EXPERIMENT<br>
+                            BY NIDAL — FRONTEND<br>
+                            DEVELOPER
                         </p>
-                        <p class="slider__location">{{ currentSlide.description }}</p>
+                        <p class="slider__location">
+                            CRAFTED WITH GSAP<br>
+                            AND CURIOSITY.
+                        </p>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Image Stack -->
             <div class="slider__right">
-                <div class="slider__images" ref="imagesEl">
-                    <div v-for="slide in visibleSlides" :key="slide.index" class="slider__slide"
-                        :style="getSlideStyle(slide)">
-                        <img :src="SLIDES[slide.index].image" :alt="SLIDES[slide.index].name">
-                    </div>
-                </div>
+                <div class="slider__images"></div>
             </div>
         </div>
     </section>
-</template>
 
-<script setup>
-    import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-    import gsap from 'gsap';
-
-    /* ========================================
-       CONFIG
-    ======================================== */
-    const SLIDES = [
-        {
-            name: '假货',
-            color: '#FF6B6B',
-            description: '假冒伪劣商品充斥平台，严重侵害消费者权益。本系统通过多模态AI识别商品特征，实现精准打假。',
-            severity: 92,
-            image: 'https://images.unsplash.com/photo-1589820296156-2454bb8a6ad1?w=600&q=80',
-        },
-        {
-            name: '图文',
-            color: '#4ECDC4',
-            description: '商家展示图与实物差异大，导致退货率飙升。本系统比对商家图与用户实拍图，量化差异程度。',
-            severity: 88,
-            image: 'https://images.unsplash.com/photo-1556742049-0cf9f7d2d1d2?w=600&q=80',
-        },
-        {
-            name: '刷单',
-            color: '#45B7D1',
-            description: '刷单、水军、模板评论泛滥，误导消费者决策。本系统通过NLP技术识别虚假评论，准确率超85%。',
-            severity: 85,
-            image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
-        },
-        {
-            name: '归因',
-            color: '#96CEB4',
-            description: '营销效果难以量化，无法精准评估ROI。本系统提供多维度数据分析，追踪转化漏斗。',
-            severity: 78,
-            image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',
-        },
-    ];
-
-    const AUTOPLAY_DELAY = 4000;
-
-    /* ========================================
-       STATE
-    ======================================== */
-    const sliderEl = ref(null);
-    const titleEl = ref(null);
-    const titleLineRef = ref(null);
-    const imagesEl = ref(null);
-
-    const current = ref(0);
-    const animating = ref(false);
-    const reducedMotion = ref(false);
-    const autoPlayId = ref(null);
-    const visibleSlides = ref([]); // { index, step }[]
-
-    const total = SLIDES.length;
-
-    // 当前幻灯片数据（响应式）
-    const currentSlide = computed(() => SLIDES[current.value]);
-
-    /* ========================================
-       HELPERS
-    ======================================== */
-    const mod = (n) => ((n % total) + total) % total;
-
-    const preload = () => {
-        SLIDES.forEach((s) => {
-            const img = new Image();
-            img.src = s.image;
-        });
-    };
-
-    /* ========================================
-       SLIDE POSITIONS (3D Stack)
-    ======================================== */
-    const positions = [
-        { x: -0.35, y: -0.95, rot: -30, s: 1.35, b: 16, o: 0 },
-        { x: -0.18, y: -0.50, rot: -15, s: 1.15, b: 8, o: 0.55 },
-        { x: 0, y: 0, rot: 0, s: 1, b: 0, o: 1 },
-        { x: -0.06, y: 0.50, rot: 15, s: 0.75, b: 6, o: 0.55 },
-        { x: -0.12, y: 0.95, rot: 30, s: 0.55, b: 14, o: 0 },
-    ];
-
-    const getSlideProps = (step) => {
-        const h = imagesEl.value?.offsetHeight || window.innerHeight;
-        const absStep = Math.abs(step);
-        const idx = Math.max(0, Math.min(4, step + 2));
-        const p = positions[idx];
-
-        return {
-            x: p.x * h,
-            y: p.y * h,
-            rotation: p.rot,
-            scale: p.s,
-            blur: p.b,
-            opacity: p.o,
-            zIndex: absStep === 0 ? 3 : absStep === 1 ? 2 : 1,
+    <script>
+        /* ========================================
+           UTILITIES
+        ======================================== */
+        const throttle = (callback, limit) => {
+            let waiting = false;
+            return function () {
+                if (!waiting) {
+                    callback.apply(this, arguments);
+                    waiting = true;
+                    setTimeout(() => {
+                        waiting = false;
+                    }, limit);
+                }
+            };
         };
-    };
 
-    const getSlideStyle = (slide) => {
-        const props = getSlideProps(slide.step);
-        return {
-            transform: `translate(-50%, -50%) translate(${props.x}px, ${props.y}px) rotate(${props.rotation}deg) scale(${props.scale})`,
-            opacity: props.opacity,
-            filter: `blur(${props.blur}px)`,
-            zIndex: props.zIndex,
+        const debounce = (func, wait, immediate) => {
+            let timeout;
+            return function () {
+                const context = this;
+                const args = arguments;
+                const later = function () {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                const callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
         };
-    };
 
-    /* ========================================
-       CAROUSEL
-    ======================================== */
-    const buildCarousel = () => {
-        const slides = [];
-        for (let step = -1; step <= 1; step++) {
-            slides.push({
-                index: mod(current.value + step),
-                step,
-            });
-        }
-        visibleSlides.value = slides;
-    };
-
-    /* ========================================
-       AUTOPLAY
-    ======================================== */
-    const startAutoPlay = () => {
-        stopAutoPlay();
-        autoPlayId.value = setInterval(() => {
-            if (!animating.value) go('next');
-        }, AUTOPLAY_DELAY);
-    };
-
-    const stopAutoPlay = () => {
-        if (autoPlayId.value) {
-            clearInterval(autoPlayId.value);
-            autoPlayId.value = null;
-        }
-    };
-
-    /* ========================================
-       TITLE ANIMATION (GSAP)
-    ======================================== */
-    const animateTitle = async (newText, direction) => {
-        if (!titleEl.value) return;
-
-        const h = titleEl.value.offsetHeight;
-        const dir = direction === 'next' ? 1 : -1;
-
-        // 获取当前字符 spans
-        const oldLine = titleLineRef.value;
-        if (!oldLine) return;
-
-        const oldChars = [...oldLine.querySelectorAll('span')];
-
-        // 创建新行
-        const newLine = document.createElement('div');
-        newLine.className = 'title-line';
-        newLine.style.cssText = 'position:absolute;top:0;left:0;width:100%';
-        [...newText].forEach((ch) => {
-            const span = document.createElement('span');
-            span.textContent = ch === ' ' ? '\u00A0' : ch;
-            newLine.appendChild(span);
-        });
-        titleEl.value.appendChild(newLine);
-
-        const newChars = [...newLine.querySelectorAll('span')];
-        gsap.set(newChars, { y: h * dir });
-
-        const duration = reducedMotion.value ? 0.01 : 1;
-        const stagger = reducedMotion.value ? 0 : 0.04;
-
-        // 固定容器高度
-        titleEl.value.style.height = h + 'px';
-        oldLine.style.cssText = 'position:absolute;top:0;left:0;width:100%';
-
-        const tl = gsap.timeline({
-            onComplete: () => {
-                oldLine.remove();
-                newLine.style.cssText = '';
-                gsap.set(newChars, { clearProps: 'all' });
-                titleEl.value.style.height = '';
-                // 更新 ref
-                titleLineRef.value = newLine;
+        /* ========================================
+           CONFIG
+        ======================================== */
+        const SLIDES = [
+            {
+                name: "Fjord",
+                color: "#6B5B50",
+                image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&q=80"
             },
-        });
-
-        tl.to(oldChars, {
-            y: -h * dir,
-            stagger,
-            duration,
-            ease: 'expo.inOut',
-        }, 0);
-
-        tl.to(newChars, {
-            y: 0,
-            stagger,
-            duration,
-            ease: 'expo.inOut',
-        }, 0);
-
-        return tl;
-    };
-
-    /* ========================================
-       CAROUSEL ANIMATION (GSAP)
-    ======================================== */
-    const animateCarousel = (direction) => {
-        if (!imagesEl.value || imagesEl.value.offsetHeight === 0) {
-            return gsap.timeline();
-        }
-
-        const shift = direction === 'next' ? -1 : 1;
-        const enterStep = direction === 'next' ? 2 : -2;
-        const newIdx = direction === 'next'
-            ? mod(current.value + 2)
-            : mod(current.value - 2);
-
-        // 添加新幻灯片到数组
-        visibleSlides.value.push({
-            index: newIdx,
-            step: enterStep,
-        });
-
-        // 更新所有 step
-        visibleSlides.value.forEach((s) => {
-            s.step += shift;
-        });
-
-        const duration = reducedMotion.value ? 0.01 : 1.2;
-
-        const tl = gsap.timeline({
-            onComplete: () => {
-                // 移除超出范围的
-                visibleSlides.value = visibleSlides.value.filter((s) => Math.abs(s.step) < 2);
+            {
+                name: "Aether",
+                color: "#B8B5A4",
+                image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80"
             },
-        });
+            {
+                name: "Onyx",
+                color: "#8BA8A8",
+                image: "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=600&q=80"
+            },
+            {
+                name: "Birch",
+                color: "#B5A882",
+                image: "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=600&q=80"
+            }
+        ];
 
-        // 使用 nextTick 确保 DOM 更新后再动画
-        nextTick(() => {
-            const slideEls = imagesEl.value.querySelectorAll('.slider__slide');
-            slideEls.forEach((el, i) => {
-                const slide = visibleSlides.value[i];
-                if (!slide) return;
-                const props = getSlideProps(slide.step);
-                el.style.zIndex = props.zIndex;
+        const AUTOPLAY_DELAY = 4000;
 
-                tl.to(el, {
+        /* ========================================
+           SLIDER CLASS
+        ======================================== */
+        class Slider {
+            constructor() {
+                this.current = 0;
+                this.animating = false;
+                this.total = SLIDES.length;
+                this.el = document.querySelector(".slider");
+                this.titleEl = document.querySelector(".slider__title");
+                this.imagesEl = document.querySelector(".slider__images");
+                this.slideEls = [];
+                this.currentLine = null;
+                this.autoPlayId = null;
+                this.reducedMotion = window.matchMedia(
+                    "(prefers-reduced-motion: reduce)"
+                ).matches;
+
+                this.preload();
+                this.setTitle(SLIDES[0].name);
+                gsap.set(this.el, { backgroundColor: SLIDES[0].color });
+                this.buildCarousel();
+                this.bind();
+                this.startAutoPlay();
+            }
+
+            /* --- Helpers --- */
+            mod(n) {
+                return ((n % this.total) + this.total) % this.total;
+            }
+
+            preload() {
+                SLIDES.forEach((s) => {
+                    new Image().src = s.image;
+                });
+            }
+
+            /* --- Autoplay --- */
+            startAutoPlay() {
+                this.stopAutoPlay();
+                this.autoPlayId = setInterval(() => {
+                    if (!this.animating) this.go("next");
+                }, AUTOPLAY_DELAY);
+            }
+
+            stopAutoPlay() {
+                if (this.autoPlayId) {
+                    clearInterval(this.autoPlayId);
+                    this.autoPlayId = null;
+                }
+            }
+
+            /* --- Title Animation --- */
+            setTitle(text) {
+                this.titleEl.innerHTML = "";
+                const line = document.createElement("div");
+                [...text].forEach((ch) => {
+                    const span = document.createElement("span");
+                    span.textContent = ch === " " ? "\u00A0" : ch;
+                    line.appendChild(span);
+                });
+                this.titleEl.appendChild(line);
+                this.currentLine = line;
+            }
+
+            animateTitle(newText, direction) {
+                const h = this.titleEl.offsetHeight;
+                const dir = direction === "next" ? 1 : -1;
+                const oldLine = this.currentLine;
+                const oldChars = [...oldLine.querySelectorAll("span")];
+
+                this.titleEl.style.height = h + "px";
+                oldLine.style.cssText = "position:absolute;top:0;left:0;width:100%";
+
+                const newLine = document.createElement("div");
+                newLine.style.cssText = "position:absolute;top:0;left:0;width:100%";
+                [...newText].forEach((ch) => {
+                    const span = document.createElement("span");
+                    span.textContent = ch === " " ? "\u00A0" : ch;
+                    newLine.appendChild(span);
+                });
+                this.titleEl.appendChild(newLine);
+
+                const newChars = [...newLine.querySelectorAll("span")];
+                gsap.set(newChars, { y: h * dir });
+
+                const duration = this.reducedMotion ? 0.01 : 1;
+                const stagger = this.reducedMotion ? 0 : 0.04;
+
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        oldLine.remove();
+                        newLine.style.cssText = "";
+                        gsap.set(newChars, { clearProps: "all" });
+                        this.titleEl.style.height = "";
+                        this.currentLine = newLine;
+                    }
+                });
+
+                tl.to(
+                    oldChars,
+                    {
+                        y: -h * dir,
+                        stagger: stagger,
+                        duration: duration,
+                        ease: "expo.inOut"
+                    },
+                    0
+                );
+
+                tl.to(
+                    newChars,
+                    {
+                        y: 0,
+                        stagger: stagger,
+                        duration: duration,
+                        ease: "expo.inOut"
+                    },
+                    0
+                );
+
+                return tl;
+            }
+
+            /* --- Carousel --- */
+            makeSlide(idx) {
+                const div = document.createElement("div");
+                div.className = "slider__slide";
+                const img = document.createElement("img");
+                img.src = SLIDES[idx].image;
+                img.alt = SLIDES[idx].name;
+                img.width = 600;
+                img.height = 420;
+                div.appendChild(img);
+                return div;
+            }
+
+            getSlideProps(step) {
+                const h = this.imagesEl.offsetHeight;
+                const absStep = Math.abs(step);
+                const positions = [
+                    { x: -0.35, y: -0.95, rot: -30, s: 1.35, b: 16, o: 0 },
+                    { x: -0.18, y: -0.50, rot: -15, s: 1.15, b: 8, o: 0.55 },
+                    { x: 0, y: 0, rot: 0, s: 1, b: 0, o: 1 },
+                    { x: -0.06, y: 0.50, rot: 15, s: 0.75, b: 6, o: 0.55 },
+                    { x: -0.12, y: 0.95, rot: 30, s: 0.55, b: 14, o: 0 }
+                ];
+                const idx = Math.max(0, Math.min(4, step + 2));
+                const p = positions[idx];
+
+                return {
+                    x: p.x * h,
+                    y: p.y * h,
+                    rotation: p.rot,
+                    scale: p.s,
+                    blur: p.b,
+                    opacity: p.o,
+                    zIndex: absStep === 0 ? 3 : absStep === 1 ? 2 : 1
+                };
+            }
+
+            positionSlide(slide, step) {
+                const props = this.getSlideProps(step);
+                gsap.set(slide, {
+                    xPercent: -50,
+                    yPercent: -50,
                     x: props.x,
                     y: props.y,
                     rotation: props.rotation,
                     scale: props.scale,
                     opacity: props.opacity,
-                    filter: `blur(${props.blur}px)`,
-                    duration,
-                    ease: 'power3.inOut',
-                }, 0);
-            });
-        });
-
-        return tl;
-    };
-
-    /* ========================================
-       MAIN TRANSITION
-    ======================================== */
-    const go = (direction) => {
-        if (animating.value) return;
-        animating.value = true;
-        startAutoPlay();
-
-        const nextIdx = direction === 'next'
-            ? mod(current.value + 1)
-            : mod(current.value - 1);
-
-        const master = gsap.timeline({
-            onComplete: () => {
-                current.value = nextIdx;
-                animating.value = false;
-                buildCarousel(); // 重新构建可见幻灯片
-            },
-        });
-
-        // 背景色过渡
-        master.to(sliderEl.value, {
-            backgroundColor: SLIDES[nextIdx].color,
-            duration: reducedMotion.value ? 0.01 : 1.2,
-            ease: 'power2.inOut',
-        }, 0);
-
-        master.add(animateTitle(SLIDES[nextIdx].name, direction), 0);
-        master.add(animateCarousel(direction), 0);
-    };
-
-    /* ========================================
-       EVENT HANDLERS
-    ======================================== */
-    let touchStartY = 0;
-
-    const onWheel = (e) => {
-        if (animating.value) return;
-        go(e.deltaY > 0 ? 'next' : 'prev');
-    };
-
-    const onTouchStart = (e) => {
-        touchStartY = e.touches[0].clientY;
-    };
-
-    const onTouchEnd = (e) => {
-        if (animating.value) return;
-        const diff = touchStartY - e.changedTouches[0].clientY;
-        if (Math.abs(diff) < 40) return;
-        go(diff > 0 ? 'next' : 'prev');
-    };
-
-    const onKeyDown = (e) => {
-        if (animating.value) return;
-        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') go('next');
-        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') go('prev');
-    };
-
-    const onResize = () => {
-        if (!animating.value && imagesEl.value?.offsetHeight > 0) {
-            // 重新计算位置
-            visibleSlides.value = [...visibleSlides.value];
-        }
-    };
-
-    const onVisibilityChange = () => {
-        if (document.visibilityState === 'hidden') {
-            animating.value = false;
-            stopAutoPlay();
-        } else {
-            startAutoPlay();
-        }
-    };
-
-    /* ========================================
-       UTILITIES (Throttle / Debounce)
-    ======================================== */
-    const throttle = (fn, limit) => {
-        let waiting = false;
-        return (...args) => {
-            if (!waiting) {
-                fn(...args);
-                waiting = true;
-                setTimeout(() => { waiting = false; }, limit);
+                    filter: "blur(" + props.blur + "px)",
+                    zIndex: props.zIndex
+                });
             }
-        };
-    };
 
-    const debounce = (fn, wait) => {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => fn(...args), wait);
-        };
-    };
+            buildCarousel() {
+                if (!this.imagesEl || this.imagesEl.offsetHeight === 0) return;
+                this.imagesEl.innerHTML = "";
+                this.slideEls = [];
 
-    const throttledWheel = throttle(onWheel, 1800);
-    const throttledTouchEnd = throttle(onTouchEnd, 1800);
-    const debouncedResize = debounce(onResize, 300);
+                for (let step = -1; step <= 1; step++) {
+                    const idx = this.mod(this.current + step);
+                    const slide = this.makeSlide(idx);
+                    this.imagesEl.appendChild(slide);
+                    this.positionSlide(slide, step);
+                    this.slideEls.push({ el: slide, step: step });
+                }
+            }
 
-    /* ========================================
-       LIFECYCLE
-    ======================================== */
-    onMounted(() => {
-        reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        preload();
-        buildCarousel();
+            animateCarousel(direction) {
+                if (!this.imagesEl || this.imagesEl.offsetHeight === 0)
+                    return gsap.timeline();
 
-        window.addEventListener('wheel', throttledWheel, { passive: true });
-        window.addEventListener('touchstart', onTouchStart, { passive: true });
-        window.addEventListener('touchend', throttledTouchEnd, { passive: true });
-        window.addEventListener('keydown', onKeyDown);
-        window.addEventListener('resize', debouncedResize, { passive: true });
-        document.addEventListener('visibilitychange', onVisibilityChange);
+                const shift = direction === "next" ? -1 : 1;
+                const enterStep = direction === "next" ? 2 : -2;
+                const newIdx =
+                    direction === "next"
+                        ? this.mod(this.current + 2)
+                        : this.mod(this.current - 2);
 
-        startAutoPlay();
-    });
+                const newSlide = this.makeSlide(newIdx);
+                this.imagesEl.appendChild(newSlide);
+                this.positionSlide(newSlide, enterStep);
+                this.slideEls.push({ el: newSlide, step: enterStep });
 
-    onUnmounted(() => {
-        stopAutoPlay();
-        window.removeEventListener('wheel', throttledWheel);
-        window.removeEventListener('touchstart', onTouchStart);
-        window.removeEventListener('touchend', throttledTouchEnd);
-        window.removeEventListener('keydown', onKeyDown);
-        window.removeEventListener('resize', debouncedResize);
-        document.removeEventListener('visibilitychange', onVisibilityChange);
-    });
-</script>
+                this.slideEls.forEach((s) => {
+                    s.step += shift;
+                });
 
-<style scoped>
-    /* ========================================
-   RESET
-======================================== */
-    *,
-    *::before,
-    *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+                const duration = this.reducedMotion ? 0.01 : 1.2;
 
-    :deep(html),
-    :deep(body) {
-        height: 100%;
-        overflow: hidden;
-    }
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        this.slideEls = this.slideEls.filter((s) => {
+                            if (Math.abs(s.step) >= 2) {
+                                s.el.remove();
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+                });
 
-    :deep(body) {
-        font-family: 'Instrument Sans', sans-serif;
-        -webkit-font-smoothing: antialiased;
-    }
+                this.slideEls.forEach((s) => {
+                    const props = this.getSlideProps(s.step);
+                    s.el.style.zIndex = props.zIndex;
 
-    /* ========================================
-   SLIDER CONTAINER
-======================================== */
-    .slider {
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: background-color 1.2s ease;
-    }
+                    tl.to(
+                        s.el,
+                        {
+                            x: props.x,
+                            y: props.y,
+                            rotation: props.rotation,
+                            scale: props.scale,
+                            opacity: props.opacity,
+                            filter: "blur(" + props.blur + "px)",
+                            duration: duration,
+                            ease: "power3.inOut"
+                        },
+                        0
+                    );
+                });
 
-    /* ========================================
-   HEADER
-======================================== */
-    .slider__header {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 24px 32px;
-        flex-shrink: 0;
-    }
+                return tl;
+            }
 
-    .slider__label {
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        color: rgba(255, 255, 255, 0.7);
-        text-transform: uppercase;
-        display: none;
-    }
+            /* --- Main Transition --- */
+            go(direction) {
+                if (this.animating) return;
+                this.animating = true;
+                this.startAutoPlay();
 
-    /* ========================================
-   BODY (Left + Right)
-======================================== */
-    .slider__body {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 0 32px 40px;
-        min-height: 0;
-        position: relative;
-    }
+                const nextIdx =
+                    direction === "next"
+                        ? this.mod(this.current + 1)
+                        : this.mod(this.current - 1);
 
-    /* --- Left: Title + Footer --- */
-    .slider__left {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-        position: relative;
-        z-index: 4;
-    }
+                const master = gsap.timeline({
+                    onComplete: () => {
+                        this.current = nextIdx;
+                        this.animating = false;
+                    }
+                });
 
-    .slider__title {
-        font-size: clamp(64px, 15vw, 200px);
-        font-weight: 700;
-        color: #fff;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-        overflow: hidden;
-        position: relative;
-        margin-top: 0;
-        margin-bottom: auto;
-    }
+                master.to(
+                    this.el,
+                    {
+                        backgroundColor: SLIDES[nextIdx].color,
+                        duration: this.reducedMotion ? 0.01 : 1.2,
+                        ease: "power2.inOut"
+                    },
+                    0
+                );
 
-    .title-line {
-        position: relative;
-    }
+                master.add(this.animateTitle(SLIDES[nextIdx].name, direction), 0);
+                master.add(this.animateCarousel(direction), 0);
+            }
 
-    .slider__title span {
-        display: inline-block;
-        will-change: transform;
-    }
+            /* --- Event Bindings --- */
+            bind() {
+                // Wheel
+                const onWheel = throttle((e) => {
+                    if (this.animating) return;
+                    this.go(e.deltaY > 0 ? "next" : "prev");
+                }, 1800);
+                window.addEventListener("wheel", onWheel, { passive: true });
 
-    .slider__footer {
-        flex-shrink: 0;
-        margin-top: 32px;
-    }
+                // Touch
+                let touchStartY = 0;
+                window.addEventListener(
+                    "touchstart",
+                    (e) => {
+                        touchStartY = e.touches[0].clientY;
+                    },
+                    { passive: true }
+                );
 
-    .slider__description {
-        font-size: 10px;
-        letter-spacing: 1.2px;
-        color: rgba(255, 255, 255, 0.6);
-        line-height: 1.6;
-        text-transform: uppercase;
-    }
+                const onTouchEnd = throttle((e) => {
+                    if (this.animating) return;
+                    const diff = touchStartY - e.changedTouches[0].clientY;
+                    if (Math.abs(diff) < 40) return;
+                    this.go(diff > 0 ? "next" : "prev");
+                }, 1800);
+                window.addEventListener("touchend", onTouchEnd, { passive: true });
 
-    .slider__description .highlight {
-        color: #fff;
-        font-weight: 700;
-    }
+                // Keyboard
+                window.addEventListener("keydown", (e) => {
+                    if (this.animating) return;
+                    if (e.key === "ArrowDown" || e.key === "ArrowRight") this.go("next");
+                    if (e.key === "ArrowUp" || e.key === "ArrowLeft") this.go("prev");
+                });
 
-    .slider__location {
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.6;
-        margin-top: 12px;
-    }
+                // Resize
+                const onResize = debounce(() => {
+                    if (!this.animating && this.imagesEl.offsetHeight > 0) {
+                        this.slideEls.forEach((s) => {
+                            this.positionSlide(s.el, s.step);
+                        });
+                    }
+                }, 300);
+                window.addEventListener("resize", onResize, { passive: true });
 
-    /* --- Right: Image Stack --- */
-    .slider__right {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-    }
-
-    .slider__images {
-        width: 100%;
-        height: 100%;
-        position: relative;
-    }
-
-    .slider__slide {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 55%;
-        aspect-ratio: 1.4;
-        overflow: hidden;
-        will-change: transform, filter, opacity;
-        contain: layout style;
-    }
-
-    .slider__slide img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: brightness(0.9);
-    }
-
-    /* ========================================
-   RESPONSIVE
-======================================== */
-    @media screen and (min-width: 768px) {
-        .slider__header {
-            padding: 40px 56px;
+                // Visibility
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === "hidden") {
+                        this.animating = false;
+                        this.stopAutoPlay();
+                    } else {
+                        this.startAutoPlay();
+                    }
+                });
+            }
         }
 
-        .slider__label {
-            display: flex;
-        }
+        /* ========================================
+           INIT
+        ======================================== */
+        document.addEventListener("DOMContentLoaded", () => {
+            new Slider();
+        });
+    </script>
 
-        .slider__body {
-            padding: 0 56px 56px;
-        }
+</body>
 
-        .slider__footer {
-            margin-top: 48px;
-        }
-
-        .slider__slide {
-            width: 60%;
-        }
-    }
-
-    @media screen and (min-width: 1024px) {
-        .slider__body {
-            flex-direction: row;
-        }
-
-        .slider__left {
-            width: 55%;
-            flex-shrink: 0;
-            z-index: auto;
-        }
-
-        .slider__title {
-            margin-top: auto;
-            margin-bottom: auto;
-        }
-
-        .slider__right {
-            position: static;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 0;
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .slider__slide {
-            width: 68%;
-        }
-    }
-
-    /* ========================================
-   REDUCED MOTION
-======================================== */
-    @media (prefers-reduced-motion: reduce) {
-
-        .slider__slide,
-        .slider__title span {
-            will-change: auto;
-        }
-    }
-</style>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>荣誉墙 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link
+        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=just-me-again-down-here:400" rel="stylesheet">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/intro.css">
+    <base target="_blank">
+
+    <style>
+        /* ========================================
+           LAYERS
+        ======================================== */
+        @layer base, mouse, demo;
+
+        /* ========================================
+           DEMO LAYER - Core Gallery Logic
+        ======================================== */
+        @layer demo {
+            @property --rotate {
+                syntax: "<number>";
+                inherits: true;
+                initial-value: 0;
+            }
+
+            .scroll-body {
+                /* 8 张卡片，每张需要足够的滚动距离来触发 step */
+                height: 800svh;
+                margin: 0;
+
+                animation: --page-rotate 1s linear;
+                animation-timeline: scroll(nearest block);
+                animation-timing-function: steps(var(--cards));
+
+                /* 卡片总数，与 HTML 中卡片数量一致 */
+                --cards: 8;
+            }
+
+            @keyframes --page-rotate {
+                to {
+                    --rotate: 1;
+                }
+            }
+
+            .wrapper {
+                --card-border-radius: 14px;
+                /* 优先使用 sibling-count()，回退到硬编码 */
+                --cards: sibling-count();
+                --card-width: max(220px, 22vw);
+                --card-height: calc(var(--card-width) * 2 / 3);
+                /* 半径足够大，防止卡片重叠 */
+                --radius: calc(var(--card-width) * var(--cards) / (2 * 3.1416));
+
+                font-family: 'Just Me Again Down Here', 'ZCOOL KuaiLe', handwriting;
+                position: fixed;
+                width: calc(var(--radius) * 2);
+                height: calc(var(--radius) * 2);
+
+                /* 圆心定位：使顶部卡片可见 */
+                top: calc(50% + var(--radius) + var(--card-height) * 2.5);
+                left: 50%;
+                transform-origin: center center;
+                transform: translateX(-50%) rotate(calc(var(--rotate) * 360deg));
+                transition: transform 300ms linear;
+                z-index: 1;
+            }
+
+            .wrapper>div {
+                --card-i: sibling-index();
+
+                /* 卡片在圆形路径上的位置 */
+                --card-offset-radius: circle(var(--radius) at 50% 50%);
+                --card-offset-distance: calc((var(--card-i) - 1) / var(--cards) * 100%);
+
+                /* 相对于焦点的位置计算 */
+                --card-phase: calc((var(--card-i) - 1) / var(--cards) - 0.75);
+                --card-pos: mod(calc(var(--card-phase) + var(--rotate) + 1), 1);
+                --card-dist: min(var(--card-pos), calc(1 - var(--card-pos)));
+
+                /* 灰度：离焦点越远越灰 */
+                --card-grayscale: clamp(0, calc(var(--card-dist) * var(--cards)), 1);
+                /* 透明度 */
+                --card-opacity: calc(1 - (var(--card-dist) / 0.25));
+
+
+                filter: blur(var(--card-blur)) grayscale(var(--card-grayscale));
+                opacity: var(--card-opacity);
+                container: size;
+
+                offset-path: var(--card-offset-radius);
+                offset-distance: var(--card-offset-distance);
+                offset-rotate: auto;
+                offset-anchor: 50% 100%;
+
+                position: absolute;
+                width: var(--card-width);
+                aspect-ratio: 3/2;
+                object-fit: cover;
+                border-radius: var(--card-border-radius);
+                transition: all 300ms ease-in-out;
+                transform-origin: center calc(var(--card-height) * 3 * -1);
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+                overflow: hidden;
+                background: #fff;
+            }
+
+            .wrapper>div::after {
+                content: attr(data-title);
+                position: absolute;
+                top: 100%;
+                left: 1rem;
+                opacity: var(--caption-opacity);
+                translate: 0 var(--caption-y);
+                font-size: clamp(1rem, 2vw + 0.045rem, 1.6rem);
+                z-index: -1;
+                transition: opacity 300ms ease-in-out, translate 300ms ease-in-out;
+                color: var(--color-text);
+                white-space: nowrap;
+                font-family: 'ZCOOL KuaiLe', 'Just Me Again Down Here', cursive;
+            }
+
+            .wrapper>div>img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: inherit;
+            }
+
+            /* 徽章覆盖层 */
+            .wrapper>div .badge {
+                position: absolute;
+                top: 15px;
+                right: 10px;
+                padding: 4px 12px;
+                border-radius: 50%;
+                font-size: 8px;
+                font-weight: 600;
+                font-family: 'Space Grotesk', sans-serif;
+                z-index: 10;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .badge.default {
+                background: linear-gradient(135deg, var(--color-primary), #3d9a3d);
+                color: white;
+            }
+        }
+
+
+        /* ========================================
+           MOUSE LAYER - Scroll Hint Icon
+        ======================================== */
+        @layer mouse {
+            .mouse {
+                position: fixed;
+                bottom: 3rem;
+                left: 50%;
+                translate: -50% 0;
+                display: none;
+                width: 50px;
+                height: 50px;
+                opacity: 1;
+                color: var(--color-primary);
+
+                animation-name: mouse-fade;
+                animation-duration: 1s;
+                animation-timing-function: linear;
+                animation-fill-mode: forwards;
+                animation-timeline: scroll(nearest block);
+                z-index: 100;
+
+                @supports (animation-timeline: scroll()) {
+                    display: block;
+                }
+            }
+
+            @keyframes mouse-fade {
+                75% {
+                    opacity: 1;
+                }
+
+                100% {
+                    opacity: 0;
+                }
+            }
+        }
+
+        /* ========================================
+           BASE LAYER - General Styling
+        ======================================== */
+        @layer base {
+            * {
+                box-sizing: border-box;
+            }
+
+            :root {
+                color-scheme: light dark;
+                --bg-dark: rgb(16, 24, 40);
+                --bg-light: rgb(248, 244, 238);
+                --txt-light: rgb(10, 10, 10);
+                --txt-dark: rgb(245, 245, 245);
+                --line-light: rgba(0 0 0 / .25);
+                --line-dark: rgba(255 255 255 / .25);
+
+                --clr-bg: light-dark(var(--bg-light), var(--bg-dark));
+                --clr-txt: light-dark(var(--txt-light), var(--txt-dark));
+                --clr-lines: light-dark(var(--line-light), var(--line-dark));
+
+                /* Honors 主题色 */
+                --color-primary: #2d7a2d;
+                --color-bg: #fdfbf7;
+                --color-text: #1a5f1a;
+                --color-text-muted: #5a9a5a;
+            }
+
+            html,
+            body {
+                height: 100%;
+            }
+
+            body {
+                background-color: var(--color-bg);
+                color: var(--color-text);
+                min-height: 100svh;
+                margin: 0;
+                padding: 0;
+                font-family: 'Space Grotesk', 'ZCOOL KuaiLe', sans-serif;
+                font-size: 1rem;
+                line-height: 1.5;
+                -webkit-font-smoothing: antialiased;
+                overflow-x: hidden;
+            }
+
+            /* 顶部打字效果 */
+            .typing-header {
+                position: fixed;
+                top: 120px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 100;
+                text-align: center;
+                pointer-events: none;
+            }
+
+            .typing-title {
+                font-size: 24px;
+                letter-spacing: 3px;
+                color: var(--color-primary);
+                text-transform: uppercase;
+                font-weight: 600;
+                min-height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+            }
+
+            .typing-title .char {
+                display: inline-block;
+                opacity: 0;
+                transform: translateY(-10px);
+                animation: char-appear 0.3s forwards;
+            }
+
+            @keyframes char-appear {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .typing-subtitle {
+                font-size: 16px;
+                color: var(--color-text-muted);
+                margin-top: 8px;
+                min-height: 20px;
+                letter-spacing: 1px;
+                white-space: nowrap;
+            }
+
+            .typing-subtitle .char {
+                display: inline-block;
+                opacity: 0;
+                transform: translateY(-10px);
+                animation: char-appear 0.3s forwards;
+            }
+
+            /* 底部提示文字 */
+            .scroll-hint-text {
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 12px;
+                color: var(--color-text-muted);
+                opacity: 0.7;
+                z-index: 100;
+                font-family: 'Space Grotesk', sans-serif;
+                pointer-events: none;
+                animation: hint-pulse 2s infinite;
+            }
+
+            @keyframes hint-pulse {
+
+                0%,
+                100% {
+                    opacity: 0.7;
+                }
+
+                50% {
+                    opacity: 0.3;
+                }
+            }
+
+            /* 浏览器不支持提示 */
+            @supports not (animation-timeline: scroll()) {
+                body::before {
+                    content: "您的浏览器不支持滚动驱动动画，请使用 Chrome 115+ 或 Edge 115+";
+                    position: fixed;
+                    top: 80px;
+                    left: 50%;
+                    translate: -50% 0;
+                    font-size: 13px;
+                    color: #c0392b;
+                    background: rgba(255, 255, 255, 0.95);
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                }
+            }
+
+            /* 移动端适配 */
+            @media screen and (max-width: 768px) {
+                .wrapper {
+                    --card-width: max(160px, 40vw);
+                    top: calc(50% + var(--radius) + var(--card-height) * 2);
+                }
+
+                .wrapper>div::after {
+                    font-size: 14px;
+                    left: 0.5rem;
+                }
+
+                .honor-header {
+                    padding: 12px 16px;
+                }
+
+                .honor-header .label {
+                    font-size: 10px;
+                }
+
+                .scroll-hint-text {
+                    font-size: 11px;
+                    bottom: 100px;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .scroll-body {
+                    animation: none;
+                }
+
+                .wrapper {
+                    transform: translateX(-50%);
+                }
+            }
+        }
+    </style>
+    <base target="_blank">
+</head>
+
+<body>
+    <div id="header-container"></div>
+
+    <!-- 顶部打字效果 -->
+    <div class="typing-header">
+        <div class="typing-title"></div>
+        <div class="typing-subtitle"></div>
+    </div>
+
+    <!-- 滚动驱动区域 -->
+    <div class="scroll-body">
+        <section class="wrapper">
+            <div data-title="优秀AI创意作品">
+                <img src="../../images/honors/7.jpg" alt="优秀作品">
+                <span class="badge default">校级</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">文化节比赛</div>
+                </div>
+            </div>
+            <div data-title="优秀干事">
+                <img src="../images/honors/6.jpg" alt="优秀干事">
+                <span class="badge default">学生工作</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">校易班工作站</div>
+                </div>
+            </div>
+            <div data-title="三灶鹤舞">
+                <img src="../images/honors/5.jpg" alt="三灶鹤舞">
+                <span class="badge default">校级三等奖</span>
+                <div>
+                    <div class="year">2024</div>
+                    <div class="category">校级文化比赛</div>
+                </div>
+            </div>
+            <div data-title="一等奖">
+                <img src="../images/honors/4.jpg" alt="东方财富杯一等奖">
+                <span class="badge default">校级一等奖</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">金融挑战赛</div>
+                </div>
+            </div>
+            <div data-title="最佳人气奖">
+                <img src="../images/honors/3.jpg" alt="最佳人气奖">
+                <span class="badge default">省级奖项</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">广东省简历创意设计大赛</div>
+                </div>
+            </div>
+            <div data-title="优秀AI创意作品">
+                <img src="../images/honors/2.jpg" alt="优秀AI创意作品">
+                <span class="badge default">国家级</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">绿色出行公益宣传</div>
+                </div>
+            </div>
+            <div data-title="银翼奖">
+                <img src="../images/honors/1.jpg" alt="银翼奖">
+                <span class="badge default">全国第二</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">智慧书海全国赛</div>
+                </div>
+            </div>
+            <div data-title="创意奖">
+                <img src="../images/honors/8.jpg" alt="汴河四叠创意奖">
+                <span class="badge default">设计赛事</span>
+                <div>
+                    <div class="year">2026</div>
+                    <div class="category">冬日灵感图像创作赛</div>
+                </div>
+            </div>
+            <!-- <div data-title="夏日四重奏创意奖">
+                <img src="../images/honors/9.jpg" alt="夏日四重奏创意奖">
+                <span class="badge default">设计赛事</span>
+                <div>
+                    <div class="year">2025</div>
+                    <div class="category">夏季主题图像创作赛</div>
+                </div>
+            </div>
+            <div data-title="影刀RPA认证">
+                <img src="../images/honors/10.jpg" alt="影刀RPA证书">
+                <span class="badge default">技能认证</span>
+                <div>
+                    <div class="year">2026</div>
+                    <div class="category">初级RPA工程师</div>
+                </div>
+            </div> -->
+
+        </section>
+    </div>
+
+    <!-- 滚动提示 -->
+    <div class="scroll-hint-text">向下滚动浏览荣誉</div>
+
+    <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 40" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mouse">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M6 3m0 4a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-4a4 4 0 0 1 -4 -4z" />
+            <path d="M12 7l0 4" />
+            <path d="M8 26l4 4l4 -4">
+                <animateTransform attributeType="XML" attributeName="transform" type="translate" values="0 0; 0 4; 0 0"
+                    dur="1s" repeatCount="indefinite" />
+            </path>
+        </svg>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="../js/components.js"></script>
+    <script>
+        // 打字效果
+        class TypeWriter {
+            constructor(titleEl, subtitleEl) {
+                this.titleEl = titleEl;
+                this.subtitleEl = subtitleEl;
+                this.currentTimeout = null;
+                this.currentText = '';
+                this.currentSubtitle = '';
+            }
+
+            type(text, subtitle = '') {
+                // 如果文字没变，不重新打字
+                if (text === this.currentText && subtitle === this.currentSubtitle) return;
+                this.currentText = text;
+                this.currentSubtitle = subtitle;
+
+                // 清除之前的动画
+                if (this.currentTimeout) {
+                    clearTimeout(this.currentTimeout);
+                }
+
+                // 清空标题和副标题
+                this.titleEl.innerHTML = '';
+                this.subtitleEl.innerHTML = '';
+
+                let titleIndex = 0;
+                let subtitleIndex = 0;
+                const titleChars = text.split('');
+                const subtitleChars = subtitle.split('');
+                let phase = 'title'; // 'title' or 'subtitle'
+
+                const typeChar = () => {
+                    if (phase === 'title') {
+                        if (titleIndex < titleChars.length) {
+                            const span = document.createElement('span');
+                            span.className = 'char';
+                            span.textContent = titleChars[titleIndex];
+                            this.titleEl.appendChild(span);
+                            titleIndex++;
+                            this.currentTimeout = setTimeout(typeChar, 60);
+                        } else if (subtitleChars.length > 0) {
+                            // 标题打完，开始副标题
+                            phase = 'subtitle';
+                            this.currentTimeout = setTimeout(typeChar, 200);
+                        }
+                    } else {
+                        if (subtitleIndex < subtitleChars.length) {
+                            const span = document.createElement('span');
+                            span.className = 'char';
+                            span.textContent = subtitleChars[subtitleIndex];
+                            this.subtitleEl.appendChild(span);
+                            subtitleIndex++;
+                            this.currentTimeout = setTimeout(typeChar, 40);
+                        }
+                    }
+                };
+
+                typeChar();
+            }
+
+            clear() {
+                if (this.currentTimeout) {
+                    clearTimeout(this.currentTimeout);
+                }
+                this.titleEl.innerHTML = '';
+                this.subtitleEl.innerHTML = '';
+                this.currentText = '';
+                this.currentSubtitle = '';
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleEl = document.querySelector('.typing-title');
+            const subtitleEl = document.querySelector('.typing-subtitle');
+            const writer = new TypeWriter(titleEl, subtitleEl);
+
+            const cards = document.querySelectorAll('.wrapper > div');
+            let currentIndex = -1;
+
+            // 滚动监听，使用 Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        const title = card.getAttribute('data-title');
+                        const badge = card.querySelector('.badge');
+                        const year = card.querySelector('.year');
+                        const category = card.querySelector('.category');
+
+                        const badgeText = badge ? badge.textContent : '';
+                        const info = [year ? year.textContent : '', category ? category.textContent : ''].filter(Boolean).join(' · ');
+                        const subtitle = badgeText + (info ? ' · ' + info : '');
+
+                        writer.type(title, subtitle);
+
+                        // 更新当前索引
+                        const idx = [...cards].indexOf(card);
+                        if (idx !== currentIndex) {
+                            currentIndex = idx;
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+
+            cards.forEach(card => observer.observe(card));
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 3D 交互 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/intro.css">
+    <link rel="stylesheet" href="../css/loader.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Inter", sans-serif;
+            background: var(--gray1, #f0f1f3);
+            color: var(--color-text, #1a1a2e);
+            transition: background 0.8s ease;
+            padding-top: 70px;
+        }
+
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 120px - 70px);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .page-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center,
+                    transparent,
+                    rgba(0, 0, 0, 0.05));
+        }
+
+        .scene {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .subtitle {
+            margin-top: 0.4rem;
+            font-size: 0.95rem;
+            font-family: "Inter", sans-serif;
+            color: #6b7280;
+            margin-bottom: 1.8rem;
+        }
+
+        .observer {
+            margin: 0.8rem 0 1.4rem;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            letter-spacing: 0.4px;
+            min-height: 1.2em;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        /* === Snack Menu === */
+        .snack-menu {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .snack {
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 14px;
+            padding: 0.7rem;
+            background: rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .snack img {
+            width: 100%;
+            height: 60px;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            margin: 0 auto;
+            pointer-events: none;
+        }
+
+        .snack span {
+            display: block;
+            margin-top: 0.3rem;
+            font-family: "Inter", sans-serif;
+            font-size: 0.8rem;
+            color: #4b5563;
+            text-align: center;
+        }
+
+        .snack:hover {
+            transform: translateY(-4px) scale(1.03);
+            border-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .pudgy-container {
+            margin-top: 1rem;
+        }
+
+        #pudgy {
+            width: clamp(150px, 35vw, 230px);
+            border-radius: 12px;
+            transition: filter 0.3s ease;
+        }
+
+        /* === Reaction === */
+        .reaction {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* === TRUE STATE === */
+        body.true {
+            background: radial-gradient(circle at 20% 20%, #e8f5e9, var(--gray1, #f0f1f3) 70%);
+        }
+
+        body.true #pudgy {
+            filter: drop-shadow(0 0 18px rgba(0, 255, 180, 0.5));
+        }
+
+        body.true .reaction {
+            color: #00a86b;
+        }
+
+        /* === FALSE STATE === */
+        body.false {
+            background: radial-gradient(circle at 20% 20%, #fce4ec, var(--gray1, #f0f1f3) 70%);
+        }
+
+        body.false #pudgy {
+            filter: drop-shadow(0 0 18px rgba(255, 0, 90, 0.5));
+        }
+
+        body.false .reaction {
+            color: #e11d48;
+        }
+
+        /* === Mobile === */
+        @media (max-width: 480px) {
+            .snack-menu {
+                gap: 0.5rem;
+            }
+
+            .snack {
+                height: 95px;
+                padding: 0.5rem;
+            }
+
+            .snack img {
+                height: 50px;
+            }
+
+            .snack span {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+    <base target="_blank">
+<base target="_blank">
+</head>
+
+<body>
+    <div id="header-container"></div>
+
+    <div class="page-wrapper">
+        <div class="scene">
+            <p class="subtitle">投喂零食，胖吉来审判 — 你的选择能过审吗？</p>
+            <p class="observer" id="observerText">正在初始化观察...</p>
+
+            <div class="snack-menu">
+                <a class="snack" href="/foods/second-food.html" data-snack="烤鸡翅" data-response="true">
+                    <img src="../images/foods/烤鸡翅.png" alt="烤鸡翅">
+                    <span>烤鸡翅</span>
+                </a>
+
+                <a class="snack" href="" data-snack="苦瓜" data-response="false">
+                    <img src="../images/foods/苦瓜.png" alt="">
+                    <span>苦瓜</span>
+                </a>
+
+                <a class="snack" href="/foods/fourth-food.html" data-snack="意面" data-response="true">
+                    <img src="../images/foods/意大利面.png" alt="意面">
+                    <span>意面</span>
+                </a>
+
+                <a class="snack" href="" data-snack="香菜" data-response="false">
+                    <img src="../images/foods/香菜.png" alt="香菜">
+                    <span>香菜</span>
+                </a>
+
+                <a class="snack" href="/foods/first-food.html" data-snack="蛋挞" data-response="true">
+                    <img src="../images/foods/蛋挞.png" alt="蛋挞">
+                    <span>蛋挞</span>
+                </a>
+
+                <a class="snack" href="" data-snack="折耳根" data-response="false">
+                    <img src="../images/foods/鱼腥草.png" alt="折耳根">
+                    <span>折耳根</span>
+                </a>
+
+                <a class="snack" href="/foods/third-food.html" data-snack="烤肠" data-response="true">
+                    <img src="../images/foods/烤肠.png" alt="烤肠">
+                    <span>烤肠</span>
+                </a>
+
+                <a class="snack" href="" data-snack="皮蛋" data-response="false">
+                    <img src="../images/foods/皮蛋.png" alt="皮蛋">
+                    <span>皮蛋</span>
+                </a>
+            </div>
+
+            <div class="pudgy-container">
+                <img id="pudgy" src="" alt="胖吉正在判断">
+                <div class="reaction" id="reactionText"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="../js/components.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const snacks = document.querySelectorAll(".snack");
+            const pudgy = document.getElementById("pudgy");
+            const body = document.body;
+            const reaction = document.getElementById("reactionText");
+
+            const yesGif = "https://assets.codepen.io/11990995/YES_20251112_175033114.gif";
+            const noGif = "https://assets.codepen.io/11990995/NO_20251112_175109062.gif";
+            const idleGif = "https://assets.codepen.io/11990995/pudgy_idle_20251111_021234773.gif";
+
+            // 预加载
+            const preload = [yesGif, noGif, idleGif];
+            preload.forEach((src) => {
+                const img = new Image();
+                img.src = src;
+            });
+
+            // 初始状态
+            pudgy.src = idleGif;
+
+            snacks.forEach((snack) => {
+                snack.addEventListener("click", (e) => {
+                    const response = snack.dataset.response;
+                    const isTrue = response === "true";
+                    const name = snack.dataset.snack;
+                    const href = snack.getAttribute("href");
+
+                    // 阻止默认跳转，先展示动画
+                    e.preventDefault();
+
+                    // 重置状态
+                    body.classList.remove("true", "false");
+                    reaction.style.opacity = 1;
+                    reaction.innerText = "正在评估...";
+                    pudgy.src = idleGif;
+
+                    // 短暂延迟
+                    setTimeout(() => {
+                        if (isTrue) {
+                            body.classList.add("true");
+
+                            // 强制GIF重新播放
+                            pudgy.src = "";
+                            pudgy.src = yesGif;
+
+                            reaction.innerText = `通过 → ${name} 已批准`;
+                        } else {
+                            body.classList.add("false");
+
+                            pudgy.src = "";
+                            pudgy.src = noGif;
+
+                            reaction.innerText = `拒绝 → ${name} 被驳回`;
+                        }
+                    }, 400);
+
+                    // 如果是通过，动画结束后跳转
+                    if (isTrue) {
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 2600);
+                    } else {
+                        // 拒绝时重置回idle
+                        setTimeout(() => {
+                            pudgy.src = idleGif;
+                            reaction.style.opacity = 0;
+                            body.classList.remove("false");
+                        }, 2600);
+                    }
+                });
+            });
+        });
+
+        const observer = document.getElementById("observerText");
+
+        const lines = [
+            "正在观察输入...",
+            "正在处理意图...",
+            "信号已接收。",
+            "正在评估选择...",
+            "输入并不能保证结果。",
+            "检测到模式。",
+            "重新评估中...",
+            "决策待定...",
+            "并非所有输入都是平等的。",
+            "系统仍未被说服。"
+        ];
+
+        let index = 0;
+
+        function rotateObserver() {
+            observer.style.opacity = 0;
+
+            setTimeout(() => {
+                observer.textContent = lines[index];
+                observer.style.opacity = 1;
+
+                index = (index + 1) % lines.length;
+            }, 400);
+        }
+
+        // 开始轮播
+        setInterval(rotateObserver, 3000);
+
+        // 初始触发
+        rotateObserver();
+    </script>
+</body>
+
+</html>
