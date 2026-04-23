@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>平面设计作品 | 陈少辉</title>
+    <title>设计作品 | 陈少辉</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
@@ -82,16 +82,68 @@
             align-items: center;
             padding: 20px;
         }
+
+        .back-btn {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 101;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(45, 122, 45, 0.1);
+            border: 1px solid rgba(45, 122, 45, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(45, 122, 45, 0.2);
+            border-color: rgba(45, 122, 45, 0.4);
+            transform: scale(1.08);
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--color-primary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 70px;
+                right: 16px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .back-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+
     <div id="header-container"></div>
 
     <div class="main-wrapper">
         <div class="page-header">
-            <h1>平面设计作品</h1>
-            <p>品牌视觉、海报、宣传物料设计</p>
+            <h1>设计作品</h1>
+            <p>海报、品牌视觉、UI设计</p>
         </div>
 
         <div class="works-container">
@@ -160,7 +212,7 @@
             return x - Math.floor(x);
         };
 
-        // 照片卡片
+        // 照片卡片 - 自适应比例 + 统一视觉
         const PhotoCard = ({ src, name, index, onClick }) => {
             return React.createElement(motion.div, {
                 initial: { opacity: 0, y: 40, scale: 0.8 },
@@ -172,55 +224,73 @@
                     delay: index * 0.06
                 },
                 style: {
-                    width: '110px',
-                    aspectRatio: '4/5',
+                    width: '140px',
+                    minHeight: '180px',
                     backgroundColor: '#f5f5dc',
-                    padding: '8px',
+                    padding: '10px 10px 8px 10px',
                     cursor: 'pointer',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                     borderRadius: '3px',
-                    position: 'relative'
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column'
                 },
                 onClick: onClick,
                 whileHover: { scale: 1.05, y: -6 },
                 whileTap: { scale: 0.95 }
             },
+                // 图片区域：自适应高度，限制最大高度
                 React.createElement("div", {
                     style: {
                         width: '100%',
-                        height: '75%',
-                        position: 'relative',
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#e8e4d9',
                         overflow: 'hidden',
-                        backgroundColor: '#e8e4d9'
+                        position: 'relative',
+                        minHeight: '100px',
+                        maxHeight: '160px',
+                        borderRadius: '2px'
                     }
                 },
                     React.createElement("img", {
                         src: src,
                         alt: name,
                         style: {
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            width: 'auto',
+                            height: 'auto',
+                            objectFit: 'contain',
                             display: 'block'
                         },
                         onError: (e) => { e.target.style.display = 'none'; }
                     }),
+                    // 内阴影保持复古感
                     React.createElement("div", {
                         style: {
                             position: 'absolute',
                             inset: 0,
-                            boxShadow: 'inset 0 6px 16px rgba(0,0,0,0.12), inset 0 -6px 16px rgba(0,0,0,0.12), inset 6px 0 16px rgba(0,0,0,0.08), inset -6px 0 16px rgba(0,0,0,0.08)',
+                            boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.1)',
                             pointerEvents: 'none'
                         }
                     })
                 ),
+                // 标题区域：固定最小高度，保证视觉对齐
                 React.createElement("div", {
                     style: {
                         marginTop: '8px',
                         fontFamily: '"IM Fell DW Pica SC", serif',
                         fontSize: '12px',
                         textAlign: 'center',
-                        color: '#333'
+                        color: '#333',
+                        lineHeight: 1.3,
+                        minHeight: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                     }
                 }, name)
             );
@@ -316,7 +386,9 @@
                                             backgroundColor: '#f5f5dc',
                                             padding: '4px',
                                             boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                                            borderRadius: '2px'
+                                            borderRadius: '2px',
+                                            display: 'flex',
+                                            flexDirection: 'column'
                                         }
                                     },
                                         React.createElement("img", {
@@ -325,8 +397,9 @@
                                             style: {
                                                 width: '100%',
                                                 height: '68%',
-                                                objectFit: 'cover',
-                                                display: 'block'
+                                                objectFit: 'contain',
+                                                display: 'block',
+                                                backgroundColor: '#e8e4d9'
                                             },
                                             onError: (e) => { e.target.style.display = 'none'; }
                                         }),
@@ -336,7 +409,12 @@
                                                 fontSize: '8px',
                                                 textAlign: 'center',
                                                 fontFamily: '"IM Fell DW Pica SC", serif',
-                                                color: '#666'
+                                                color: '#666',
+                                                lineHeight: 1.2,
+                                                minHeight: '20px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
                                             }
                                         }, p.name)
                                     )
@@ -428,9 +506,12 @@
                             transition: { duration: 0.2 },
                             style: {
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 110px)',
-                                gap: '16px',
-                                zIndex: 10
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                                gap: '20px',
+                                zIndex: 10,
+                                width: '100%',
+                                maxWidth: '800px',
+                                justifyItems: 'center'
                             }
                         },
                             currentPhotos.map((p, i) =>

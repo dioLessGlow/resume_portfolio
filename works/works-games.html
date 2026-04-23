@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>益智小游戏 | 陈少辉</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link
@@ -42,6 +42,7 @@
         body {
             background: var(--color-bg);
             font-family: 'Space Grotesk', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .main-wrapper {
@@ -81,35 +82,49 @@
             transform-origin: 0 0;
             display: grid;
             place-items: center;
-            cursor: pointer;
-            transition: transform 0.3s;
+            text-decoration: none;
+            /* 移除悬停暂停旋转：不在这里加transform，避免与GSAP冲突 */
+            transition: filter 0.3s ease;
         }
 
+        /* 悬停效果：图标放大+亮度提升，旋转不暂停 */
         .game-wheel .game-item:hover {
-            transform: scale(1.15);
+            filter: brightness(1.2) drop-shadow(0 4px 12px rgba(45, 122, 45, 0.3));
         }
 
+        .game-wheel .game-item:hover .icon {
+            transform: scale(1.2);
+        }
+
+        /* 移除背景圈，纯emoji展示 */
         .game-wheel .game-item .icon {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--color-primary), #27ae60);
-            border-radius: 50%;
-            color: #fff;
+            /* 移除背景渐变和圆角 */
+            background: none;
+            border-radius: 0;
+            color: inherit;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .game-wheel .game-item .name {
             position: absolute;
-            bottom: -25px;
+            bottom: -28px;
             left: 50%;
             transform: translateX(-50%);
             font-size: var(--fs-xs);
             color: var(--color-text);
             white-space: nowrap;
             font-weight: 600;
+            pointer-events: none;
+            letter-spacing: 0.5px;
         }
 
         .wheel-center {
@@ -119,99 +134,172 @@
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 2;
+            pointer-events: none;
         }
 
         .wheel-center h2 {
             font-size: var(--fs-xl);
             color: var(--color-text);
             margin: 0;
+            font-weight: 700;
         }
 
         .wheel-center p {
             font-size: var(--fs-sm);
             color: var(--color-text-muted);
-            margin-top: 5px;
+            margin-top: 6px;
+            font-weight: 500;
         }
 
+        /* ===== 移动端优化 ===== */
         @media (max-width: 768px) {
             :root {
-                --wheel-width: min(90vw, 320px);
-                --item-size-min: 40px;
-                --item-size-vw: 14vw;
-                --item-size-max: 50px;
-                --fs-xl: 20px;
-                --fs-sm: 10px;
+                --wheel-width: min(92vw, 380px);
+                --item-size-min: 48px;
+                --item-size-vw: 16vw;
+                --item-size-max: 64px;
+                --fs-xl: 22px;
+                --fs-sm: 11px;
+                --fs-xs: 9px;
             }
 
             .main-wrapper {
                 padding-top: 60px;
-                padding-bottom: 16px;
+                padding-bottom: 24px;
             }
 
             .game-wheel-section {
-                margin: 30px auto;
-                max-width: 320px;
+                margin: 20px auto;
+                max-width: 380px;
             }
 
             .game-wheel .game-item .icon {
-                font-size: 1.3rem;
+                font-size: 2rem;
             }
 
             .game-wheel .game-item .name {
-                font-size: 8px;
-                bottom: -20px;
+                font-size: var(--fs-xs);
+                bottom: -22px;
             }
 
             .wheel-center h2 {
-                font-size: var(--fs-lg);
+                font-size: var(--fs-xl);
             }
 
             .wheel-center p {
-                font-size: 9px;
+                font-size: var(--fs-sm);
+                margin-top: 4px;
             }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            .game-wheel {
-                animation: none !important;
+        /* 超小屏优化 */
+        @media (max-width: 380px) {
+            :root {
+                --wheel-width: 90vw;
+                --item-size-min: 42px;
+                --item-size-vw: 15vw;
+                --item-size-max: 56px;
+                --fs-xl: 18px;
+            }
+
+            .game-wheel .game-item .icon {
+                font-size: 1.6rem;
+            }
+
+            .game-wheel .game-item .name {
+                bottom: -18px;
+                font-size: 8px;
+            }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 101;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(45, 122, 45, 0.1);
+            border: 1px solid rgba(45, 122, 45, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(45, 122, 45, 0.2);
+            border-color: rgba(45, 122, 45, 0.4);
+            transform: scale(1.08);
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--color-primary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 16px;
+                right: 16px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .back-btn svg {
+                width: 16px;
+                height: 16px;
             }
         }
     </style>
+    <base target="_blank">
 </head>
 
 <body>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </a>
+
     <div id="header-container"></div>
 
     <div class="main-wrapper">
-
         <div class="container">
-            <section class="game-wheel-section" data-speed="0.2" data-direction="right" data-radius="65"
-                data-radius-mobile="55">
+            <section class="game-wheel-section" data-speed="0.25" data-direction="right" data-radius="68"
+                data-radius-mobile="58">
                 <div class="game-wheel">
-                    <div class="game-item" data-name="拼图游戏">
+                    <!-- 改为a标签，添加href跳转链接 -->
+                    <a href="./puzzle.html" class="game-item" data-name="拼图游戏" aria-label="拼图游戏">
                         <div class="icon">🧩</div>
                         <span class="name">拼图游戏</span>
-                    </div>
-                    <div class="game-item" data-name="贪吃蛇">
+                    </a>
+                    <a href="./snake.html" class="game-item" data-name="贪吃蛇" aria-label="贪吃蛇">
                         <div class="icon">🐍</div>
                         <span class="name">贪吃蛇</span>
-                    </div>
-                    <div class="game-item" data-name="弹球游戏">
+                    </a>
+                    <a href="./pinball.html" class="game-item" data-name="弹球游戏" aria-label="弹球游戏">
                         <div class="icon">⛹️</div>
                         <span class="name">弹球游戏</span>
-                    </div>
-                    <div class="game-item" data-name="记忆翻牌">
+                    </a>
+                    <a href="./memory.html" class="game-item" data-name="记忆翻牌" aria-label="记忆翻牌">
                         <div class="icon">🃏</div>
                         <span class="name">记忆翻牌</span>
-                    </div>
-                    <div class="game-item" data-name="乒乓球">
+                    </a>
+                    <a href="./pingpong.html" class="game-item" data-name="乒乓球" aria-label="乒乓球">
                         <div class="icon">🏓</div>
                         <span class="name">乒乓球</span>
-                    </div>
-                    <div class="game-item" data-name="更多游戏">
+                    </a>
+                    <a href="./more.html" class="game-item" data-name="更多游戏" aria-label="更多游戏">
                         <div class="icon">🎮</div>
                         <span class="name">更多游戏</span>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="wheel-center">
@@ -235,14 +323,12 @@
             function computeRadiusPx(section, items) {
                 const rect = section.getBoundingClientRect();
                 const half = Math.min(rect.width, rect.height) / 2;
-
-                // 检测移动端
                 const isMobile = window.innerWidth <= 768;
                 const raw = isMobile
-                    ? (section.dataset.radiusMobile || '55').toString().trim().toLowerCase()
-                    : (section.dataset.radius || '65').toString().trim().toLowerCase();
+                    ? (section.dataset.radiusMobile || '58').toString().trim().toLowerCase()
+                    : (section.dataset.radius || '68').toString().trim().toLowerCase();
                 const pct = Number(raw);
-                return (isFinite(pct) ? pct : 65) / 100 * half;
+                return (isFinite(pct) ? pct : (isMobile ? 58 : 68)) / 100 * half;
             }
 
             function createWheel(section) {
@@ -250,15 +336,16 @@
                 const items = [...wheel.querySelectorAll('.game-item')];
 
                 const parsed = parseFloat(section.dataset.speed);
-                let speedDeg = Number.isFinite(parsed) ? parsed : 0.2;
+                let speedDeg = Number.isFinite(parsed) ? parsed : 0.25;
 
                 let dirAttr = String(section.dataset.direction || 'right').toLowerCase();
                 let dir = (dirAttr === 'left') ? -1 : 1;
 
                 let radius = 0;
                 let angles = [];
-                let reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                let paused = false;
+                let isHovered = false;
+                let rafId = null;
+                let lastTime = 0;
 
                 function layout(init = false) {
                     const rect = section.getBoundingClientRect();
@@ -286,7 +373,7 @@
                 }
 
                 function tick(dt) {
-                    if (reduced || paused) return;
+                    // 悬停时不暂停旋转，保持匀速
                     const step = dir * speedDeg * dt;
                     for (let i = 0; i < angles.length; i++) {
                         angles[i] = (angles[i] + step) % 360;
@@ -294,35 +381,45 @@
                     layout(false);
                 }
 
-                function bindUI() {
-                    section.addEventListener('mouseenter', () => { paused = true; });
-                    section.addEventListener('mouseleave', () => { paused = false; });
+                function animate(time) {
+                    if (!lastTime) lastTime = time;
+                    const dt = (time - lastTime) / 16.67;
+                    lastTime = time;
+                    tick(dt || 1);
+                    rafId = requestAnimationFrame(animate);
+                }
 
+                function bindUI() {
+                    // 悬停不暂停旋转，仅做视觉反馈
                     items.forEach(item => {
-                        item.addEventListener('click', function () {
-                            const name = this.dataset.name;
-                            alert(name + ' - 建设中...');
+                        item.addEventListener('mouseenter', () => {
+                            isHovered = true;
+                            // 不暂停动画，仅提升层级
+                            gsap.to(item, { zIndex: 10, duration: 0.2 });
+                        });
+                        item.addEventListener('mouseleave', () => {
+                            isHovered = false;
+                            gsap.to(item, { zIndex: 1, duration: 0.2 });
                         });
                     });
 
-                    const stepper = () => {
-                        const dt = gsap.ticker.deltaRatio(60);
-                        tick(dt);
-                    };
-                    gsap.ticker.add(stepper);
-                    section._wheelStepper = stepper;
+                    rafId = requestAnimationFrame(animate);
                 }
 
-                function onResize() { layout(false); }
+                function onResize() {
+                    layout(false);
+                }
+
+                function destroy() {
+                    if (rafId) cancelAnimationFrame(rafId);
+                }
 
                 return {
                     init() {
                         layout(true);
                         bindUI();
                     },
-                    destroy() {
-                        if (section._wheelStepper) gsap.ticker.remove(section._wheelStepper);
-                    },
+                    destroy,
                     onResize
                 };
             }

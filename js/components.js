@@ -18,7 +18,12 @@ function loadGSAP() {
 
 // 公共组件加载
 async function initComponents() {
-    const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+    let currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+    
+    // home.html 也算 index 页面
+    if (currentPage === 'home') {
+        currentPage = 'index';
+    }
     
     // 判断是否在子目录
     const isInSubDir = window.location.pathname.includes('/works/');

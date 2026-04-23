@@ -71,6 +71,6 @@
 }
 
 .nav-link:hover, .nav-link.active {
-    background: rgba(15, 216, 80, 0.1);
+    background: white;
     color: var(--color-primary);
 }
