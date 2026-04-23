@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 3D 美食 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/intro.css">
+    <link rel="stylesheet" href="../css/loader.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--color-bg, #fdfbf7);
+        }
+
+        body {
+            font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .food-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 60px 0;
+        }
+        
+        .food-card {
+            --s: -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: calc(100vh / 5);
+            min-height: 160px;
+            transform: translateX(calc(var(--s) * 30%));
+            position: relative;
+        }
+        
+        .food-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: var(--color-text-muted);
+            opacity: 0.3;
+            transform: translateY(-50%);
+        }
+        
+        .food-card:nth-child(odd)::before {
+            left: 15%;
+            right: 25%;
+        }
+        
+        .food-card:nth-child(even)::before {
+            left: 25%;
+            right: 15%;
+        }
+        
+        .food-card:nth-child(2n) {
+            --s: 1;
+            flex-direction: row-reverse;
+        }
+        
+        .food-card h3 {
+            order: var(--s);
+            font-size: var(--fs-lg);
+            font-weight: 600;
+            color: var(--color-text);
+            width: 40%;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .food-card .food-icon {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-primary), #27ae60);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            filter: drop-shadow(2px 2px 4px rgba(15, 216, 80, 0.3));
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .food-card:nth-child(2n) .food-icon {
+            clip-path: polygon(50% 100%, 0% 62%, 18% 0%, 82% 0%, 100% 62%);
+        }
+        
+        .food-card .food-icon:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+        
+        .food-card .food-icon span {
+            font-size: 2.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .food-card {
+                transform: translateX(0);
+                min-height: 100px;
+            }
+            .food-card:nth-child(2n) {
+                flex-direction: row;
+            }
+            .food-card h3 {
+                font-size: 12px;
+                width: 30%;
+                padding: 4px;
+            }
+            .food-card:nth-child(odd) h3 {
+                margin-left: 3%;
+                text-align: left;
+            }
+            .food-card:nth-child(even) h3 {
+                margin-right: 3%;
+                text-align: right;
+            }
+            .food-card .food-icon {
+                width: 50px;
+                height: 50px;
+            }
+            .food-card:nth-child(odd) .food-icon {
+                margin-right: 3%;
+            }
+            .food-card:nth-child(even) .food-icon {
+                margin-left: 3%;
+            }
+            .food-card .food-icon span {
+                font-size: 1.2rem;
+            }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 101;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(45, 122, 45, 0.1);
+            border: 1px solid rgba(45, 122, 45, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(45, 122, 45, 0.2);
+            border-color: rgba(45, 122, 45, 0.4);
+            transform: scale(1.08);
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #2d7a2d;
+            stroke-width: 2;
+            fill: none;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+
+    <div id="header-container"></div>
+
+    <div class="main-wrapper">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 30px;">
+                Web 3D 美食交互
+            </h2>
+            
+            <div class="food-grid">
+                <article class="food-card">
+                    <h3>沙海幻镜</h3>
+                    <div class="food-icon"><span>🏜️</span></div>
+                </article>
+                
+                <article class="food-card">
+                    <h3>萌趣demo</h3>
+                    <div class="food-icon"><span>🍪</span></div>
+                </article>
+                
+                <article class="food-card">
+                    <h3>开发中</h3>
+                    <div class="food-icon"><span>🥗</span></div>
+                </article>
+                
+                <article class="food-card">
+                    <h3>风拂萌狮</h3>
+                    <div class="food-icon"><span>🦁</span></div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="../js/components.js"></script>
+        
+    <script>
+        setTimeout(() => {
+            const loader = document.getElementById('loader-container');
+            if (loader) loader.style.display = 'none';
+        }, 1000);
+        
+        // 点击卡片跳转
+        document.querySelectorAll('.food-icon').forEach((icon, index) => {
+            icon.addEventListener('click', function() {
+                const card = this.closest('.food-card');
+                const title = card.querySelector('h3').textContent;
+                
+                this.style.transform = 'rotate(180deg) scale(1.1)';
+                
+                setTimeout(() => {
+                    switch(title) {
+                        case '沙海幻镜':
+                            window.location.href = 'foods/first-food.html';
+                            break;
+                        case '萌趣demo':
+                            window.location.href = 'foods/second-food.html';
+                            break;
+                        case '开发中':
+                            window.location.href = 'foods/third-food.html';
+                            break;
+                        case '风拂萌狮':
+                            window.location.href = 'foods/fourth-food.html';
+                            break;
+                        default:
+                            window.location.href = '../works.html';
+                    }
+                }, 500);
+            });
+        });
+    </script>
+</body>
+
+</html>

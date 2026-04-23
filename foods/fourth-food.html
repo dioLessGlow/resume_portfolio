@@ -1,23 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>风拂萌狮</title>
     <style>
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:800);
 
-        #world {
-            background: #d4f7d4;
-            position: absolute;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
             width: 100%;
             height: 100%;
+            overflow: hidden;
+            background: #d4f7d4;
+            touch-action: none;
+        }
+
+        #world {
+            background: #d4f7d4;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100dvh;
             overflow: hidden;
         }
 
         #instructions {
-            position: absolute;
+            position: fixed;
             width: 100%;
             top: 60%;
             margin: auto;
@@ -28,19 +44,73 @@
             text-transform: uppercase;
             text-align: center;
             user-select: none;
+            pointer-events: none;
+            z-index: 10;
         }
 
         .lightInstructions {
             color: #993f4c;
             font-size: .8em;
         }
+
+        .back-btn {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 101;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(101, 63, 76, 0.1);
+            border: 1px solid rgba(101, 63, 76, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(101, 63, 76, 0.2);
+            border-color: rgba(101, 63, 76, 0.4);
+            transform: scale(1.08);
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #653f4c;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 70px;
+                right: 16px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .back-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
     </style>
+<base target="_blank">
 </head>
 
 <body>
+    <a href="../works/works-web.html" class="back-btn" aria-label="返回" target="_self">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+
     <div id="world"></div>
     <div id="instructions">长按滑动生成气流<br /><span class="lightInstructions">狮子定会心生感激</span></div>
-
 
     <!-- 引入Three.js核心库 -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
@@ -77,12 +147,17 @@
             mousePos = { x: 0, y: 0 };
         dist = 0;
 
+        var resizeTimer = null;
+
         //INIT THREE JS, SCREEN AND MOUSE EVENTS
 
         function init() {
             scene = new THREE.Scene();
-            HEIGHT = window.innerHeight;
-            WIDTH = window.innerWidth;
+
+            var containerEl = document.getElementById('world');
+            WIDTH = containerEl.clientWidth;
+            HEIGHT = containerEl.clientHeight;
+
             aspectRatio = WIDTH / HEIGHT;
             fieldOfView = 60;
             nearPlane = 1;
@@ -96,31 +171,57 @@
             camera.position.y = 0;
             camera.lookAt(new THREE.Vector3(0, 0, 0));
             renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(WIDTH, HEIGHT);
-            // 修复废弃API
             renderer.shadowMap.enabled = true;
-            container = document.getElementById('world');
+            container = containerEl;
             container.appendChild(renderer.domElement);
             windowHalfX = WIDTH / 2;
             windowHalfY = HEIGHT / 2;
+
+            // 使用 ResizeObserver 监听容器实际尺寸，避免移动端地址栏变化导致 canvas 晃动
+            if ('ResizeObserver' in window) {
+                var ro = new ResizeObserver(function (entries) {
+                    for (var i = 0; i < entries.length; i++) {
+                        var cr = entries[i].contentRect;
+                        var w = Math.round(cr.width);
+                        var h = Math.round(cr.height);
+                        if (w !== WIDTH || h !== HEIGHT) {
+                            WIDTH = w;
+                            HEIGHT = h;
+                            windowHalfX = WIDTH / 2;
+                            windowHalfY = HEIGHT / 2;
+                            renderer.setSize(WIDTH, HEIGHT);
+                            camera.aspect = WIDTH / HEIGHT;
+                            camera.updateProjectionMatrix();
+                        }
+                    }
+                });
+                ro.observe(containerEl);
+            }
+
+            // 后备：防抖 resize，防止旧浏览器或极端情况下重复重绘
             window.addEventListener('resize', onWindowResize, false);
+
             document.addEventListener('mousemove', handleMouseMove, false);
             document.addEventListener('mousedown', handleMouseDown, false);
             document.addEventListener('mouseup', handleMouseUp, false);
-            document.addEventListener('touchstart', handleTouchStart, false);
+            document.addEventListener('touchstart', handleTouchStart, { passive: false });
             document.addEventListener('touchend', handleTouchEnd, false);
-            document.addEventListener('touchmove', handleTouchMove, false);
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
         }
 
         function onWindowResize() {
-            HEIGHT = window.innerHeight;
-            WIDTH = window.innerWidth;
-            windowHalfX = WIDTH / 2;
-            windowHalfY = HEIGHT / 2;
-            renderer.setSize(WIDTH, HEIGHT);
-            camera.aspect = WIDTH / HEIGHT;
-            camera.updateProjectionMatrix();
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                WIDTH = container.clientWidth;
+                HEIGHT = container.clientHeight;
+                windowHalfX = WIDTH / 2;
+                windowHalfY = HEIGHT / 2;
+                renderer.setSize(WIDTH, HEIGHT);
+                camera.aspect = WIDTH / HEIGHT;
+                camera.updateProjectionMatrix();
+            }, 100);
         }
 
         function handleMouseMove(event) {
@@ -135,9 +236,9 @@
         }
 
         function handleTouchStart(event) {
-            if (event.touches.length > 1) {
+            if (event.touches.length >= 1) {
                 event.preventDefault();
-                mousePos = { x: event.touches[0].pageX, y: event.touches[0].pageY };
+                mousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
                 isBlowing = true;
             }
         }
@@ -147,9 +248,9 @@
         }
 
         function handleTouchMove(event) {
-            if (event.touches.length == 1) {
+            if (event.touches.length >= 1) {
                 event.preventDefault();
-                mousePos = { x: event.touches[0].pageX, y: event.touches[0].pageY };
+                mousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY };
                 isBlowing = true;
             }
         }
@@ -171,7 +272,6 @@
         }
 
         function createFloor() {
-            // 修复几何类名
             floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 500), new THREE.MeshBasicMaterial({ color: 0xd4f7d4 }));
             floor.rotation.x = -Math.PI / 2;
             floor.position.y = -100;
@@ -211,7 +311,6 @@
             var coreGeom = new THREE.BoxGeometry(10, 10, 20);
             var sphereGeom = new THREE.BoxGeometry(10, 10, 3);
             var propGeom = new THREE.BoxGeometry(10, 30, 2);
-            // 修复废弃方法
             propGeom.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 25, 0));
 
             this.core = new THREE.Mesh(coreGeom, this.greyMat);
@@ -741,6 +840,3 @@
 </body>
 
 </html>
-//作品名称：风拂萌狮
-技术栈：Three.js、WebGL、鼠标交互、3D角色动画
-作品简介：基于 Three.js 开发的 3D 交互式萌狮动画项目，实现鼠标拖拽吹风的实时物理反馈效果。通过自定义 3D 模型组合、骨骼动态控制与毛发飘动算法，结合相机跟随、鼠标交互与场景光影渲染，完成流畅自然的 3D 沉浸式交互体验。
