@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计作品 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="/resume_portfolio/assets/svg/favicon-nBXgqIzF.svg">
+    <link
+        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
+    <style>
+        * {
+            border: 0;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --hue: 223deg;
+            --gray1: hsl(var(--hue) 10% 95%);
+            --gray9: hsl(var(--hue) 10% 15%);
+            --black: hsl(0 0% 0%);
+            --primary3: hsl(var(--hue) 90% 75%);
+            --primary5: hsl(var(--hue) 90% 55%);
+            --primary6: hsl(var(--hue) 90% 45%);
+            --trans-dur: 0.3s;
+            font-size: clamp(1.25rem, 1rem + 1.25vw, 2.5rem);
+        }
+
+        body {
+            font-family: "Space Grotesk", sans-serif;
+        }
+    </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "IM Fell DW Pica SC", serif;
+        }
+
+        .main-wrapper {
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid rgba(15, 216, 80, 0.2);
+        }
+
+        .page-header h1 {
+            font-size: var(--fs-xl);
+            color: var(--color-text);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: var(--color-text-muted);
+        }
+
+        .works-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        #app {
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 101;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(45, 122, 45, 0.1);
+            border: 1px solid rgba(45, 122, 45, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(45, 122, 45, 0.2);
+            border-color: rgba(45, 122, 45, 0.4);
+            transform: scale(1.08);
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--color-primary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 70px;
+                right: 16px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .back-btn svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    </style>
+  <script type="module" crossorigin src="/resume_portfolio/assets/js/works-design-C0bO1uaV.js"></script>
+  <link rel="modulepreload" crossorigin href="/resume_portfolio/assets/js/components-D5cXtlVD.js">
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/footer-CYW4Q0t1.css">
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/intro-DCeDJZGQ.css">
+</head>
+
+<body>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+
+    <div id="header-container"></div>
+
+    <div class="main-wrapper">
+        <div class="page-header">
+            <h1>设计作品</h1>
+            <p>海报、品牌视觉、UI设计</p>
+        </div>
+
+        <div class="works-container">
+            <div class="poster-showcase">
+                <div id="app"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+
+</body>
+
+</html>

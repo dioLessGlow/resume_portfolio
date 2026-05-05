@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品集 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="/resume_portfolio/assets/svg/favicon-nBXgqIzF.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 多边形卡片 - 枯树形状 */
+        .poly-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 60px 0;
+        }
+        
+        /* 树干 */
+        .poly-grid::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 30px;
+            bottom: 30px;
+            width: 3px;
+            background: linear-gradient(to bottom, 
+                transparent 0%,
+                var(--color-text-muted) 5%,
+                var(--color-text-muted) 100%
+            );
+            transform: translateX(-50%);
+        }
+        
+        .poly-card {
+            --s: -1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: calc(100vh / 7);
+            min-height: 140px;
+            transform: translateX(calc(var(--s) * 30%));
+            position: relative;
+        }
+        
+        /* 弯折的树枝连接线 */
+        .poly-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: var(--color-text-muted);
+            opacity: 0.3;
+            transform: translateY(-50%);
+        }
+        
+        /* 奇数行左倾 */
+        .poly-card:nth-child(odd)::before {
+            left: 15%;
+            right: 25%;
+            transform: translateY(-50%) rotate(-5deg);
+        }
+        
+        /* 偶数行右倾 */
+        .poly-card:nth-child(even)::before {
+            left: 25%;
+            right: 15%;
+            transform: translateY(-50%) rotate(5deg);
+        }
+        
+        .poly-card:nth-child(2n) {
+            --s: 1;
+            flex-direction: row-reverse;
+        }
+        
+        .poly-card h3 {
+            order: var(--s);
+            font-size: var(--fs-lg);
+            font-weight: 600;
+            color: var(--color-text);
+            width: 40%;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .poly-card .poly-icon {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-primary), #27ae60);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            filter: drop-shadow(2px 2px 4px rgba(15, 216, 80, 0.3));
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .poly-card:nth-child(2n) .poly-icon {
+            clip-path: polygon(50% 100%, 0% 62%, 18% 0%, 82% 0%, 100% 62%);
+        }
+        
+        .poly-card .poly-icon:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+        
+        .poly-card .poly-icon img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+        
+        .poly-card .poly-icon span {
+            font-size: 2.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .poly-card {
+                transform: translateX(0);
+                min-height: 90px;
+            }
+            .poly-card:nth-child(2n) {
+                flex-direction: row;
+            }
+            .poly-card h3 {
+                font-size: 10px;
+                width: 28%;
+                padding: 4px;
+            }
+            .poly-card:nth-child(odd) h3 {
+                margin-left: 3%;
+                text-align: left;
+            }
+            .poly-card:nth-child(even) h3 {
+                margin-right: 3%;
+                text-align: right;
+            }
+            .poly-card .poly-icon {
+                width: 45px;
+                height: 45px;
+            }
+            .poly-card:nth-child(odd) .poly-icon {
+                margin-right: 3%;
+            }
+            .poly-card:nth-child(even) .poly-icon {
+                margin-left: 3%;
+            }
+            .poly-card .poly-icon span {
+                font-size: 1rem;
+            }
+            .poly-card .poly-icon img {
+                width: 24px;
+                height: 24px;
+            }
+            /* 树枝缩短 */
+            .poly-card::before {
+                left: 35%;
+                right: 35%;
+            }
+            .poly-grid::before {
+                width: 2px;
+            }
+        }
+    </style>
+  <script type="module" crossorigin src="/resume_portfolio/assets/js/components-D5cXtlVD.js"></script>
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/footer-CYW4Q0t1.css">
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/intro-DCeDJZGQ.css">
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/loader-C5yT9dJ-.css">
+</head>
+
+<body>
+    <div id="loader-container"></div>
+
+    <div id="header-container"></div>
+
+    <div class="main-wrapper">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 30px;">
+                请点击多边形卡片
+            </h2>
+            
+            <div class="poly-grid">
+                <article class="poly-card">
+                    <h3>实战项目</h3>
+                    <div class="poly-icon"><img src="data:image/png;base64,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" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>益智小游戏</h3>
+                    <div class="poly-icon"><img src="/resume_portfolio/assets/png/%E6%B8%B8%E6%88%8F-Bf3V8JXb.png" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>Web 3D 交互</h3>
+                    <div class="poly-icon"><img src="data:image/png;base64,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" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>设计作品</h3>
+                    <div class="poly-icon"><img src="/resume_portfolio/assets/png/%E8%AE%BE%E8%AE%A1-D42i1B6C.png" alt=""></div>
+                </article>
+                
+                <article class="poly-card">
+                    <h3>荣誉墙</h3>
+                    <div class="poly-icon"><img src="/resume_portfolio/assets/png/%E8%8D%A3%E8%AA%89%E8%AF%81%E4%B9%A6-ByCPMWoU.png" alt=""></div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+        
+    <script>
+        setTimeout(() => {
+            const loader = document.getElementById('loader-container');
+            if (loader) loader.style.display = 'none';
+        }, 1000);
+        
+        // 点击多边形卡片跳转
+        document.querySelectorAll('.poly-icon').forEach((icon, index) => {
+            icon.addEventListener('click', function() {
+                const card = this.closest('.poly-card');
+                const title = card.querySelector('h3').textContent;
+                
+                // 添加旋转动画类
+                this.style.transform = 'rotate(180deg) scale(1.1)';
+                
+                // 动画结束后跳转
+                setTimeout(() => {
+                    switch(title) {
+                        case '荣誉墙':
+                            window.location.href = 'works/works-honors.html';
+                            break;
+                        case '设计作品':
+                            window.location.href = 'works/works-design.html';
+                            break;
+                        case 'Web 3D 交互':
+                            window.location.href = 'works/works-web.html';
+                            break;
+                        case '益智小游戏':
+                            window.location.href = 'works/works-games.html';
+                            break;
+                        case '实战项目':
+                            window.location.href = 'works/works-projects.html';
+                            break;
+                        default:
+                            window.location.href = 'intro.html';
+                    }
+                }, 500);
+            });
+        });
+    </script>
+</body>
+
+</html>

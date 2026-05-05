@@ -1,20 +1,4 @@
-// 加载 GSAP
-function loadGSAP() {
-    return new Promise((resolve) => {
-        if (typeof gsap !== 'undefined') {
-            resolve();
-            return;
-        }
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
-        script.onload = () => {
-            console.log('GSAP loaded successfully');
-            resolve();
-        };
-        script.onerror = () => console.error('Failed to load GSAP');
-        document.head.appendChild(script);
-    });
-}
+// GSAP 已通过 Vite 打包，无需 CDN 加载
 
 // 公共组件加载
 async function initComponents() {
@@ -58,8 +42,6 @@ async function initComponents() {
     // 加载 loader
     const loaderContainer = document.getElementById('loader-container');
     if (loaderContainer) {
-        await loadGSAP();
-
         fetch(basePath + 'loader.html')
             .then(response => response.text())
             .then(html => {

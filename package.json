@@ -1,0 +1,21 @@
+{
+  "name": "resume-portfolio",
+  "version": "1.0.0",
+  "description": "陈少辉的个人简历网站",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "compress": "node scripts/compress-images.cjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5",
+    "terser": "^5.46.2",
+    "vite": "^5.4.0",
+    "vite-plugin-imagemin": "^0.6.1"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0"
+  }
+}

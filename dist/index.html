@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎 | 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="/resume_portfolio/assets/svg/favicon-nBXgqIzF.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700;900&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="/resume_portfolio/assets/js/components-D5cXtlVD.js"></script>
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/index-Plk6emhN.css">
+  <link rel="stylesheet" crossorigin href="/resume_portfolio/assets/css/loader-C5yT9dJ-.css">
+</head>
+
+<body>
+    <!-- Loader立即显示 -->
+    <div id="loader-container" style="position:fixed;inset:0;background:#fdfbf7;display:flex;align-items:center;justify-content:center;z-index:10000;transition:opacity 0.5s,visibility 0.5s;">
+        <div style="font-family:'ZCOOL KuaiLe';font-size:86px;font-weight:bold;color:#2d7a2d;display:flex;gap:20px;">
+            <span style="opacity:0;animation:bounceInLeft 0.8s ease-out forwards;animation-delay:0s;">C</span>
+            <span style="opacity:0;animation:bounceInTop 0.8s ease-out forwards;animation-delay:0.2s;">S</span>
+            <span style="opacity:0;animation:bounceInRight 0.8s ease-out forwards;animation-delay:0.4s;">H</span>
+        </div>
+        <style>
+            @keyframes bounceInLeft {0%{opacity:0;transform:translateX(-80px)}60%{opacity:1;transform:translateX(10px)}80%{transform:translateX(-5px)}100%{opacity:1;transform:translateX(0)}}
+            @keyframes bounceInTop {0%{opacity:0;transform:translateY(-80px)}60%{opacity:1;transform:translateY(10px)}80%{transform:translateY(-5px)}100%{opacity:1;transform:translateY(0)}}
+            @keyframes bounceInRight {0%{opacity:0;transform:translateX(80px)}60%{opacity:1;transform:translateX(-10px)}80%{transform:translateX(5px)}100%{opacity:1;transform:translateX(0)}}
+        </style>
+    </div>
+    <script>
+        // 1秒后隐藏loader
+        setTimeout(function() {
+            var loader = document.getElementById('loader-container');
+            if (loader) {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+                loader.style.pointerEvents = 'none';
+            }
+        }, 1000);
+    </script>
+    
+    <!-- 漂浮的彩色圆球 -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    
+    <div class="welcome-content">
+        <h1 class="welcome-text">欢迎来到我的</h1>
+        <h1 class="welcome-text">小世界<img src="data:image/png;base64,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" alt="欢迎" class="welcome-icon"></h1>
+        <p class="sub-text">这里记录了我的成长</p>
+        <p class="hint">Click below to enter →</p>
+
+        <a href="home.html" class="enter-btn" onclick="sessionStorage.setItem('visited', 'true'); return true;">
+            <span>请进</span>
+            <span class="arrow">→</span>
+        </a>
+    </div>
+
+    <div class="decoration">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
+
+</body>
+
+</html>
