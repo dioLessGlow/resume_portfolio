@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
-    <link href="//christieclee.github.io/highalo/starry/starry.css" rel="stylesheet">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/intro.css">
@@ -241,27 +240,8 @@
     <script type="module" src="js/components.js"></script>
         
     <script>
-        // ===== 技能标签打字机效果 =====
-        let typewriterTimer = null;
-
-        function typeText(element, text, speed = 40) {
-            if (typewriterTimer) clearTimeout(typewriterTimer);
-            element.innerHTML = '<span></span>';
-            element.classList.add('active');
-            
-            const span = element.querySelector('span');
-            let index = 0;
-            
-            function type() {
-                if (index < text.length) {
-                    span.textContent += text.charAt(index);
-                    index++;
-                    typewriterTimer = setTimeout(type, speed);
-                }
-            }
-            type();
-        }
-
+        // ===== 技能标签打字机效果 (使用 components.js 共享函数) =====
+        
         // 技能卡片悬停事件
         document.querySelectorAll('.skill-tag').forEach(tag => {
             tag.addEventListener('mouseenter', function () {
@@ -274,15 +254,10 @@
             });
 
             tag.addEventListener('mouseleave', function () {
-                if (typewriterTimer) {
-                    clearTimeout(typewriterTimer);
-                    typewriterTimer = null;
-                }
                 const container = this.closest('.skill-level');
                 const typewriter = container ? container.querySelector('.typewriter-info') : null;
                 if (typewriter) {
-                    typewriter.innerHTML = '<span></span>';
-                    typewriter.classList.remove('active');
+                    clearTypewriter(typewriter);
                 }
             });
         });

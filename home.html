@@ -159,38 +159,8 @@
     <div id="footer-container"></div>
     <script type="module" src="js/components.js"></script>
     <script>
-        // 打字机效果
-        let typewriterTimer = null;
-
-        function typeText(element, text, speed = 50) {
-            // 清除之前的计时器
-            if (typewriterTimer) {
-                clearTimeout(typewriterTimer);
-                typewriterTimer = null;
-            }
-
-            element.innerHTML = '<span></span>';
-            element.classList.add('active');
-
-            const span = element.querySelector('span');
-            let index = 0;
-
-            function type() {
-                if (index < text.length) {
-                    // 检查是否是 <br> 标签
-                    if (text.substr(index, 4) === '<br>') {
-                        span.innerHTML += '<br>';
-                        index += 4;
-                    } else {
-                        span.innerHTML += text[index];
-                        index++;
-                    }
-                    typewriterTimer = setTimeout(type, speed);
-                }
-            }
-            type();
-        }
-
+        // 打字机效果 (使用 components.js 共享函数)
+        
         // 卡片悬停事件 - 按钮下方打字
         const globalTypewriter = document.querySelector('.typewriter-info');
         document.querySelectorAll('.hex-card').forEach(card => {
@@ -207,13 +177,8 @@
             });
 
             card.addEventListener('mouseleave', function () {
-                if (typewriterTimer) {
-                    clearTimeout(typewriterTimer);
-                    typewriterTimer = null;
-                }
                 if (globalTypewriter) {
-                    globalTypewriter.innerHTML = '<span></span>';
-                    globalTypewriter.classList.remove('active');
+                    clearTypewriter(globalTypewriter);
                 }
             });
         });

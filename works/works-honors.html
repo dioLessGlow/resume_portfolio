@@ -412,6 +412,7 @@
         }
     </style>
     <base target="_blank">
+<base target="_blank">
 </head>
 
 <body>
@@ -496,28 +497,11 @@
                     <div class="category">冬日灵感图像创作赛</div>
                 </div>
             </div>
-            <!-- <div data-title="夏日四重奏创意奖">
-                <img src="../images/honors/9.jpg" alt="夏日四重奏创意奖">
-                <span class="badge default">设计赛事</span>
-                <div>
-                    <div class="year">2025</div>
-                    <div class="category">夏季主题图像创作赛</div>
-                </div>
-            </div>
-            <div data-title="影刀RPA认证">
-                <img src="../images/honors/10.jpg" alt="影刀RPA证书">
-                <span class="badge default">技能认证</span>
-                <div>
-                    <div class="year">2026</div>
-                    <div class="category">初级RPA工程师</div>
-                </div>
-            </div> -->
-
         </section>
     </div>
 
     <!-- 滚动提示 -->
-    <div class="scroll-hint-text">向下滚动浏览荣誉</div>
+    <div class="scroll-hint-text" id="scroll-hint">向下滚动浏览荣誉</div>
 
     <div class="icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 40" fill="none"
@@ -644,6 +628,29 @@
             });
 
             cards.forEach(card => observer.observe(card));
+
+            // 滚动提示切换
+            const scrollBody = document.querySelector('.scroll-body');
+            const hintEl = document.getElementById('scroll-hint');
+
+            function updateHint() {
+                if (!scrollBody || !hintEl) return;
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight;
+                const clientHeight = document.documentElement.clientHeight;
+
+                // 判断是否滚动到底部（留 50px 容差）
+                const isBottom = scrollTop + clientHeight >= scrollHeight - 50;
+
+                if (isBottom) {
+                    hintEl.textContent = '向上滚动浏览荣誉';
+                } else {
+                    hintEl.textContent = '向下滚动浏览荣誉';
+                }
+            }
+
+            window.addEventListener('scroll', updateHint, { passive: true });
+            updateHint(); // 初始化
         });
     </script>
 </body>

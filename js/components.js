@@ -1,5 +1,48 @@
 // GSAP 已通过 Vite 打包，无需 CDN 加载
 
+// ===== 打字机效果工具 =====
+// 立即执行，确保在其他脚本之前可用
+(function() {
+    let typewriterTimer = null;
+
+    window.typeText = function(element, text, speed = 40) {
+        if (typewriterTimer) clearTimeout(typewriterTimer);
+        if (!element) return;
+        
+        element.innerHTML = '<span></span>';
+        element.classList.add('active');
+        
+        const span = element.querySelector('span');
+        let index = 0;
+        
+        function type() {
+            if (index < text.length) {
+                // 支持 <br> 标签
+                if (text.substr(index, 4) === '<br>') {
+                    span.innerHTML += '<br>';
+                    index += 4;
+                } else {
+                    span.textContent += text.charAt(index);
+                    index++;
+                }
+                typewriterTimer = setTimeout(type, speed);
+            }
+        }
+        type();
+    };
+
+    window.clearTypewriter = function(element) {
+        if (typewriterTimer) {
+            clearTimeout(typewriterTimer);
+            typewriterTimer = null;
+        }
+        if (element) {
+            element.innerHTML = '<span></span>';
+            element.classList.remove('active');
+        }
+    };
+})();
+
 // 公共组件加载
 async function initComponents() {
     let currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';

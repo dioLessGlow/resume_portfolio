@@ -266,8 +266,17 @@ body {
 .skill-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--space-xs);
+    justify-content: center;
     padding-left: 32px;
+}
+
+.skill-tags span {
+    padding: var(--space-xs) var(--space-sm);
+    background: rgba(15, 216, 80, 0.15);
+    color: var(--color-primary);
+    border-radius: 15px;
+    font-size: var(--fs-xs);
 }
 
 .skill-tag {
@@ -313,38 +322,23 @@ body {
 }
 
 /* 移动端适配 */
-@media (max-width: 768px) {
-    .skill-tags {
-        padding-left: 0;
+    @media (max-width: 768px) {
+        .skill-tags {
+            padding-left: 0;
+        }
+        
+        .level-header {
+            flex-wrap: wrap;
+        }
+        
+        .level-label {
+            width: 100%;
+            margin-left: 32px;
+            margin-top: 4px;
+        }
     }
-    
-    .level-header {
-        flex-wrap: wrap;
-    }
-    
-    .level-label {
-        width: 100%;
-        margin-left: 32px;
-        margin-top: 4px;
-    }
-}
 
-.skill-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    justify-content: center;
-}
-
-.skill-tags span {
-    padding: var(--space-xs) var(--space-sm);
-    background: rgba(15, 216, 80, 0.15);
-    color: var(--color-primary);
-    border-radius: 15px;
-    font-size: var(--fs-xs);
-}
-
-/* 荣誉 */
+    /* 荣誉 */
 .awards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 22vw, 250px), 1fr));
