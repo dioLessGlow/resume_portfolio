@@ -8,8 +8,12 @@ const IMAGES_DIR = path.join(__dirname, '..', 'images');
 const CONFIG = {
     jpg: { quality: 70, format: 'webp' },
     jpeg: { quality: 70, format: 'webp' },
-    png: { quality: 70, format: 'webp', effort: 6 }
+    png: { quality: 70, format: 'webp', effort: 6 },
+    webp: { quality: 60 }  // 再次压缩 WebP
 };
+
+// 是否重新压缩现有 WebP
+const RECOMPRESS_WEBP = process.argv.includes('--recompress');
 
 function getFiles(dir) {
     const files = [];
@@ -32,6 +36,40 @@ async function compressImage(inputPath) {
 
     const dir = path.dirname(inputPath);
     const name = path.basename(inputPath, path.extname(inputPath));
+
+    // WebP 重新压缩
+    if (ext === 'webp') {
+        if (!RECOMPRESS_WEBP) {
+            console.log(`⏭️  Skip: ${name}.webp (use --recompress to force)`);
+            return;
+        }
+        const outputPath = path.join(dir, `${name}_new.webp`);
+        const originalSize = fs.statSync(inputPath).size;
+
+        try {
+            await sharp(inputPath)
+                .webp({ quality: config.quality })
+                .toFile(outputPath);
+
+            const newSize = fs.statSync(outputPath).size;
+            const saved = ((originalSize - newSize) / originalSize * 100).toFixed(1);
+
+            // 如果新文件更小，替换原文件
+            if (newSize < originalSize) {
+                fs.unlinkSync(inputPath);
+                fs.renameSync(outputPath, inputPath);
+                console.log(`✅ ${name}.webp: ${(originalSize/1024).toFixed(0)}KB → ${(newSize/1024).toFixed(0)}KB (${saved}% saved)`);
+            } else {
+                fs.unlinkSync(outputPath);
+                console.log(`⏭️  ${name}.webp: no improvement, keep original`);
+            }
+        } catch (err) {
+            console.error(`❌ ${inputPath}: ${err.message}`);
+        }
+        return;
+    }
+
+    // 转换为 WebP
     const outputPath = path.join(dir, `${name}.webp`);
 
     // 跳过已存在的 webp
