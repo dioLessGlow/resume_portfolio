@@ -1,15 +1,62 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>镜中追兔</title>
 
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:600" rel="stylesheet">
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; background: #332e2e; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .back-btn {
+        position: fixed;
+        top: 80px;
+        right: 24px;
+        z-index: 9999;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        pointer-events: auto;
+    }
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.08);
+    }
+    .back-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: #fff;
+        stroke-width: 2;
+        fill: none;
+    }
+    @media (max-width: 768px) {
+        .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
+        .back-btn svg { width: 16px; height: 16px; }
+    }
+
+    body {
+      overflow: hidden;
+      background: #332e2e;
+      touch-action: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
 
     .webgl {
       position: fixed;
@@ -20,7 +67,9 @@
       outline: none;
       background-color: #332e2e;
       cursor: grab;
+      touch-action: none;
     }
+
     .webgl:active {
       cursor: grabbing;
     }
@@ -37,40 +86,28 @@
       text-align: center;
       pointer-events: none;
       user-select: none;
+      padding: 0 20px;
     }
 
-    #credits {
-      position: absolute;
-      width: 100%;
-      margin: auto;
-      bottom: 0;
-      margin-bottom: 20px;
-      font-family: "Open Sans", sans-serif;
-      color: #544027;
-      font-size: 0.7em;
-      text-transform: uppercase;
-      text-align: center;
-    }
-    #credits a {
-      color: #7beeff;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    #credits a:hover {
-      color: #ff3434;
+    @media (max-width: 768px) {
+      #instructions {
+        bottom: 40px;
+        font-size: 0.65em;
+      }
     }
   </style>
-<base target="_blank">
 </head>
+
 <body>
+  <a href="../../works/works-games.html" class="back-btn" aria-label="返回" target="_self">
+    <svg viewBox="0 0 24 24">
+      <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
 
   <canvas class="webgl"></canvas>
 
   <div id="instructions">— 移动鼠标引导兔子 — 点击跳跃 —</div>
-
-  <div id="credits">
-    <p><a href="https://codepen.io/Yakudoo/" target="_blank">我的其他作品</a> | <a href="http://epic.net" target="_blank">epic.net</a></p>
-  </div>
 
   <!-- ===== Shader ===== -->
   <script type="x-shader/x-vertex" id="reflectorVertexShader">
@@ -96,7 +133,7 @@
       #include <worldpos_vertex>
       #include <shadowmap_vertex>
     }
-  </script> 
+  </script>
 
   <script type="x-shader/x-fragment" id="reflectorFragmentShader">
     uniform vec3 color;
@@ -153,7 +190,7 @@
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }
-  </script>  
+  </script>
 
   <script type="x-shader/x-vertex" id="simulationVertexShader">
     precision highp float;
@@ -255,12 +292,12 @@
         this.current = 0;
         this.output = this.fbos[0];
         this.orthoCamera = new THREE.OrthographicCamera(
-          width / -2, width / 2, 
-          height / 2, height / -2, 
+          width / -2, width / 2,
+          height / 2, height / -2,
           .00001, 1000
         );
         this.orthoQuad = new THREE.Mesh(
-          new THREE.PlaneGeometry(width, height), 
+          new THREE.PlaneGeometry(width, height),
           this.shader
         );
         this.orthoScene.add(this.orthoQuad);
@@ -283,6 +320,9 @@
         this.winWidth = window.innerWidth;
         this.winHeight = window.innerHeight;
         this.gltfFile = "https://assets.codepen.io/264161/rabbit6.glb";
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+          || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+        this.touchHandled = false;
         this.loadAssets();
       }
 
@@ -342,6 +382,12 @@
         this.createLight();
         this.createParticles();
 
+        // 移动端提示文字
+        const instructions = document.getElementById('instructions');
+        if (instructions && this.isMobile) {
+          instructions.textContent = '— 滑动屏幕引导兔子 — 点击/触摸跳跃 —';
+        }
+
         // 渲染循环
         this.draw();
       }
@@ -397,12 +443,13 @@
       }
 
       createFloor() {
+        const texSize = this.isMobile ? 512 : 1024;
         this.floor = new Reflector(
           new THREE.PlaneGeometry(this.floorSize, this.floorSize),
           {
             color: new THREE.Color(this.bgrColor),
-            textureWidth: 1024,
-            textureHeight: 1024
+            textureWidth: texSize,
+            textureHeight: texSize
           }
         );
         this.floor.rotation.x = -Math.PI / 2;
@@ -477,7 +524,8 @@
           preserveDrawingBuffer: true
         });
         this.renderer.setClearColor(new THREE.Color(this.bgrColor));
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        const pixelRatio = this.isMobile ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio;
+        this.renderer.setPixelRatio(pixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.toneMapping = THREE.LinearToneMapping;
         this.renderer.toneMappingExposure = 1;
@@ -502,7 +550,8 @@
           fragmentShader,
         });
 
-        this.bufferSim = new BufferSim(this.renderer, 1024, 1024, this.floorSimMat);
+        const simSize = this.isMobile ? 512 : 1024;
+        this.bufferSim = new BufferSim(this.renderer, simSize, simSize, this.floorSimMat);
       }
 
       createMaterials() {
@@ -544,7 +593,11 @@
       createListeners() {
         window.addEventListener("resize", this.onWindowResize.bind(this));
         document.addEventListener("mousemove", this.onMouseMove.bind(this), false);
-        document.addEventListener("touchmove", this.onTouchMove.bind(this), false);
+
+        // 移动端触摸事件（必须 passive: false 才能 preventDefault）
+        document.addEventListener("touchstart", this.onTouchStart.bind(this), { passive: false });
+        document.addEventListener("touchmove", this.onTouchMove.bind(this), { passive: false });
+
         document.addEventListener("mousedown", this.onMouseDown.bind(this), false);
       }
 
@@ -610,7 +663,6 @@
             0.5 - this.rabbit.position.z / this.floorSize
           );
 
-          // 修复：ShaderMaterial 没有 .time 属性，需通过 uniforms 访问
           this.floorSimMat.uniforms.time.value += this.dt;
           this.floorSimMat.uniforms.blade1PosNew.value = this.heroNewUVPos;
           this.floorSimMat.uniforms.blade1PosOld.value = this.heroOldUVPos;
@@ -637,17 +689,28 @@
         this.renderer.setSize(this.winWidth, this.winHeight);
       }
 
-      onMouseMove(event) { 
+      onMouseMove(event) {
         const x = event.clientX / this.winWidth * 2 - 1;
         const y = -(event.clientY / this.winHeight * 2 - 1);
         this.updateMouse(x, y);
       }
 
-      onTouchMove(event) { 
-        if (event.touches.length == 1) {
+      onTouchStart(event) {
+        if (event.touches.length === 1) {
           event.preventDefault();
-          const x = event.touches[0].pageX / this.winWidth * 2 - 1;
-          const y = -(event.touches[0].pageY / this.winHeight * 2 - 1);
+          this.touchHandled = true;
+          const x = event.touches[0].clientX / this.winWidth * 2 - 1;
+          const y = -(event.touches[0].clientY / this.winHeight * 2 - 1);
+          this.updateMouse(x, y);
+          if (this.rabbit && !this.isJumping) this.jump();
+        }
+      }
+
+      onTouchMove(event) {
+        if (event.touches.length === 1) {
+          event.preventDefault();
+          const x = event.touches[0].clientX / this.winWidth * 2 - 1;
+          const y = -(event.touches[0].clientY / this.winHeight * 2 - 1);
           this.updateMouse(x, y);
         }
       }
@@ -655,10 +718,15 @@
       updateMouse(x, y) {
         this.mouse.x = x;
         this.mouse.y = y;
-        if (this.floor) this.raycast(); 
+        if (this.floor) this.raycast();
       }
 
       onMouseDown() {
+        // 忽略触摸事件合成的鼠标事件，防止跳跃触发两次
+        if (this.touchHandled) {
+          this.touchHandled = false;
+          return;
+        }
         if (this.rabbit && !this.isJumping) this.jump();
       }
 
@@ -669,28 +737,28 @@
         let targetRot = (this.heroAngularSpeed > 0) ? Math.PI * 2 * turns : -Math.PI * 2 * turns;
 
         gsap.to(this.rabbitBody.rotation, {
-          duration: jumpDuration, 
+          duration: jumpDuration,
           ease: "none",
-          y: targetRot, 
+          y: targetRot,
           onComplete: () => { this.rabbitBody.rotation.y = 0; }
         });
 
         gsap.to([this.earLeft.rotation, this.earRight.rotation], {
-          duration: jumpDuration * .8, 
+          duration: jumpDuration * .8,
           ease: "power4.out",
-          x: Math.PI / 4, 
+          x: Math.PI / 4,
         });
         gsap.to([this.earLeft.rotation, this.earRight.rotation], {
-          duration: jumpDuration * .2, 
-          delay: jumpDuration * .8, 
+          duration: jumpDuration * .2,
+          delay: jumpDuration * .8,
           ease: "power4.in",
-          x: 0, 
+          x: 0,
         });
 
         gsap.to(this.jumpParams, {
           duration: jumpDuration * .5,
           ease: "power2.out",
-          jumpProgress: .5, 
+          jumpProgress: .5,
           onUpdate: () => {
             let sin = Math.sin(this.jumpParams.jumpProgress * Math.PI);
             this.rabbit.position.y = Math.pow(sin, 4) * turns;
@@ -701,7 +769,7 @@
           duration: jumpDuration * .5,
           ease: "power2.in",
           delay: jumpDuration * .5,
-          jumpProgress: 1, 
+          jumpProgress: 1,
           onUpdate: () => {
             let sin = Math.sin(this.jumpParams.jumpProgress * Math.PI);
             this.rabbit.position.y = Math.pow(sin, 1) * turns;
@@ -711,7 +779,7 @@
             this.jumpParams.jumpProgress = 0;
             this.isJumping = false;
           }
-        });      
+        });
       }
 
       raycast() {
@@ -750,6 +818,16 @@
         this.isExploding = true;
         let p1Count = this.particles1.length;
         let p2Count = this.particles2.length;
+        let completed = 0;
+        const total = p1Count + p2Count;
+
+        const onComplete = () => {
+          completed++;
+          if (completed >= total) {
+            this.spawnCarrot();
+            this.isExploding = false;
+          }
+        };
 
         for (let i = 0; i < p1Count; i++) {
           let m = this.particles1[i];
@@ -767,10 +845,7 @@
             x: 0, y: 0, z: 0,
             duration: 1,
             ease: "power4.out",
-            onComplete: () => {
-              this.spawnCarrot();
-              this.isExploding = false;
-            }
+            onComplete: onComplete
           });
         }
 
@@ -790,20 +865,43 @@
             x: 0, y: 0, z: 0,
             duration: 1,
             ease: "power4.out",
-            onComplete: () => {
-              this.spawnCarrot();
-              this.isExploding = false;
-            }
+            onComplete: onComplete
           });
         }
       }
 
       spawnCarrot() {
-        let px = (Math.random() - .5) * .3;
-        let py = (Math.random() - .5) * .3;
+        let px, py;
+
+        if (this.isMobile) {
+          // 屏幕百分比转 NDC（-1 到 1），再投射到地板
+          const screenX = 0.1 + Math.random() * 0.8; // 10% ~ 90%
+          const screenY = 0.1 + Math.random() * 0.8; // 10% ~ 90%（竖向也留边距）
+
+          const ndcX = screenX * 2 - 1;  // 0~1 -> -1~1
+          const ndcY = -(screenY * 2 - 1); // 0~1 -> 1~-1（NDC Y 向上）
+
+          const raycaster = new THREE.Raycaster();
+          raycaster.setFromCamera({ x: ndcX, y: ndcY }, this.camera);
+          const intersects = raycaster.intersectObject(this.floor);
+
+          if (intersects.length > 0) {
+            px = intersects[0].point.x;
+            py = intersects[0].point.z;
+          } else {
+            // 万一射线没打到地板（比如角度太偏），回退到兔子附近
+            px = this.rabbit.position.x + (Math.random() - 0.5) * 2;
+            py = this.rabbit.position.z + (Math.random() - 0.5) * 2;
+          }
+        } else {
+          // 桌面端：保持原版逻辑不变
+          px = (Math.random() - .5) * .3 * this.floorSize;
+          py = (Math.random() - .5) * .3 * this.floorSize;
+        }
+
         let h = .2 + Math.random() * 1;
-        this.carrot.position.x = px * this.floorSize;
-        this.carrot.position.z = py * this.floorSize;
+        this.carrot.position.x = px;
+        this.carrot.position.z = py;
         this.carrot.position.y = -1;
 
         this.carrot.scale.set(0, 0, 0);
@@ -845,6 +943,26 @@
         this.floor.material.fragmentShader = fragmentShader;
       }
     }
+
+    // 修复：阻止返回按钮的事件冒泡，避免触发游戏交互
+    (function() {
+      const btn = document.querySelector('.back-btn');
+      if (!btn) return;
+      
+      btn.addEventListener('mousedown', function(e) {
+        e.stopPropagation();
+      });
+      btn.addEventListener('touchstart', function(e) {
+        e.stopPropagation();
+      }, { passive: false });
+      btn.addEventListener('touchmove', function(e) {
+        e.stopPropagation();
+      }, { passive: false });
+      btn.addEventListener('touchend', function(e) {
+        e.stopPropagation();
+      });
+    })();
   </script>
 </body>
+
 </html>

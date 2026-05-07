@@ -10,9 +10,8 @@
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&family=IM+Fell+DW+Pica+SC&family=Londrina+Solid&display=swap"
         rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
     <style>
         * {
             border: 0;
@@ -30,23 +29,15 @@
             --primary5: hsl(var(--hue) 90% 55%);
             --primary6: hsl(var(--hue) 90% 45%);
             --trans-dur: 0.3s;
+            --fs-xl: clamp(1.5rem, 1.2rem + 1.5vw, 3rem);
+            --color-text: #1a1a2e;
+            --color-text-muted: #6b7280;
             font-size: clamp(1.25rem, 1rem + 1.25vw, 2.5rem);
         }
 
         body {
             font-family: "Space Grotesk", sans-serif;
-        }
-    </style>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap');
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
             min-height: 100vh;
-            font-family: "IM Fell DW Pica SC", serif;
         }
 
         .main-wrapper {
@@ -56,7 +47,7 @@
 
         .page-header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px 50px;
             border-bottom: 1px solid rgba(15, 216, 80, 0.2);
         }
 
@@ -127,8 +118,26 @@
                 width: 16px;
                 height: 16px;
             }
+
+            .page-header {
+                padding: 24px 16px;
+            }
+
+            .page-header h1 {
+                font-size: clamp(1.25rem, 1rem + 1vw, 2rem);
+            }
+
+            .page-header p {
+                font-size: 0.85rem;
+            }
+
+            #app {
+                padding: 12px;
+                min-height: auto;
+            }
         }
     </style>
+<base target="_blank">
 </head>
 
 <body>
@@ -183,12 +192,12 @@
                 color: '#fec7c7',
                 textColor: '#4b1b1b',
                 photos: [
-                    { name: 'Logo设计A', src: '../images/posters/1.webp' },
-                    { name: 'VI手册', src: '../images/posters/2.webp' },
-                    { name: '名片设计', src: '../images/posters/3.webp' },
-                    { name: '包装概念', src: '../images/posters/4.webp' },
-                    { name: '品牌规范', src: '../images/posters/5.webp' },
-                    { name: '色彩系统', src: '../images/posters/6.webp' },
+                    { name: '谷物包装', src: '../images/posters/1.webp' },
+                    { name: '丰收满仓', src: '../images/posters/2.webp' },
+                    { name: '粒粒金黄', src: '../images/posters/3.webp' },
+                    { name: '荣誉锦旗', src: '../images/posters/4.webp' },
+                    { name: '荣誉奖杯', src: '../images/posters/5.webp' },
+                    { name: '文化海报', src: '../images/posters/6.webp' },
                 ]
             },
             {
@@ -197,12 +206,12 @@
                 color: '#c7fed2',
                 textColor: '#1b4b2e',
                 photos: [
-                    { name: '人像修图', src: '../images/posters/ui4.webp' },
-                    { name: '风景调色', src: '../images/posters/ui5.webp' },
-                    { name: '产品精修', src: '../images/posters/ui6.webp' },
-                    { name: '合成特效', src: '../images/posters/ui1.webp' },
-                    { name: '黑白艺术', src: '../images/posters/ui2.webp' },
-                    { name: '光影实验', src: '../images/posters/ui3.webp' },
+                    { name: '后台系统', src: '../images/posters/ui4.webp' },
+                    { name: '管理后台', src: '../images/posters/ui5.webp' },
+                    { name: '网页界面', src: '../images/posters/ui6.webp' },
+                    { name: '产品展示', src: '../images/posters/ui1.webp' },
+                    { name: '电商主图', src: '../images/posters/ui2.webp' },
+                    { name: '移动端UI', src: '../images/posters/ui3.webp' },
                 ]
             }
         ];
@@ -266,7 +275,10 @@
                             objectFit: 'contain',
                             display: 'block'
                         },
-                        onError: (e) => { e.target.style.display = 'none'; }
+                        onError: (e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.style.backgroundColor = '#d4cfc4';
+                        }
                     }),
                     // 内阴影保持复古感
                     React.createElement("div", {
@@ -301,7 +313,8 @@
             return React.createElement(motion.div, {
                 style: {
                     position: 'relative',
-                    width: '140px',
+                    width: '100%',
+                    maxWidth: '160px',
                     aspectRatio: '5/4',
                     borderRadius: '12px',
                     cursor: 'pointer',
@@ -401,7 +414,10 @@
                                                 display: 'block',
                                                 backgroundColor: '#e8e4d9'
                                             },
-                                            onError: (e) => { e.target.style.display = 'none'; }
+                                            onError: (e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.parentElement.style.backgroundColor = '#d4cfc4';
+                                            }
                                         }),
                                         React.createElement("div", {
                                             style: {
@@ -436,7 +452,7 @@
                         backdropFilter: 'blur(6px)',
                         borderRadius: '0 0 12px 12px',
                         padding: '6px',
-                        zIndex: 3,
+                        zIndex: 10,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -488,22 +504,22 @@
                 }
             },
                 /* ===== 共享展开网格 ===== */
-                React.createElement("div", {
-                    style: {
-                        minHeight: '280px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%'
-                    }
-                },
-                    React.createElement(AnimatePresence, { mode: "wait" },
-                        expandedFolder && React.createElement(motion.div, {
-                            key: `grid-${expandedFolder}`,
-                            initial: { opacity: 0 },
-                            animate: { opacity: 1 },
-                            exit: { opacity: 0 },
-                            transition: { duration: 0.2 },
+                React.createElement(AnimatePresence, null,
+                    expandedFolder && React.createElement(motion.div, {
+                        key: `grid-${expandedFolder}`,
+                        initial: { opacity: 0, height: 0 },
+                        animate: { opacity: 1, height: 'auto' },
+                        exit: { opacity: 0, height: 0 },
+                        transition: { duration: 0.3, ease: 'easeInOut' },
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            overflow: 'hidden'
+                        }
+                    },
+                        React.createElement("div", {
                             style: {
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
@@ -511,7 +527,8 @@
                                 zIndex: 10,
                                 width: '100%',
                                 maxWidth: '800px',
-                                justifyItems: 'center'
+                                justifyItems: 'center',
+                                padding: '20px 0'
                             }
                         },
                             currentPhotos.map((p, i) =>
@@ -530,14 +547,13 @@
                 /* ===== 三个文件夹 ===== */
                 React.createElement("div", {
                     style: {
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'flex-end',
-                        gap: '32px',
-                        flexWrap: 'wrap',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: 'clamp(16px, 4vw, 36px)',
                         width: '100%',
-                        maxWidth: '600px'
+                        maxWidth: '560px',
+                        padding: '0 20px',
+                        justifyItems: 'center'
                     }
                 },
                     FOLDERS.map(folder =>

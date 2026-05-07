@@ -19,6 +19,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+           
         }
 
         html,
@@ -107,7 +108,7 @@
 
         .project-slider__tech span {
             font-size: 12px;
-            padding: 6px 14px;
+            padding: 3px 6px;
             border-radius: 20px;
             background: rgba(45, 122, 45, 0.15);
             color: #2d7a2d;
@@ -135,7 +136,7 @@
 
         .project-slider__slide {
             position: absolute;
-            top: 45%;
+            top: 40%;
             left: 50%;
             width: 55%;
             aspect-ratio: 1.4;
@@ -359,19 +360,19 @@
         const PROJECTS = [
             {
                 name: "信购AI",
-                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%235878c6' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='48' font-family='sans-serif'%3E🤖%3C/text%3E%3Ctext x='200' y='200' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16'%3E电商可信核验平台%3C/text%3E%3C/svg%3E",
+                image: "../images/projects/信购 AI .webp",
                 description: "2026.03 - 2026.06 | 中国大学生计算机设计大赛<br>设计微服务架构，FastAPI独立部署ML服务实现前后端解耦<br>Chinese-CLIP图文相似度 + SVM虚假评论识别 + 豆包大模型<br>开发ECharts可视化大屏，实时展示商品可信度评分<br>设计色差检测算法，解决服装退货率70-90%行业痛点",
                 tech: ["Vue3", "Element Plus", "Spring Boot", "FastAPI", "Chinese-CLIP", "豆包大模型", "MySQL"]
             },
             {
                 name: "MES系统",
-                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%236B8E6B' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='white' font-size='48' font-family='sans-serif'%3E🏭%3C/text%3E%3Ctext x='200' y='200' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16'%3EMES制造执行系统%3C/text%3E%3C/svg%3E",
+                image: "../images/projects/双碳管理系统.webp",
                 description: "2025.12 - 2026.04 | 广东省职业院校技能大赛省二等奖<br>独立完成产品原型设计（Axure）→ 前后端开发 → 部署测试全链路<br>搭建三端部署架构（管理端/用户端/可视化大屏），Nginx反向代理<br>开发实时数据可视化大屏，集成能耗仪表盘、动态图表<br>使用JMeter完成接口压力测试，保障系统稳定性",
                 tech: ["Vue.js", "Element UI", "Spring Boot", "MySQL", "Nginx", "JMeter"]
             },
             {
                 name: "岐青乡望",
-                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23c89696' width='400' height='300'/%3E%3Ctext x='200' y='200' text-anchor='middle' fill='rgba(255,255,255,0.7)' font-size='16'%3E岐青乡望小程序%3C/text%3E%3C/svg%3E",
+                image: "../images/projects/岐青乡望.jpg",
                 description: "独立开发 | 志愿服务小程序<br>独立完成前端页面开发与云函数编写，实现义教报名、志愿者签到、服务时长统计<br>服务家乡教育公益，累计覆盖岐石村及周边地区",
                 tech: ["uni-app", "Vue.js", "uniCloud"]
             }

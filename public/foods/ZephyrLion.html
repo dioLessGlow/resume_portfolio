@@ -57,7 +57,7 @@
             position: fixed;
             top: 80px;
             right: 24px;
-            z-index: 101;
+            z-index: 9999;
             width: 44px;
             height: 44px;
             border-radius: 50%;
@@ -69,6 +69,7 @@
             cursor: pointer;
             transition: all 0.25s ease;
             text-decoration: none;
+            pointer-events: auto;
         }
 
         .back-btn:hover {
@@ -99,11 +100,10 @@
             }
         }
     </style>
-<base target="_blank">
 </head>
 
 <body>
-    <a href="../works/works-web.html" class="back-btn" aria-label="返回" target="_self">
+    <a href="../../works/works-web.html" class="back-btn" aria-label="返回" target="_self">
         <svg viewBox="0 0 24 24">
             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -836,6 +836,31 @@
             var tv = tmin + (pc * dt);
             return tv;
         }
+
+        // 修复：阻止返回按钮的事件冒泡，避免触发风扇吹风
+        (function() {
+            var btn = document.querySelector('.back-btn');
+            if (!btn) return;
+            
+            btn.addEventListener('mousedown', function(e) {
+                e.stopPropagation();
+            });
+            btn.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+                // 同时阻止默认行为，避免触发 document 的 touchstart
+                // 但不要阻止默认的链接跳转
+            }, { passive: false });
+            btn.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            }, { passive: false });
+            btn.addEventListener('touchend', function(e) {
+                e.stopPropagation();
+            });
+            // 点击时立即停止吹风状态
+            btn.addEventListener('click', function(e) {
+                isBlowing = false;
+            });
+        })();
     </script>
 </body>
 

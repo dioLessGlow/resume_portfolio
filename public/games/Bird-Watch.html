@@ -10,6 +10,40 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { overflow: hidden; font-family: 'Open Sans', sans-serif; }
+    
+    .back-btn {
+        position: fixed;
+        top: 80px;
+        right: 24px;
+        z-index: 101;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(45, 122, 45, 0.1);
+        border: 1px solid rgba(45, 122, 45, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+    }
+    .back-btn:hover {
+        background: rgba(45, 122, 45, 0.2);
+        border-color: rgba(45, 122, 45, 0.4);
+        transform: scale(1.08);
+    }
+    .back-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: #2d7a2d;
+        stroke-width: 2;
+        fill: none;
+    }
+    @media (max-width: 768px) {
+        .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
+        .back-btn svg { width: 16px; height: 16px; }
+    }
 
     #world {
       background: #e0dacd;
@@ -42,28 +76,15 @@
       margin-top: 4px;
     }
 
-    #credits {
-      position: absolute;
-      width: 100%;
-      bottom: 0;
-      margin-bottom: 20px;
-      color: #b59b63;
-      font-size: 0.7em;
-      text-transform: uppercase;
-      text-align: center;
-    }
-    #credits a {
-      color: #b59b63;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    #credits a:hover {
-      color: #b75505;
-    }
   </style>
 <base target="_blank">
 </head>
 <body>
+  <a href="../../works/works-games.html" class="back-btn" aria-label="返回" target="_self">
+    <svg viewBox="0 0 24 24">
+      <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
 
   <div id="world"></div>
 
@@ -73,13 +94,6 @@
     <span class="light-instructions">
       观察另外两只小鸟<br/>如何与它互动
     </span>
-  </div>
-
-  <div id="credits">
-    <p>
-      <a href="https://codepen.io/Yakudoo/" target="_blank">我的其他作品</a> | 
-      <a href="https://www.epic.net" target="_blank">epiQc.net</a>
-    </p>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

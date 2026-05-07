@@ -101,6 +101,13 @@
             cursor: pointer;
             transition: all 0.25s ease;
             text-decoration: none;
+            /* 统一按钮/链接样式 */
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            text-align: center;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         .snack img {
@@ -128,24 +135,39 @@
             background: rgba(0, 0, 0, 0.06);
         }
 
+        .snack:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .pudgy-container {
-            margin-top: 1rem;
+            margin: 1rem auto 0;
+            width: clamp(150px, 35vw, 230px);
+            height: clamp(150px, 35vw, 230px);
+            text-align: center;
         }
 
         #pudgy {
-            width: clamp(150px, 35vw, 230px);
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             border-radius: 12px;
             transition: filter 0.3s ease;
         }
 
         /* === Reaction === */
         .reaction {
-            margin-top: 1rem;
+            margin: 1rem auto 0;
             font-size: 1.1rem;
             text-transform: uppercase;
             letter-spacing: 1.2px;
             opacity: 0;
             transition: opacity 0.3s ease;
+            white-space: nowrap;
+            text-align: center;
+            width: fit-content;
         }
 
         /* === TRUE STATE === */
@@ -222,6 +244,7 @@
         }
     </style>
     <base target="_blank">
+<base target="_blank">
 </head>
 
 <body>
@@ -239,49 +262,49 @@
             <p class="observer" id="observerText">正在初始化观察...</p>
 
             <div class="snack-menu">
-                <a class="snack" href="../public/foods/Sylvan Sands.html" data-snack="林间秘境・沙海幻镜" data-response="true">
+                <a class="snack" href="../public/foods/Sylvan-Sands.html" data-snack="林间秘境・沙海幻镜" data-response="true" target="_self">
                     <img src="../images/foods/烤鸡翅.webp" alt="烤鸡翅" loading="lazy">
                     <span>烤鸡翅</span>
                 </a>
 
-                <a class="snack" href="javascript:void(0)" data-snack="苦瓜" data-response="false">
-                    <img src="../images/foods/苦瓜.webp" alt="" loading="lazy">
+                <button class="snack" data-snack="苦瓜" data-response="false">
+                    <img src="../images/foods/苦瓜.webp" alt="苦瓜" loading="lazy">
                     <span>苦瓜</span>
-                </a>
+                </button>
 
-                <a class="snack" href="../public/foods/ZephyrLion.html" data-snack="风拂萌狮" data-response="true">
+                <a class="snack" href="../public/foods/ZephyrLion.html" data-snack="风拂萌狮" data-response="true" target="_self">
                     <img src="../images/foods/意大利面.webp" alt="意面" loading="lazy">
                     <span>意面</span>
                 </a>
 
-                <a class="snack" href="javascript:void(0)" data-snack="香菜" data-response="false">
+                <button class="snack" data-snack="香菜" data-response="false">
                     <img src="../images/foods/香菜.webp" alt="香菜" loading="lazy">
                     <span>香菜</span>
-                </a>
+                </button>
 
-                <a class="snack" href="../public/foods/Pocket Drums.html" data-snack="掌上架子鼓" data-response="true">
+                <a class="snack" href="../public/foods/Pocket-Drums.html" data-snack="掌上架子鼓" data-response="true" target="_self">
                     <img src="../images/foods/蛋挞.webp" alt="蛋挞" loading="lazy">
                     <span>蛋挞</span>
                 </a>
 
-                <a class="snack" href="javascript:void(0)" data-snack="折耳根" data-response="false">
+                <button class="snack" data-snack="折耳根" data-response="false">
                     <img src="../images/foods/鱼腥草.webp" alt="折耳根" loading="lazy">
                     <span>折耳根</span>
-                </a>
+                </button>
 
-                <a class="snack" href="../public/foods/Ember.html" data-snack="烤肠" data-response="true">
+                <a class="snack" href="../public/foods/map.html" data-snack="烤肠" data-response="true" target="_self">
                     <img src="../images/foods/烤肠.webp" alt="烤肠" loading="lazy">
                     <span>烤肠</span>
                 </a>
 
-                <a class="snack" href="javascript:void(0)" data-snack="皮蛋" data-response="false">
+                <button class="snack" data-snack="皮蛋" data-response="false">
                     <img src="../images/foods/皮蛋.webp" alt="皮蛋" loading="lazy">
                     <span>皮蛋</span>
-                </a>
+                </button>
             </div>
 
             <div class="pudgy-container">
-                <img id="pudgy" src="" alt="胖吉正在判断">
+                <img id="pudgy" alt="胖吉正在判断" style="display:none;">
                 <div class="reaction" id="reactionText"></div>
             </div>
         </div>
@@ -301,18 +324,38 @@
             const noGif = "https://assets.codepen.io/11990995/NO_20251112_175109062.gif";
             const idleGif = "https://assets.codepen.io/11990995/pudgy_idle_20251111_021234773.gif";
 
-            // 预加载
-            const preload = [yesGif, noGif, idleGif];
-            preload.forEach((src) => {
-                const img = new Image();
-                img.src = src;
-            });
+            // 定时器引用，防止竞态条件
+            let jumpTimer = null;
+            let resetTimer = null;
+            let isAnimating = false;
 
-            // 初始状态
-            pudgy.src = idleGif;
+            // 预加载并等待 idle 就绪后再显示
+            function preloadImage(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = src;
+                });
+            }
+
+            Promise.all([
+                preloadImage(yesGif),
+                preloadImage(noGif),
+                preloadImage(idleGif)
+            ]).then(() => {
+                pudgy.src = idleGif;
+                pudgy.style.display = "block";
+            }).catch(() => {
+                // 即使加载失败也显示，避免空白
+                pudgy.src = idleGif;
+                pudgy.style.display = "block";
+            });
 
             snacks.forEach((snack) => {
                 snack.addEventListener("click", (e) => {
+                    if (isAnimating) return;
+
                     const response = snack.dataset.response;
                     const isTrue = response === "true";
                     const name = snack.dataset.snack;
@@ -320,44 +363,53 @@
 
                     // 阻止默认跳转，先展示动画
                     e.preventDefault();
+                    isAnimating = true;
+
+                    // 清除旧定时器，防止竞态条件
+                    clearTimeout(jumpTimer);
+                    clearTimeout(resetTimer);
+
+                    // 禁用所有按钮，防止连续点击
+                    snacks.forEach(s => {
+                        if (s.tagName === "BUTTON") s.disabled = true;
+                        s.style.pointerEvents = "none";
+                    });
 
                     // 重置状态
                     body.classList.remove("true", "false");
                     reaction.style.opacity = 1;
                     reaction.innerText = "正在评估...";
-                    pudgy.src = idleGif;
 
-                    // 短暂延迟
+                    // 短暂延迟后播放结果
                     setTimeout(() => {
                         if (isTrue) {
                             body.classList.add("true");
-
-                            // 强制GIF重新播放
-                            pudgy.src = "";
-                            pudgy.src = yesGif;
-
+                            // 加时间戳强制浏览器重新加载并播放 GIF
+                            pudgy.src = yesGif + "?t=" + Date.now();
                             reaction.innerText = `通过 → ${name} 已批准`;
                         } else {
                             body.classList.add("false");
-
-                            pudgy.src = "";
-                            pudgy.src = noGif;
-
+                            pudgy.src = noGif + "?t=" + Date.now();
                             reaction.innerText = `拒绝 → ${name} 被驳回`;
                         }
                     }, 400);
 
-                    // 如果是通过，动画结束后跳转
+                    // 动画结束后的处理
                     if (isTrue) {
-                        setTimeout(() => {
+                        jumpTimer = setTimeout(() => {
                             window.location.href = href;
                         }, 2600);
                     } else {
-                        // 拒绝时重置回idle
-                        setTimeout(() => {
-                            pudgy.src = idleGif;
+                        resetTimer = setTimeout(() => {
+                            pudgy.src = idleGif + "?t=" + Date.now();
                             reaction.style.opacity = 0;
                             body.classList.remove("false");
+                            isAnimating = false;
+                            // 恢复交互
+                            snacks.forEach(s => {
+                                if (s.tagName === "BUTTON") s.disabled = false;
+                                s.style.pointerEvents = "";
+                            });
                         }, 2600);
                     }
                 });

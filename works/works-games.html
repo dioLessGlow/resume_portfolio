@@ -83,11 +83,10 @@
             display: grid;
             place-items: center;
             text-decoration: none;
-            /* 移除悬停暂停旋转：不在这里加transform，避免与GSAP冲突 */
             transition: filter 0.3s ease;
+            will-change: transform;
         }
 
-        /* 悬停效果：图标放大+亮度提升，旋转不暂停 */
         .game-wheel .game-item:hover {
             filter: brightness(1.2) drop-shadow(0 4px 12px rgba(45, 122, 45, 0.3));
         }
@@ -96,7 +95,6 @@
             transform: scale(1.2);
         }
 
-        /* 移除背景圈，纯emoji展示 */
         .game-wheel .game-item .icon {
             font-size: 2.8rem;
             display: flex;
@@ -104,7 +102,6 @@
             justify-content: center;
             width: 100%;
             height: 100%;
-            /* 移除背景渐变和圆角 */
             background: none;
             border-radius: 0;
             color: inherit;
@@ -151,7 +148,6 @@
             font-weight: 500;
         }
 
-        /* ===== 移动端优化 ===== */
         @media (max-width: 768px) {
             :root {
                 --wheel-width: min(92vw, 380px);
@@ -192,7 +188,6 @@
             }
         }
 
-        /* 超小屏优化 */
         @media (max-width: 380px) {
             :root {
                 --wheel-width: 90vw;
@@ -275,20 +270,19 @@
             <section class="game-wheel-section" data-speed="0.25" data-direction="right" data-radius="68"
                 data-radius-mobile="58">
                 <div class="game-wheel">
-                    <!-- 改为a标签，添加href跳转链接 -->
-                    <a href="../public/games/Stack Tower.html" class="game-item" data-name="旋轨迷途" aria-label="旋轨迷途">
+                    <a href="../public/games/cubspin.html" class="game-item" data-name="旋轨迷途" aria-label="旋轨迷途" target="_self">
                         <div class="icon">🧩</div>
                         <span class="name">旋轨迷途</span>
                     </a>
-                    <a href="../public/games/Stack Tower.html" class="game-item" data-name="堆塔大师" aria-label="堆塔大师">
+                    <a href="../public/games/stack-tower.html" class="game-item" data-name="堆塔大师" aria-label="堆塔大师" target="_self">
                         <div class="icon">🏗️</div>
                         <span class="name">堆塔大师</span>
                     </a>
-                    <a href="../public/games/Bird Watch.html" class="game-item" data-name="小鸟互视" aria-label="小鸟互视">
+                    <a href="../public/games/bird-watch.html" class="game-item" data-name="小鸟互视" aria-label="小鸟互视" target="_self">
                         <div class="icon">🐦</div>
                         <span class="name">小鸟互视</span>
                     </a>
-                    <a href="../public/games/Mirror Chase.html" class="game-item" data-name="镜中追兔" aria-label="镜中追兔">
+                    <a href="../public/games/mirror-chase.html" class="game-item" data-name="镜中追兔" aria-label="镜中追兔" target="_self">
                         <div class="icon">🐰</div>
                         <span class="name">镜中追兔</span>
                     </a>
@@ -306,71 +300,86 @@
 
     <script type="module" src="../js/components.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script>
         (() => {
-            const sections = document.querySelectorAll('.game-wheel-section');
-            const ACTIVE = [];
-
-            function computeRadiusPx(section, items) {
-                const rect = section.getBoundingClientRect();
-                const half = Math.min(rect.width, rect.height) / 2;
-                const isMobile = window.innerWidth <= 768;
-                const raw = isMobile
-                    ? (section.dataset.radiusMobile || '58').toString().trim().toLowerCase()
-                    : (section.dataset.radius || '68').toString().trim().toLowerCase();
-                const pct = Number(raw);
-                return (isFinite(pct) ? pct : (isMobile ? 58 : 68)) / 100 * half;
+            /* ========================================
+               UTILITIES
+            ======================================== */
+            function debounce(fn, wait) {
+                let t;
+                return function (...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), wait);
+                };
             }
+
+            /* ========================================
+               WHEEL LOGIC
+            ======================================== */
+            const ACTIVE = [];
 
             function createWheel(section) {
                 const wheel = section.querySelector('.game-wheel');
                 const items = [...wheel.querySelectorAll('.game-item')];
+                const n = items.length;
 
                 const parsed = parseFloat(section.dataset.speed);
-                let speedDeg = Number.isFinite(parsed) ? parsed : 0.25;
-
-                let dirAttr = String(section.dataset.direction || 'right').toLowerCase();
-                let dir = (dirAttr === 'left') ? -1 : 1;
+                const speedDeg = Number.isFinite(parsed) ? parsed : 0.25;
+                const dirAttr = String(section.dataset.direction || 'right').toLowerCase();
+                const dir = dirAttr === 'left' ? -1 : 1;
 
                 let radius = 0;
                 let angles = [];
-                let isHovered = false;
+                let cx = 0, cy = 0;
                 let rafId = null;
                 let lastTime = 0;
 
-                function layout(init = false) {
-                    const rect = section.getBoundingClientRect();
-                    const cx = rect.width / 2;
-                    const cy = rect.height / 2;
-                    radius = computeRadiusPx(section, items);
+                const DEG2RAD = Math.PI / 180;
 
-                    const n = items.length;
-                    if (init || angles.length !== n) {
+                // 初始化样式：重置 left/top 为 0，避免 CSS 中的 50% 干扰
+                function initStyles() {
+                    items.forEach(item => {
+                        item.style.position = 'absolute';
+                        item.style.left = '0';
+                        item.style.top = '0';
+                    });
+                }
+
+                function computeLayout() {
+                    const rect = section.getBoundingClientRect();
+                    cx = rect.width / 2;
+                    cy = rect.height / 2;
+
+                    const half = Math.min(rect.width, rect.height) / 2;
+                    const isMobile = window.innerWidth <= 768;
+                    const raw = isMobile
+                        ? (section.dataset.radiusMobile || '58').toString().trim().toLowerCase()
+                        : (section.dataset.radius || '68').toString().trim().toLowerCase();
+                    const pct = Number(raw);
+                    radius = (isFinite(pct) ? pct : (isMobile ? 58 : 68)) / 100 * half;
+
+                    if (angles.length !== n) {
                         angles = Array.from({ length: n }, (_, i) => (360 / n) * i);
                     }
+                }
 
+                function updatePositions() {
                     for (let i = 0; i < n; i++) {
-                        const deg = angles[i];
-                        const rad = deg * Math.PI / 180;
+                        const rad = angles[i] * DEG2RAD;
                         const x = cx + radius * Math.cos(rad);
                         const y = cy + radius * Math.sin(rad);
-
-                        gsap.set(items[i], {
-                            position: 'absolute',
-                            left: 0, top: 0,
-                            x, y, xPercent: -50, yPercent: -50
-                        });
+                        // translate3d 开启 GPU 加速；translate(-50%,-50%) 居中自身
+                        items[i].style.transform =
+                            `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
                     }
                 }
 
                 function tick(dt) {
-                    // 悬停时不暂停旋转，保持匀速
                     const step = dir * speedDeg * dt;
-                    for (let i = 0; i < angles.length; i++) {
+                    for (let i = 0; i < n; i++) {
                         angles[i] = (angles[i] + step) % 360;
+                        if (angles[i] < 0) angles[i] += 360;
                     }
-                    layout(false);
                 }
 
                 function animate(time) {
@@ -378,28 +387,25 @@
                     const dt = (time - lastTime) / 16.67;
                     lastTime = time;
                     tick(dt || 1);
+                    updatePositions();
                     rafId = requestAnimationFrame(animate);
                 }
 
                 function bindUI() {
-                    // 悬停不暂停旋转，仅做视觉反馈
                     items.forEach(item => {
                         item.addEventListener('mouseenter', () => {
-                            isHovered = true;
-                            // 不暂停动画，仅提升层级
-                            gsap.to(item, { zIndex: 10, duration: 0.2 });
+                            item.style.zIndex = '10';
                         });
                         item.addEventListener('mouseleave', () => {
-                            isHovered = false;
-                            gsap.to(item, { zIndex: 1, duration: 0.2 });
+                            item.style.zIndex = '';
                         });
                     });
-
                     rafId = requestAnimationFrame(animate);
                 }
 
                 function onResize() {
-                    layout(false);
+                    computeLayout();
+                    updatePositions();
                 }
 
                 function destroy() {
@@ -408,15 +414,17 @@
 
                 return {
                     init() {
-                        layout(true);
+                        initStyles();
+                        computeLayout();
+                        updatePositions();
                         bindUI();
                     },
                     destroy,
-                    onResize
+                    onResize: debounce(onResize, 150)
                 };
             }
 
-            async function initAll(root = document) {
+            function initAll(root = document) {
                 const sections = root.querySelectorAll('.game-wheel-section');
                 for (const sec of sections) {
                     const inst = createWheel(sec);

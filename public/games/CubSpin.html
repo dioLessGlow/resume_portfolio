@@ -7,6 +7,40 @@
 <style>
 * { box-sizing: border-box; }
 
+.back-btn {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    z-index: 101;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(45, 122, 45, 0.1);
+    border: 1px solid rgba(45, 122, 45, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+}
+.back-btn:hover {
+    background: rgba(45, 122, 45, 0.2);
+    border-color: rgba(45, 122, 45, 0.4);
+    transform: scale(1.08);
+}
+.back-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: #2d7a2d;
+    stroke-width: 2;
+    fill: none;
+}
+@media (max-width: 768px) {
+    .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
+    .back-btn svg { width: 16px; height: 16px; }
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -178,6 +212,11 @@ canvas {
 <base target="_blank">
 </head>
 <body>
+<a href="../../works/works-games.html" class="back-btn" aria-label="返回" target="_self">
+    <svg viewBox="0 0 24 24">
+        <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</a>
 
 <div class="top-bar">
   <button class="button level-select-button">选关</button>
