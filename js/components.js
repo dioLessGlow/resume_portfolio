@@ -108,7 +108,6 @@ async function initComponents() {
                 const isindex = window.location.pathname.includes('index');
                 const hideTime = isindex ? 2500 : 1000;
                 console.log('Hide time:', hideTime);
-
                 // 存储 timer 引用，便于清理
                 const loaderTimer = setTimeout(() => {
                     if (loader) {
