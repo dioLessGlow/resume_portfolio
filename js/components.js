@@ -107,11 +107,7 @@ async function initComponents() {
                 // 根据页面设置隐藏时间
                 const isindex = currentPage === 'index';
                 const hideTime = isindex ? 2500 : 1000;
-                // 加这三行调试
-                console.log('=== DEBUG ===');
-                console.log('pathname:', window.location.pathname);
-                console.log('currentPage:', currentPage);
-                console.log('isindex:', isindex, 'hideTime:', hideTime);
+                
                 console.log('Hide time:', hideTime);
                 // 存储 timer 引用，便于清理
                 const loaderTimer = setTimeout(() => {
