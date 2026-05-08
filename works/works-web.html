@@ -244,13 +244,13 @@
         }
     </style>
     <base target="_blank">
-<base target="_blank">
+    <base target="_blank">
 </head>
 
 <body>
     <a href="../works.html" class="back-btn" aria-label="返回" target="_self">
         <svg viewBox="0 0 24 24">
-            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
     </a>
 
@@ -262,7 +262,8 @@
             <p class="observer" id="observerText">正在初始化观察...</p>
 
             <div class="snack-menu">
-                <a class="snack" href="../public/foods/Sylvan-Sands.html" data-snack="林间秘境・沙海幻镜" data-response="true" target="_self">
+                <a class="snack" href="../public/foods/Sylvan-Sands.html" data-snack="林间秘境・沙海幻镜" data-response="true"
+                    target="_self">
                     <img src="../images/foods/烤鸡翅.webp" alt="烤鸡翅" loading="lazy">
                     <span>烤鸡翅</span>
                 </a>
@@ -272,7 +273,8 @@
                     <span>苦瓜</span>
                 </button>
 
-                <a class="snack" href="../public/foods/ZephyrLion.html" data-snack="风拂萌狮" data-response="true" target="_self">
+                <a class="snack" href="../public/foods/ZephyrLion.html" data-snack="风拂萌狮" data-response="true"
+                    target="_self">
                     <img src="../images/foods/意大利面.webp" alt="意面" loading="lazy">
                     <span>意面</span>
                 </a>
@@ -282,7 +284,8 @@
                     <span>香菜</span>
                 </button>
 
-                <a class="snack" href="../public/foods/Pocket-Drums.html" data-snack="掌上架子鼓" data-response="true" target="_self">
+                <a class="snack" href="../public/foods/Pocket-Drums.html" data-snack="掌上架子鼓" data-response="true"
+                    target="_self">
                     <img src="../images/foods/蛋挞.webp" alt="蛋挞" loading="lazy">
                     <span>蛋挞</span>
                 </a>
@@ -320,9 +323,20 @@
             const body = document.body;
             const reaction = document.getElementById("reactionText");
 
-            const yesGif = "../images/pudgy/isyes.gif";
-            const noGif = "../images/pudgy/no.gif";
-            const idleGif = "../images/pudgy/idle.gif";
+            // 判断是否在本地开发环境
+            const isLocal = location.hostname === "127.0.0.1" || location.hostname === "localhost";
+
+            const yesGif = isLocal
+                ? "../images/pudgy/isyes.gif"
+                : "https://assets.codepen.io/11990995/YES_20251112_175033114.gif";
+
+            const noGif = isLocal
+                ? "../images/pudgy/no.gif"
+                : "https://assets.codepen.io/11990995/NO_20251112_175109062.gif";
+
+            const idleGif = isLocal
+                ? "../images/pudgy/idle.gif"
+                : "https://assets.codepen.io/11990995/pudgy_idle_20251111_021234773.gif";
 
             // 定时器引用，防止竞态条件
             let jumpTimer = null;
