@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>林间秘境・沙海幻镜</title>
+    <title>林间秘境・沙海幻镜 (Optimized)</title>
     <style>
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:800&display=swap);
 
@@ -118,7 +118,106 @@
             pointer-events: none;
             line-height: 1.5;
         }
-    </style>
+            /* 加载动画 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loader-ring-inner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+            position: absolute;
+        }
+        .loader-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #fff;
+            font-family: "Open Sans", sans-serif;
+            font-size: 1.2em;
+            margin-top: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+        .loading-subtext {
+            color: rgba(255, 255, 255, 0.4);
+            font-family: "Open Sans", sans-serif;
+            font-size: 0.85em;
+            margin-top: 12px;
+            letter-spacing: 1px;
+        }
+        .loading-progress {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+            margin-top: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.3));
+            border-radius: 1px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .loading-percent {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: monospace;
+            font-size: 0.8em;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+        /* 传送门脉冲效果 */
+        .portal-pulse {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: pulse 2s ease-out infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+</style>
 <base target="_blank">
 </head>
 
@@ -130,6 +229,21 @@
     </a>
 
     <canvas class="webgl"></canvas>
+    <!-- 加载画面 -->
+    <div id="loading-screen">
+        <div class="loader-container">
+            <div class="portal-pulse"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring-inner"></div>
+        </div>
+        <div class="loading-text">正在构建世界</div>
+        <div class="loading-subtext">加载模型与纹理资源中...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loading-bar"></div>
+        </div>
+        <div class="loading-percent" id="loading-percent">0%</div>
+    </div>
+
     <div id="instructions">滑动屏幕旋转视角<br />双指缩放画面<br />点击传送门进行探索</div>
     <div id="perf-panel" style="display: none;">
         FPS: <span id="fps">0</span> | 
@@ -217,6 +331,55 @@
 
         document.addEventListener("DOMContentLoaded", () => new App());
 
+
+        class LoadingManager {
+            constructor() {
+                this.screen = document.getElementById("loading-screen");
+                this.bar = document.getElementById("loading-bar");
+                this.percent = document.getElementById("loading-percent");
+                this.subtext = document.querySelector(".loading-subtext");
+                this.currentProgress = 0;
+            }
+
+            updateProgress(percent) {
+                this.currentProgress = percent;
+                if (this.bar) {
+                    this.bar.style.width = percent + "%";
+                }
+                if (this.percent) {
+                    this.percent.textContent = Math.round(percent) + "%";
+                }
+
+                // 根据进度更新提示文字
+                if (this.subtext) {
+                    if (percent < 30) {
+                        this.subtext.textContent = "正在加载沙漠场景...";
+                    } else if (percent < 60) {
+                        this.subtext.textContent = "正在加载森林场景...";
+                    } else if (percent < 90) {
+                        this.subtext.textContent = "正在生成纹理贴图...";
+                    } else {
+                        this.subtext.textContent = "即将完成...";
+                    }
+                }
+            }
+
+            hide() {
+                if (this.screen) {
+                    this.screen.classList.add("hidden");
+                }
+            }
+
+            showError(message) {
+                if (this.subtext) {
+                    this.subtext.textContent = message;
+                    this.subtext.style.color = "#ff6b6b";
+                }
+                if (this.bar) {
+                    this.bar.style.background = "#ff6b6b";
+                }
+            }
+        }
         class App {
             constructor() {
                 this.winWidth = window.innerWidth;
@@ -243,16 +406,38 @@
             }
 
             async loadAssets() {
-                ASSETS.desertScene = await this.loadModel(FILES.desertFile);
-                ASSETS.forestScene = await this.loadModel(FILES.forestFile);
-                ASSETS.noiseMap = await this.loadTexture(FILES.noiseFile);
-                this.initApp();
+                this.loadingManager = new LoadingManager();
+
+                try {
+                    ASSETS.desertScene = await this.loadModel(FILES.desertFile);
+                    this.loadingManager.updateProgress(40);
+
+                    ASSETS.forestScene = await this.loadModel(FILES.forestFile);
+                    this.loadingManager.updateProgress(75);
+
+                    ASSETS.noiseMap = await this.loadTexture(FILES.noiseFile);
+                    this.loadingManager.updateProgress(100);
+
+                    // 短暂延迟让用户看到 100%
+                    setTimeout(() => {
+                        this.loadingManager.hide();
+                        this.initApp();
+                    }, 500);
+                } catch (error) {
+                    console.error("资源加载失败:", error);
+                    this.loadingManager.showError("资源加载失败，请刷新页面重试");
+                }
             }
 
             loadModel(file) {
                 const loaderModel = new GLTFLoader();
-                return new Promise((resolve) => {
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error("模型加载超时"));
+                    }, 30000);  // 30秒超时
+
                     loaderModel.load(file, (gltf) => {
+                        clearTimeout(timeout);
                         // 优化模型：遍历并设置 frustumCulled
                         gltf.scene.traverse((child) => {
                             if (child.isMesh) {
@@ -264,14 +449,22 @@
                             }
                         });
                         resolve(gltf.scene);
+                    }, undefined, (error) => {
+                        clearTimeout(timeout);
+                        reject(error);
                     });
                 });
             }
 
             loadTexture(file) {
                 const textureLoader = new THREE.TextureLoader();
-                return new Promise((resolve) => {
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error("纹理加载超时"));
+                    }, 20000);  // 20秒超时
+
                     textureLoader.load(file, (texture) => {
+                        clearTimeout(timeout);
                         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                         // 限制纹理尺寸，避免移动端内存爆炸
                         const maxSize = 1024;
@@ -280,6 +473,9 @@
                             texture.generateMipmaps = true;
                         }
                         resolve(texture);
+                    }, undefined, (error) => {
+                        clearTimeout(timeout);
+                        reject(error);
                     });
                 });
             }
@@ -425,6 +621,14 @@
                         PERF_CONFIG.enableStats = !PERF_CONFIG.enableStats;
                         document.getElementById("perf-panel").style.display = 
                             PERF_CONFIG.enableStats ? "block" : "none";
+                    }
+                });
+
+                // 网络状态监听
+                window.addEventListener("offline", () => {
+                    console.warn("网络已断开");
+                    if (this.loadingManager && !this.loadingManager.screen.classList.contains("hidden")) {
+                        this.loadingManager.showError("网络已断开，请检查网络连接");
                     }
                 });
             }
