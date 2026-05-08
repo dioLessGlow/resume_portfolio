@@ -14,33 +14,12 @@
     <link rel="stylesheet" href="css/welcome.css">
     <link rel="stylesheet" href="css/loader.css">
 <base target="_blank">
+<base target="_blank">
 </head>
 
 <body>
-    <!-- Loader立即显示 -->
-    <div id="loader-container" style="position:fixed;inset:0;background:#fdfbf7;display:flex;align-items:center;justify-content:center;z-index:10000;transition:opacity 0.5s,visibility 0.5s;">
-        <div style="font-family:'ZCOOL KuaiLe';font-size:86px;font-weight:bold;color:#2d7a2d;display:flex;gap:20px;">
-            <span style="opacity:0;animation:bounceInLeft 0.8s ease-out forwards;animation-delay:0s;">C</span>
-            <span style="opacity:0;animation:bounceInTop 0.8s ease-out forwards;animation-delay:0.2s;">S</span>
-            <span style="opacity:0;animation:bounceInRight 0.8s ease-out forwards;animation-delay:0.4s;">H</span>
-        </div>
-        <style>
-            @keyframes bounceInLeft {0%{opacity:0;transform:translateX(-80px)}60%{opacity:1;transform:translateX(10px)}80%{transform:translateX(-5px)}100%{opacity:1;transform:translateX(0)}}
-            @keyframes bounceInTop {0%{opacity:0;transform:translateY(-80px)}60%{opacity:1;transform:translateY(10px)}80%{transform:translateY(-5px)}100%{opacity:1;transform:translateY(0)}}
-            @keyframes bounceInRight {0%{opacity:0;transform:translateX(80px)}60%{opacity:1;transform:translateX(-10px)}80%{transform:translateX(5px)}100%{opacity:1;transform:translateX(0)}}
-        </style>
-    </div>
-    <script>
-        // 1秒后隐藏loader
-        setTimeout(function() {
-            var loader = document.getElementById('loader-container');
-            if (loader) {
-                loader.style.opacity = '0';
-                loader.style.visibility = 'hidden';
-                loader.style.pointerEvents = 'none';
-            }
-        }, 2000);
-    </script>
+    <!-- Loader 容器，由 components.js 统一加载 -->
+    <div id="loader-container"></div>
     
     <!-- 漂浮的彩色圆球 -->
     <div class="blob blob-1"></div>

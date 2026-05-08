@@ -106,17 +106,18 @@ async function initComponents() {
 
                 // 根据页面设置隐藏时间
                 const isindex = window.location.pathname.includes('index');
-                const hideTime = isindex ? 2000 : 1000;
+                const hideTime = isindex ? 2500 : 1000;
                 console.log('Hide time:', hideTime);
 
-                setTimeout(() => {
+                // 存储 timer 引用，便于清理
+                const loaderTimer = setTimeout(() => {
                     if (loader) {
                         loader.classList.add('hidden');
-                        // 强制隐藏作为备份
                         loader.style.display = 'none';
                         loader.style.opacity = '0';
                         loader.style.visibility = 'hidden';
                     }
+                    clearTimeout(loaderTimer);
                 }, hideTime);
             })
             .catch(err => console.error('Loader 加载失败:', err));
