@@ -105,8 +105,8 @@ async function initComponents() {
                 console.log('Loader ready, CSS animation will play');
 
                 // 根据页面设置隐藏时间
-                const isWelcome = window.location.pathname.includes('welcome');
-                const hideTime = isWelcome ? 2000 : 1000;
+                const isindex = window.location.pathname.includes('index');
+                const hideTime = isindex ? 2000 : 1000;
                 console.log('Hide time:', hideTime);
 
                 setTimeout(() => {
