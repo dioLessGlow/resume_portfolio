@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/welcome.css">
     <link rel="stylesheet" href="css/loader.css">
+<base target="_blank">
 </head>
 
 <body>
@@ -30,14 +31,15 @@
         </style>
     </div>
     <script>
-        // 1秒后隐藏loader
-        setTimeout(function() {
+        // 1秒后隐藏loader，添加清理机制
+        var loaderTimer = setTimeout(function() {
             var loader = document.getElementById('loader-container');
             if (loader) {
                 loader.style.opacity = '0';
                 loader.style.visibility = 'hidden';
                 loader.style.pointerEvents = 'none';
             }
+            clearTimeout(loaderTimer);
         }, 1000);
     </script>
     
@@ -48,7 +50,10 @@
     
     <div class="welcome-content">
         <h1 class="welcome-text">欢迎来到我的</h1>
-        <h1 class="welcome-text">小世界<img src="images/icons/欢迎.webp" alt="欢迎" class="welcome-icon"></h1>
+        <h1 class="welcome-text">小世界<picture>
+            <source srcset="images/icons/欢迎.webp" type="image/webp">
+            <img src="images/icons/欢迎.png" alt="欢迎" class="welcome-icon">
+        </picture></h1>
         <p class="sub-text">这里记录了我的成长</p>
         <p class="hint">Click below to enter →</p>
 
