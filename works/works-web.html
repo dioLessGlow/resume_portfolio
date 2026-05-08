@@ -320,9 +320,9 @@
             const body = document.body;
             const reaction = document.getElementById("reactionText");
 
-            const yesGif = "https://assets.codepen.io/11990995/YES_20251112_175033114.gif";
-            const noGif = "https://assets.codepen.io/11990995/NO_20251112_175109062.gif";
-            const idleGif = "https://assets.codepen.io/11990995/pudgy_idle_20251111_021234773.gif";
+            const yesGif = "../images/pudgy/yes.gif";
+            const noGif = "../images/pudgy/no.gif";
+            const idleGif = "../images/pudgy/idle.gif";
 
             // 定时器引用，防止竞态条件
             let jumpTimer = null;
@@ -385,11 +385,11 @@
                         if (isTrue) {
                             body.classList.add("true");
                             // 加时间戳强制浏览器重新加载并播放 GIF
-                            pudgy.src = yesGif + "?t=" + Date.now();
+                            pudgy.src = yesGif;
                             reaction.innerText = `通过 → ${name} 已批准`;
                         } else {
                             body.classList.add("false");
-                            pudgy.src = noGif + "?t=" + Date.now();
+                            pudgy.src = noGif;
                             reaction.innerText = `拒绝 → ${name} 被驳回`;
                         }
                     }, 400);
@@ -398,10 +398,10 @@
                     if (isTrue) {
                         jumpTimer = setTimeout(() => {
                             window.location.href = href;
-                        }, 2600);
+                        }, 3000);
                     } else {
                         resetTimer = setTimeout(() => {
-                            pudgy.src = idleGif + "?t=" + Date.now();
+                            pudgy.src = idleGif;
                             reaction.style.opacity = 0;
                             body.classList.remove("false");
                             isAnimating = false;
@@ -410,7 +410,7 @@
                                 if (s.tagName === "BUTTON") s.disabled = false;
                                 s.style.pointerEvents = "";
                             });
-                        }, 2600);
+                        }, 3000);
                     }
                 });
             });
