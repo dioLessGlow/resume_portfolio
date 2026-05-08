@@ -3,15 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>林间秘境・沙海幻镜</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>林间秘境・沙海幻镜 (Optimized)</title>
     <style>
-        @import url(https://fonts.googleapis.com/css?family=Open+Sans:800);
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans:800&display=swap);
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            touch-action: none;
         }
 
         .back-btn {
@@ -30,6 +35,7 @@
             cursor: pointer;
             transition: all 0.25s ease;
             text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .back-btn:hover {
             background: rgba(255, 255, 255, 0.3);
@@ -45,10 +51,14 @@
         @media (max-width: 768px) {
             .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
             .back-btn svg { width: 16px; height: 16px; }
+            #instructions {
+                bottom: 40px;
+                left: 20px;
+                font-size: 0.85em;
+            }
         }
 
-        html,
-        body {
+        html, body {
             overflow: hidden;
             background: #000;
         }
@@ -61,14 +71,17 @@
             bottom: 0;
             outline: none;
             background-color: #000000;
-            cursor: move;
-            width: 100%;
-            height: 100%;
             cursor: grab;
             cursor: -moz-grab;
             cursor: -webkit-grab;
+            width: 100%;
+            height: 100%;
         }
-
+        .webgl:active {
+            cursor: grabbing;
+            cursor: -moz-grabbing;
+            cursor: -webkit-grabbing;
+        }
 
         #instructions {
             position: absolute;
@@ -81,71 +94,50 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             z-index: 10;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.8;
+            transition: opacity 0.5s ease;
+        }
+        #instructions.hidden {
+            opacity: 0;
         }
 
-        .back-btn {
+        /* 性能监控面板 */
+        #perf-panel {
             position: fixed;
-            top: 80px;
-            right: 24px;
-            z-index: 101;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: scale(1.08);
-        }
-
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #ffffff;
-            stroke-width: 2;
-            fill: none;
-        }
-
-        @media (max-width: 768px) {
-            .back-btn {
-                top: 70px;
-                right: 16px;
-                width: 38px;
-                height: 38px;
-            }
-
-            .back-btn svg {
-                width: 16px;
-                height: 16px;
-            }
-
-            #instructions {
-                bottom: 40px;
-                left: 20px;
-                font-size: 0.85em;
-            }
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            border-radius: 4px;
+            z-index: 1000;
+            pointer-events: none;
+            line-height: 1.5;
         }
     </style>
+<base target="_blank">
 </head>
 
 <body>
-<a href="../../works/works-web.html" class="back-btn" aria-label="返回" target="_self">
-            <svg viewBox="0 0 24 24">
-                <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </a>
+    <a href="../../works/works-web.html" class="back-btn" aria-label="返回" target="_self">
+        <svg viewBox="0 0 24 24">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
 
     <canvas class="webgl"></canvas>
     <div id="instructions">滑动屏幕旋转视角<br />双指缩放画面<br />点击传送门进行探索</div>
+    <div id="perf-panel" style="display: none;">
+        FPS: <span id="fps">0</span> | 
+        DrawCalls: <span id="drawcalls">0</span> | 
+        Triangles: <span id="triangles">0</span> | 
+        Textures: <span id="textures">0</span>
+    </div>
+
     <script type="x-shader/x-fragment" id="fragmentShader">
         #define PI 3.1415
         #define TAU 6.2832
@@ -155,37 +147,37 @@
         uniform float effectIntensity;
         uniform float effectMultiplier;
         varying vec2 vUv;
-        
+
         void main() {
             vec2 vUv2 = vUv - .5; 
             float angle = atan(vUv2.y, vUv2.x); 
             float l = length(vUv2); 
             float l2 = pow(l, .5);
-            
+
             float u = angle * 2. / TAU + time * .1;
             float v = fract(l + time * .2);
-            vec4 noise = texture2D( noiseMap, vec2(u, v));
-            
+            vec4 noise = texture2D(noiseMap, vec2(u, v));
+
             float noiseDisp = noise.r * noise.g * 4. * effectMultiplier;
             float radialMask = l;
             float wavesCount = 5.0;
             float wavesSpeed = time * 5.;
             float pnt = sin(2.0 * l * PI * wavesCount + noiseDisp + wavesSpeed) * radialMask;
-            
+
             float dx = pnt * cos(angle);
             float dy = pnt * sin(angle);
-            
-            vec4 color = texture2D( map, vUv + vec2(dx,dy) * l * .3 * effectIntensity * effectMultiplier);
+
+            vec4 color = texture2D(map, vUv + vec2(dx,dy) * l * .3 * effectIntensity * effectMultiplier);
             color *= 1. + pnt * .5 * effectIntensity;
-            
+
             float highlight = smoothstep(.0, .2, dx * dy);
             color += highlight * effectIntensity;
-            
+
             float grey = dot(color.rgb, vec3(0.299, 0.587, 0.114));
             color.rgb = mix(color.rgb, vec3(grey), effectIntensity * l * effectMultiplier);
-            
-            color.r += smoothstep( .1, .7, l) * .5 * effectIntensity;
-           
+
+            color.r += smoothstep(.1, .7, l) * .5 * effectIntensity;
+
             gl_FragColor = color;
         }
     </script>
@@ -214,6 +206,15 @@
         };
         const ASSETS = {};
 
+        // 性能配置
+        const PERF_CONFIG = {
+            enableStats: false,          // 按 ~ 键切换
+            targetFPS: 60,
+            adaptiveQuality: true,       // 自适应画质
+            maxPixelRatio: 2,            // 限制最大像素比
+            renderTargetScale: 1,        // 根据性能动态调整
+        };
+
         document.addEventListener("DOMContentLoaded", () => new App());
 
         class App {
@@ -227,6 +228,17 @@
                 this.deltaTime = 0;
                 this.isInTransition = false;
                 this.portalHover = false;
+
+                // 性能监控
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 60;
+                this.raycastThrottle = false;  // 射线检测节流
+
+                // 缓存向量避免 GC
+                this._cachedDir = new THREE.Vector3();
+                this._cachedPos = new THREE.Vector3();
+
                 this.loadAssets();
             }
 
@@ -241,6 +253,16 @@
                 const loaderModel = new GLTFLoader();
                 return new Promise((resolve) => {
                     loaderModel.load(file, (gltf) => {
+                        // 优化模型：遍历并设置 frustumCulled
+                        gltf.scene.traverse((child) => {
+                            if (child.isMesh) {
+                                child.frustumCulled = true;
+                                // 确保 bounding box 正确
+                                if (!child.geometry.boundingBox) {
+                                    child.geometry.computeBoundingBox();
+                                }
+                            }
+                        });
                         resolve(gltf.scene);
                     });
                 });
@@ -251,6 +273,12 @@
                 return new Promise((resolve) => {
                     textureLoader.load(file, (texture) => {
                         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                        // 限制纹理尺寸，避免移动端内存爆炸
+                        const maxSize = 1024;
+                        if (texture.image && (texture.image.width > maxSize || texture.image.height > maxSize)) {
+                            texture.minFilter = THREE.LinearMipmapLinearFilter;
+                            texture.generateMipmaps = true;
+                        }
                         resolve(texture);
                     });
                 });
@@ -262,6 +290,7 @@
                 this.createControls();
                 this.createListeners();
                 this.onWindowResize();
+                this.setupPerformanceMonitor();
                 this.loop();
             }
 
@@ -299,6 +328,11 @@
             }
 
             switchWorlds() {
+                // 释放旧世界的 RenderTarget
+                if (this.otherWorld.portal && this.otherWorld.portal.renderTarget) {
+                    this.otherWorld.portal.renderTarget.dispose();
+                }
+
                 const w = this.otherWorld;
                 this.otherWorld = this.currentWorld;
                 this.currentWorld = w;
@@ -325,21 +359,37 @@
                 this.controls.target = this.currentWorld.cameraTarget.position;
                 this.isInTransition = false;
                 this.controls.enabled = true;
+
+                // 过渡完成后更新 portal 角点
+                this.currentWorld.portal.updateCorners();
             }
 
             createRenderer() {
                 const canvas = document.querySelector("canvas.webgl");
+
+                // 根据设备性能调整像素比
+                const pixelRatio = Math.min(window.devicePixelRatio, PERF_CONFIG.maxPixelRatio);
+
                 this.renderer = new THREE.WebGLRenderer({
                     canvas,
                     alpha: true,
-                    antialias: true,
-                    preserveDrawingBuffer: true
+                    antialias: pixelRatio < 2,  // 高像素比设备关闭原生抗锯齿
+                    preserveDrawingBuffer: false,  // 不需要截图时关闭
+                    powerPreference: "high-performance"
                 });
 
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.setPixelRatio(pixelRatio);
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.toneMapping = THREE.CineonToneMapping;
+                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;  // 更高效的色调映射
+                this.renderer.toneMappingExposure = 1.0;
                 this.renderer.localClippingEnabled = true;
+
+                // 输出渲染器信息
+                console.log("Renderer created:", {
+                    pixelRatio,
+                    antialias: pixelRatio < 2,
+                    maxTextureSize: this.renderer.capabilities.maxTextureSize
+                });
             }
 
             createControls() {
@@ -351,13 +401,41 @@
                 this.controls.maxDistance = 50;
                 this.controls.maxPolarAngle = Math.PI / 2 + 0.1;
                 this.controls.enabled = true;
+                this.controls.enableDamping = true;  // 启用阻尼，减少不必要的渲染
+                this.controls.dampingFactor = 0.05;
             }
 
             createListeners() {
                 window.addEventListener("resize", this.onWindowResize.bind(this));
-                document.addEventListener("mousemove", this.onMouseMove.bind(this), false);
-                document.addEventListener("touchmove", this.onTouchMove.bind(this), false);
-                document.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+
+                // 鼠标事件使用被动监听器
+                document.addEventListener("mousemove", this.onMouseMove.bind(this), { passive: true });
+                document.addEventListener("touchmove", this.onTouchMove.bind(this), { passive: false });
+                document.addEventListener("mousedown", this.onMouseDown.bind(this), { passive: true });
+
+                // 隐藏说明文字
+                setTimeout(() => {
+                    const instructions = document.getElementById("instructions");
+                    if (instructions) instructions.classList.add("hidden");
+                }, 8000);
+
+                // 性能监控快捷键
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "~" || e.key === "`") {
+                        PERF_CONFIG.enableStats = !PERF_CONFIG.enableStats;
+                        document.getElementById("perf-panel").style.display = 
+                            PERF_CONFIG.enableStats ? "block" : "none";
+                    }
+                });
+            }
+
+            setupPerformanceMonitor() {
+                this.perfElements = {
+                    fps: document.getElementById("fps"),
+                    drawcalls: document.getElementById("drawcalls"),
+                    triangles: document.getElementById("triangles"),
+                    textures: document.getElementById("textures")
+                };
             }
 
             loop() {
@@ -367,18 +445,42 @@
                 this.currentWorld.portal.loop(this.deltaTime);
                 this.render();
 
-                if (this.controls && this.controls.enabled) this.controls.update();
-                this.syncCameras();
+                if (this.controls && this.controls.enabled) {
+                    this.controls.update();
+                }
 
-                window.requestAnimationFrame(this.loop.bind(this));
+                // 仅在非过渡状态时同步相机
+                if (!this.isInTransition) {
+                    this.syncCameras();
+                }
+
+                this.updatePerformanceStats();
+
+                requestAnimationFrame(this.loop.bind(this));
             }
 
             render() {
-                this.currentWorld.portal.updateCorners();
+                // 仅在 portal 角点需要更新时计算（过渡期间或首次渲染）
+                if (this.isInTransition || this.currentWorld.portal.needsCornerUpdate) {
+                    this.currentWorld.portal.updateCorners();
+                    this.currentWorld.portal.needsCornerUpdate = false;
+                }
+
                 const { bottomLeft, bottomRight, topLeft } = this.currentWorld.portal.corners;
                 CameraUtils.frameCorners(this.otherWorld.camera, bottomLeft, bottomRight, topLeft, false);
 
                 const currentRenderTarget = this.renderer.getRenderTarget();
+
+                // 根据性能动态调整 RenderTarget 尺寸
+                const rtScale = PERF_CONFIG.renderTargetScale;
+                const rtWidth = Math.floor(2048 * rtScale);
+                const rtHeight = Math.floor(2048 * rtScale);
+
+                if (this.currentWorld.portal.renderTarget.width !== rtWidth || 
+                    this.currentWorld.portal.renderTarget.height !== rtHeight) {
+                    this.currentWorld.portal.renderTarget.setSize(rtWidth, rtHeight);
+                }
+
                 this.renderer.setRenderTarget(this.currentWorld.portal.renderTarget);
                 this.renderer.render(this.otherWorld.scene, this.otherWorld.camera);
                 this.renderer.setRenderTarget(currentRenderTarget);
@@ -386,6 +488,7 @@
             }
 
             syncCameras() {
+                // 使用缓存向量避免创建新对象
                 this.otherWorld.camera.position.copy(this.currentWorld.camera.position);
                 this.otherWorld.camera.quaternion.copy(this.currentWorld.camera.quaternion);
                 this.otherWorld.cameraTarget.position.copy(
@@ -394,10 +497,15 @@
             }
 
             raycast() {
+                // 节流：每 100ms 最多执行一次
+                if (this.raycastThrottle) return;
+                this.raycastThrottle = true;
+                setTimeout(() => { this.raycastThrottle = false; }, 100);
+
                 this.raycaster.setFromCamera(this.mouse, this.currentWorld.camera);
-                var intersects = this.raycaster.intersectObjects([
+                const intersects = this.raycaster.intersectObjects([
                     this.currentWorld.portalPlane
-                ]);
+                ], false);  // false = 不递归检测子对象
 
                 if (intersects.length > 0) {
                     this.currentWorld.portal.effectMultiplier = 2;
@@ -408,12 +516,51 @@
                 }
             }
 
+            updatePerformanceStats() {
+                this.frameCount++;
+                const now = performance.now();
+
+                if (now - this.lastTime >= 1000) {
+                    this.fps = Math.round(this.frameCount * 1000 / (now - this.lastTime));
+                    this.frameCount = 0;
+                    this.lastTime = now;
+
+                    // 自适应画质调整
+                    if (PERF_CONFIG.adaptiveQuality) {
+                        this.adjustQuality();
+                    }
+
+                    // 更新监控面板
+                    if (PERF_CONFIG.enableStats && this.perfElements.fps) {
+                        const info = this.renderer.info;
+                        this.perfElements.fps.textContent = this.fps;
+                        this.perfElements.drawcalls.textContent = info.render.calls;
+                        this.perfElements.triangles.textContent = info.render.triangles;
+                        this.perfElements.textures.textContent = info.memory.textures;
+                    }
+                }
+            }
+
+            adjustQuality() {
+                // 根据 FPS 动态调整 RenderTarget 分辨率
+                if (this.fps < 30 && PERF_CONFIG.renderTargetScale > 0.5) {
+                    PERF_CONFIG.renderTargetScale -= 0.1;
+                    console.log("Performance low, reducing RT scale to:", PERF_CONFIG.renderTargetScale);
+                } else if (this.fps > 55 && PERF_CONFIG.renderTargetScale < 1.0) {
+                    PERF_CONFIG.renderTargetScale += 0.05;
+                    console.log("Performance good, increasing RT scale to:", PERF_CONFIG.renderTargetScale);
+                }
+            }
+
             onWindowResize() {
                 this.winWidth = window.innerWidth;
                 this.winHeight = window.innerHeight;
                 this.renderer.setSize(this.winWidth, this.winHeight);
                 this.currentWorld.camera.aspect = this.winWidth / this.winHeight;
                 this.currentWorld.camera.updateProjectionMatrix();
+
+                // 标记需要更新 portal 角点
+                this.currentWorld.portal.needsCornerUpdate = true;
             }
 
             onMouseDown(event) {
@@ -619,12 +766,19 @@
                 this._effectIntensity = 1;
                 this._effectMultiplier = 1;
                 this.time = 0;
+                this.needsCornerUpdate = true;  // 标记是否需要更新角点
 
                 const fragmentShader = document.getElementById("fragmentShader").textContent;
                 const vertexShader = document.getElementById("vertexShader").textContent;
 
-                this.renderTarget = new THREE.WebGLRenderTarget(2048, 2048, {
-                    type: THREE.HalfFloatType
+                // 根据设备性能调整 RenderTarget 尺寸
+                const rtSize = Math.min(2048, window.innerWidth * window.devicePixelRatio);
+
+                this.renderTarget = new THREE.WebGLRenderTarget(rtSize, rtSize, {
+                    type: THREE.HalfFloatType,
+                    minFilter: THREE.LinearFilter,
+                    magFilter: THREE.LinearFilter,
+                    format: THREE.RGBAFormat
                 });
 
                 this.plane.material = new THREE.ShaderMaterial({
@@ -681,11 +835,15 @@
                 this.time += deltaTime * this.effectMultiplier;
                 this.plane.material.uniforms.time.value = this.time;
             }
+
+            dispose() {
+                if (this.renderTarget) {
+                    this.renderTarget.dispose();
+                    this.renderTarget = null;
+                }
+            }
         }
     </script>
 </body>
 
 </html>
-// 前端开发项目 / Web 3D 交互
-//作品名称：沙海幻镜・林间秘境技术栈：Three.js、WebGL、GLSL 着色器、GSAP 动画作品简介：基于 Three.js 开发的 3D 沉浸式双场景传送门交互项目，实现沙漠与森林的实时穿梭效果。通过自定义 GLSL
-片段着色器制作动态水波特效，结合相机控制、射线检测、场景渲染与平滑过渡动画，完成完整的 3D 交互体验。
