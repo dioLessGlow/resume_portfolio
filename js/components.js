@@ -2,19 +2,19 @@
 
 // ===== 打字机效果工具 =====
 // 立即执行，确保在其他脚本之前可用
-(function() {
+(function () {
     let typewriterTimer = null;
 
-    window.typeText = function(element, text, speed = 40) {
+    window.typeText = function (element, text, speed = 40) {
         if (typewriterTimer) clearTimeout(typewriterTimer);
         if (!element) return;
-        
+
         element.innerHTML = '<span></span>';
         element.classList.add('active');
-        
+
         const span = element.querySelector('span');
         let index = 0;
-        
+
         function type() {
             if (index < text.length) {
                 // 支持 <br> 标签
@@ -31,7 +31,7 @@
         type();
     };
 
-    window.clearTypewriter = function(element) {
+    window.clearTypewriter = function (element) {
         if (typewriterTimer) {
             clearTimeout(typewriterTimer);
             typewriterTimer = null;
@@ -46,12 +46,12 @@
 // 公共组件加载
 async function initComponents() {
     let currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-    
+
     // home.html 也算 index 页面
     if (currentPage === 'home') {
         currentPage = 'index';
     }
-    
+
     // 判断是否在子目录
     const isInSubDir = window.location.pathname.includes('/works/');
     const basePath = isInSubDir ? '../' : '';
@@ -105,7 +105,7 @@ async function initComponents() {
                 console.log('Loader ready, CSS animation will play');
 
                 // 根据页面设置隐藏时间
-                const isindex = window.location.pathname.includes('index');
+                const isindex = currentPage === 'index';
                 const hideTime = isindex ? 2500 : 1000;
                 console.log('Hide time:', hideTime);
                 // 存储 timer 引用，便于清理
@@ -129,11 +129,11 @@ async function initComponents() {
             .then(response => response.text())
             .then(html => {
                 footerContainer.innerHTML = html;
-                
+
                 // footer 点击展开（移动端）
                 const footer = footerContainer.querySelector('.site-footer');
                 if (footer) {
-                    footer.addEventListener('click', function(e) {
+                    footer.addEventListener('click', function (e) {
                         this.classList.toggle('expanded');
                     });
                 }
