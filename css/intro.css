@@ -733,3 +733,5 @@ body {
 .practice-result::before {
     content: '✨';
 }
+.card-icon svg, .level-icon svg, .award-icon svg, .cert-icon svg,
+.practice-icon svg, .location svg { width: 1em; height: 1em; vertical-align: -0.14em; }

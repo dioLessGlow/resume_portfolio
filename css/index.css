@@ -246,3 +246,5 @@ body {
         box-sizing: border-box;
     }
 }
+
+.hex-card .card-icon svg { width: 1em; height: 1em; vertical-align: -0.14em; }
