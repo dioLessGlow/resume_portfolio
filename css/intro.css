@@ -735,3 +735,13 @@ body {
 }
 .card-icon svg, .level-icon svg, .award-icon svg, .cert-icon svg,
 .practice-icon svg, .location svg { width: 1em; height: 1em; vertical-align: -0.14em; }
+
+/* 岐石青年 logo 徽章（实践经历） */
+.practice-icon .logo-badge {
+    width: 1.35em;
+    height: 1.35em;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: -0.3em;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
