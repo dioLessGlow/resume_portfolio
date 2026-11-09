@@ -112,3 +112,21 @@
     }
 }
 .footer-link .icon svg { width: 1em; height: 1em; vertical-align: -0.14em; }
+
+/* Twemoji 图标署名（CC-BY 4.0） */
+.footer-credit {
+    position: absolute;
+    right: 10px;
+    bottom: 3px;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--color-text-muted);
+    opacity: .38;
+    text-decoration: none;
+    letter-spacing: .02em;
+    transition: opacity .3s;
+}
+
+.site-footer:hover .footer-credit {
+    opacity: .7;
+}
