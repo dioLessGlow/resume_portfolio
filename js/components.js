@@ -1,4 +1,4 @@
-// GSAP 已通过 Vite 打包，无需 CDN 加载
+// GSAP 通过 CDN 加载（仅 home.html / works-projects.html 使用）
 
 // ===== 打字机效果工具 =====
 // 立即执行，确保在其他脚本之前可用

@@ -2,7 +2,7 @@
 
 📱 在线访问：[https://diolessglow.github.io/resume_portfolio/](https://diolessglow.github.io/resume_portfolio/)
 
-![QR Code](images/qrcode.png)
+![QR Code](images/qrcode.webp)
 
 ---
 
