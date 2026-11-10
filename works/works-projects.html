@@ -138,10 +138,11 @@
             position: absolute;
             top: 40%;
             left: 50%;
-            width: 55%;
-            aspect-ratio: 1.4;
+            width: 58%;
+            aspect-ratio: 2.07;
             overflow: hidden;
-            will-change: transform, filter, opacity;
+            pointer-events: auto; /* 父容器在移动端是 none，卡片需自己恢复点击/手势 */
+            will-change: transform;
             contain: layout style;
         }
 
@@ -234,6 +235,103 @@
 
         .project-slider__img-nav:hover {
             background: rgba(0, 0, 0, .45);
+        }
+
+        /* 正面卡片可点击放大 */
+        .project-slider__slide.is-front {
+            cursor: zoom-in;
+        }
+
+        /* ============ 点击放大 Lightbox ============ */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(17, 20, 14, .92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .35s ease, visibility .35s;
+        }
+
+        .lightbox.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lightbox__img {
+            max-width: min(1400px, 92vw);
+            max-height: 86vh;
+            border-radius: 10px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .5);
+            transform: scale(.94);
+            transition: transform .35s cubic-bezier(.22, .8, .3, 1);
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .lightbox.is-open .lightbox__img {
+            transform: scale(1);
+        }
+
+        .lightbox__btn {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            padding: 0;
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .25s, transform .25s;
+        }
+
+        .lightbox__btn:hover {
+            background: rgba(255, 255, 255, .24);
+        }
+
+        .lightbox__btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .lightbox__close {
+            top: 28px;
+            right: 32px;
+        }
+
+        .lightbox__nav {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .lightbox__nav:hover {
+            transform: translateY(-50%) scale(1.08);
+        }
+
+        .lightbox__nav.prev { left: 28px; }
+        .lightbox__nav.next { right: 28px; }
+
+        .lightbox__counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, .75);
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .lightbox__nav.prev { left: 10px; }
+            .lightbox__nav.next { right: 10px; }
+            .lightbox__close { top: 16px; right: 16px; }
         }
 
 
@@ -430,16 +528,16 @@
         const PROJECTS = [
             {
                 name: "信购AI",
-                image: "../images/projects/xingou-1.webp",
+                image: "../images/projects/xingou-1.png",
                 images: [
-                    "../images/projects/xingou-1.webp",
-                    "../images/projects/xingou-2.webp",
-                    "../images/projects/xingou-3.webp",
-                    "../images/projects/xingou-4.webp",
-                    "../images/projects/xingou-5.webp",
-                    "../images/projects/xingou-6.webp",
-                    "../images/projects/xingou-7.webp",
-                    "../images/projects/xingou-8.webp"
+                    "../images/projects/xingou-1.png",
+                    "../images/projects/xingou-2.png",
+                    "../images/projects/xingou-3.jpg",
+                    "../images/projects/xingou-4.jpg",
+                    "../images/projects/xingou-5.jpg",
+                    "../images/projects/xingou-6.jpg",
+                    "../images/projects/xingou-7.jpg",
+                    "../images/projects/xingou-8.jpg"
                 ],
                 description: "2026.03 - 2026.06 | 中国大学生计算机设计大赛<br>设计微服务架构，FastAPI独立部署ML服务实现前后端解耦<br>Chinese-CLIP图文相似度 + SVM虚假评论识别 + 豆包大模型<br>开发ECharts可视化大屏，实时展示商品可信度评分<br>设计色差检测算法，解决服装退货率70-90%行业痛点",
                 tech: ["Vue3", "Element Plus", "Spring Boot", "FastAPI", "Chinese-CLIP", "豆包大模型", "MySQL"]
@@ -484,6 +582,7 @@
                 this.setContent(PROJECTS[0]);
                 this.buildCarousel();
                 this.buildCursor();
+                this.buildLightbox();
                 this.bind();
                 this.startAutoPlay();
                 this.startImageLoop();
@@ -610,6 +709,94 @@
                 return tl;
             }
 
+            /* ---- 点击放大 Lightbox ---- */
+            buildLightbox() {
+                const lb = document.createElement("div");
+                lb.className = "lightbox";
+                lb.innerHTML =
+                    '<img class="lightbox__img" alt="项目截图预览">' +
+                    '<button type="button" class="lightbox__btn lightbox__close" aria-label="关闭">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' +
+                    '<button type="button" class="lightbox__btn lightbox__nav prev" aria-label="上一张">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>' +
+                    '<button type="button" class="lightbox__btn lightbox__nav next" aria-label="下一张">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>' +
+                    '<div class="lightbox__counter"></div>';
+                document.body.appendChild(lb);
+                this.lightboxEl = lb;
+                this.lbImg = lb.querySelector(".lightbox__img");
+                this.lbCounter = lb.querySelector(".lightbox__counter");
+                this.lbList = [];
+                this.lbIdx = 0;
+                this.lbSlide = null;
+
+                lb.querySelector(".lightbox__close").addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.closeLightbox();
+                });
+                const nav = (dir) => {
+                    lb.querySelector(".lightbox__nav." + dir).addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        this.lbStep(dir);
+                    });
+                };
+                nav("prev");
+                nav("next");
+                // 点击背景关闭（图片本身不关闭）
+                lb.addEventListener("click", () => this.closeLightbox());
+                this.lbImg.addEventListener("click", (e) => e.stopPropagation());
+                // 手机横滑切换大图
+                let lbTx = 0;
+                lb.addEventListener("touchstart", (e) => {
+                    lbTx = e.touches[0].clientX;
+                }, { passive: true });
+                lb.addEventListener("touchend", (e) => {
+                    const dx = e.changedTouches[0].clientX - lbTx;
+                    if (Math.abs(dx) < 40) return;
+                    this.lbStep(dx < 0 ? "next" : "prev");
+                });
+            }
+
+            isLightboxOpen() {
+                return !!(this.lightboxEl && this.lightboxEl.classList.contains("is-open"));
+            }
+
+            lbStep(dir) {
+                const n = this.lbList.length;
+                if (n < 2) return;
+                this.lbIdx = (this.lbIdx + (dir === "next" ? 1 : n - 1)) % n;
+                this.updateLightbox();
+            }
+
+            updateLightbox() {
+                this.lbImg.src = this.lbList[this.lbIdx];
+                this.lbCounter.textContent = (this.lbIdx + 1) + " / " + this.lbList.length;
+                const multi = this.lbList.length > 1;
+                this.lightboxEl.querySelectorAll(".lightbox__nav").forEach(b => {
+                    b.style.display = multi ? "flex" : "none";
+                });
+                this.lbCounter.style.display = multi ? "block" : "none";
+            }
+
+            openLightbox(list, idx, slideEl) {
+                this.lbList = list;
+                this.lbIdx = idx;
+                this.lbSlide = slideEl;
+                this.updateLightbox();
+                this.lightboxEl.classList.add("is-open");
+                // 打开期间暂停两套自动轮播
+                this.stopImageLoop();
+                this.stopAutoPlay();
+            }
+
+            closeLightbox() {
+                this.lightboxEl.classList.remove("is-open");
+                // 卡片同步到刚才查看的那张
+                if (this.lbSlide) this.showImage(this.lbSlide, this.lbIdx);
+                this.startAutoPlay();
+                this.startImageLoop();
+            }
+
             makeSlide(idx) {
                 const p = PROJECTS[idx];
                 const div = document.createElement("div");
@@ -619,6 +806,7 @@
                     const img = document.createElement("img");
                     img.src = src;
                     img.alt = p.name;
+                    img.decoding = "async";
                     if (i > 0) img.classList.add("is-hidden");
                     div.appendChild(img);
                 });
@@ -660,6 +848,11 @@
                     div.appendChild(mkNav("prev"));
                     div.appendChild(mkNav("next"));
                 }
+                // 点击正面卡片放大查看
+                div.addEventListener("click", () => {
+                    if (!div.classList.contains("is-front")) return;
+                    this.openLightbox(imgs, div._imgIdx || 0, div);
+                });
                 return div;
             }
 
@@ -727,7 +920,7 @@
                     rotation: props.rotation,
                     scale: props.scale,
                     opacity: props.opacity,
-                    filter: "blur(" + props.blur + "px)",
+                    filter: props.blur > 0 ? "blur(" + props.blur + "px)" : "none",
                     zIndex: props.zIndex
                 });
             }
@@ -786,7 +979,7 @@
                         rotation: props.rotation,
                         scale: props.scale,
                         opacity: props.opacity,
-                        filter: "blur(" + props.blur + "px)",
+                        filter: props.blur > 0 ? "blur(" + props.blur + "px)" : "none",
                         duration: duration,
                         ease: "power3.inOut"
                     }, 0);
@@ -824,7 +1017,7 @@
             bind() {
                 // Wheel - 带节流
                 const onWheel = throttle((e) => {
-                    if (this.animating) return;
+                    if (this.animating || this.isLightboxOpen()) return;
                     this.go(e.deltaY > 0 ? "next" : "prev");
                 }, 1800);
                 window.addEventListener("wheel", onWheel, { passive: true });
@@ -836,7 +1029,7 @@
                 }, { passive: true });
 
                 const onTouchEnd = throttle((e) => {
-                    if (this.animating) return;
+                    if (this.animating || this.isLightboxOpen()) return;
                     const diff = touchStartY - e.changedTouches[0].clientY;
                     if (Math.abs(diff) < 40) return;
                     this.go(diff > 0 ? "next" : "prev");
@@ -865,6 +1058,13 @@
 
                 // Keyboard
                 window.addEventListener("keydown", (e) => {
+                    // Lightbox 打开时接管键盘
+                    if (this.isLightboxOpen()) {
+                        if (e.key === "Escape") this.closeLightbox();
+                        if (e.key === "ArrowRight") this.lbStep("next");
+                        if (e.key === "ArrowLeft") this.lbStep("prev");
+                        return;
+                    }
                     if (this.animating) return;
                     if (e.key === "ArrowDown" || e.key === "ArrowRight") this.go("next");
                     if (e.key === "ArrowUp" || e.key === "ArrowLeft") this.go("prev");
@@ -888,7 +1088,7 @@
                         this.animating = false;
                         this.stopAutoPlay();
                         this.stopImageLoop();
-                    } else {
+                    } else if (!this.isLightboxOpen()) {
                         this.startAutoPlay();
                         this.startImageLoop();
                     }
