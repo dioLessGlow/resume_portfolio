@@ -152,6 +152,51 @@
             filter: brightness(0.9);
         }
 
+        /* 项目内图片轮播（多图时启用） */
+        .project-slider__slide img {
+            position: absolute;
+            inset: 0;
+            transition: opacity .55s ease;
+        }
+
+        .project-slider__slide img.is-hidden {
+            opacity: 0;
+        }
+
+        .project-slider__dots {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 7px;
+            z-index: 4;
+            opacity: 0;
+            transition: opacity .35s;
+            pointer-events: none;
+        }
+
+        .project-slider__slide.is-front .project-slider__dots {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .project-slider__dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 4px;
+            border: none;
+            padding: 0;
+            background: rgba(255, 255, 255, .55);
+            cursor: pointer;
+            transition: background .3s, width .3s;
+        }
+
+        .project-slider__dot.is-active {
+            background: #fff;
+            width: 18px;
+        }
+
 
 
 
@@ -365,6 +410,7 @@
         ];
 
         const AUTOPLAY_DELAY = 5000;
+        const IMAGE_INTERVAL = 2600; // 项目内图片轮播间隔
 
         /* ========================================
            PROJECT SLIDER CLASS
@@ -391,6 +437,7 @@
                 this.buildCursor();
                 this.bind();
                 this.startAutoPlay();
+                this.startImageLoop();
             }
 
             mod(n) {
@@ -399,15 +446,24 @@
 
             preload() {
                 PROJECTS.forEach((p) => {
-                    new Image().src = p.image;
+                    this.imgsOf(p).forEach((src) => { new Image().src = src; });
                 });
             }
 
-            startAutoPlay() {
+            imgsOf(p) {
+                return (p.images && p.images.length) ? p.images : [p.image];
+            }
+
+            startAutoPlay(idx) {
                 this.stopAutoPlay();
+                // 多图项目：等项目内图片轮完一轮再切下一个项目
+                const p = PROJECTS[idx !== undefined ? idx : this.current];
+                const delay = this.imgsOf(p).length > 1
+                    ? this.imgsOf(p).length * IMAGE_INTERVAL + 1200
+                    : AUTOPLAY_DELAY;
                 this.autoPlayId = setInterval(() => {
                     if (!this.animating) this.go("next");
-                }, AUTOPLAY_DELAY);
+                }, delay);
             }
 
             stopAutoPlay() {
@@ -506,13 +562,67 @@
             }
 
             makeSlide(idx) {
+                const p = PROJECTS[idx];
                 const div = document.createElement("div");
                 div.className = "project-slider__slide";
-                const img = document.createElement("img");
-                img.src = PROJECTS[idx].image;
-                img.alt = PROJECTS[idx].name;
-                div.appendChild(img);
+                const imgs = this.imgsOf(p);
+                imgs.forEach((src, i) => {
+                    const img = document.createElement("img");
+                    img.src = src;
+                    img.alt = p.name;
+                    if (i > 0) img.classList.add("is-hidden");
+                    div.appendChild(img);
+                });
+                if (imgs.length > 1) {
+                    const dots = document.createElement("div");
+                    dots.className = "project-slider__dots";
+                    imgs.forEach((_, i) => {
+                        const d = document.createElement("button");
+                        d.type = "button";
+                        d.className = "project-slider__dot" + (i === 0 ? " is-active" : "");
+                        d.setAttribute("aria-label", "第" + (i + 1) + "张图");
+                        d.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            this.showImage(div, i);
+                            this.startImageLoop(); // 从当前图重新计时
+                        });
+                        dots.appendChild(d);
+                    });
+                    div.appendChild(dots);
+                }
                 return div;
+            }
+
+            /* ---- 项目内图片轮播 ---- */
+            showImage(slide, i) {
+                const imgs = slide.querySelectorAll("img");
+                const dots = slide.querySelectorAll(".project-slider__dot");
+                imgs.forEach((im, k) => im.classList.toggle("is-hidden", k !== i));
+                dots.forEach((d, k) => d.classList.toggle("is-active", k === i));
+                slide._imgIdx = i;
+            }
+
+            updateFrontClass() {
+                this.slideEls.forEach(s => s.el.classList.toggle("is-front", s.step === 0));
+            }
+
+            startImageLoop() {
+                this.stopImageLoop();
+                const front = this.slideEls.find(s => s.step === 0);
+                if (!front) return;
+                const imgs = front.el.querySelectorAll("img");
+                if (imgs.length < 2) return;
+                this.imageTimer = setInterval(() => {
+                    const i = ((front.el._imgIdx || 0) + 1) % imgs.length;
+                    this.showImage(front.el, i);
+                }, IMAGE_INTERVAL);
+            }
+
+            stopImageLoop() {
+                if (this.imageTimer) {
+                    clearInterval(this.imageTimer);
+                    this.imageTimer = null;
+                }
             }
 
             getSlideProps(step) {
@@ -564,6 +674,7 @@
                     this.positionSlide(slide, step);
                     this.slideEls.push({ el: slide, step: step });
                 }
+                this.updateFrontClass();
             }
 
             animateCarousel(direction) {
@@ -617,14 +728,22 @@
             go(direction) {
                 if (this.animating) return;
                 this.animating = true;
-                this.startAutoPlay();
+                // 停掉图片轮播，卡片复位到第一张图
+                this.stopImageLoop();
+                this.slideEls.forEach(s => {
+                    this.showImage(s.el, 0);
+                    s.el.classList.remove("is-front");
+                });
 
                 const nextIdx = direction === "next" ? this.mod(this.current + 1) : this.mod(this.current - 1);
+                this.startAutoPlay(nextIdx);
 
                 const master = gsap.timeline({
                     onComplete: () => {
                         this.current = nextIdx;
                         this.animating = false;
+                        this.updateFrontClass();
+                        this.startImageLoop();
                     }
                 });
 
@@ -678,8 +797,10 @@
                     if (document.visibilityState === "hidden") {
                         this.animating = false;
                         this.stopAutoPlay();
+                        this.stopImageLoop();
                     } else {
                         this.startAutoPlay();
+                        this.startImageLoop();
                     }
                 });
             }
