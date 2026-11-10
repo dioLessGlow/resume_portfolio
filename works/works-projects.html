@@ -197,6 +197,45 @@
             width: 18px;
         }
 
+        /* 手动切换箭头（悬停正面卡片时出现） */
+        .project-slider__img-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            padding: 0;
+            background: rgba(0, 0, 0, .28);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s, background .3s;
+        }
+
+        .project-slider__img-nav svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .project-slider__img-nav.prev { left: 10px; }
+        .project-slider__img-nav.next { right: 10px; }
+
+        .project-slider__slide.is-front:hover .project-slider__img-nav {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .project-slider__img-nav:hover {
+            background: rgba(0, 0, 0, .45);
+        }
+
 
 
 
@@ -391,7 +430,13 @@
         const PROJECTS = [
             {
                 name: "信购AI",
-                image: "../images/projects/xingou-ai.webp",
+                image: "../images/projects/xingou-1.webp",
+                images: [
+                    "../images/projects/xingou-1.webp",
+                    "../images/projects/xingou-2.webp",
+                    "../images/projects/xingou-3.webp",
+                    "../images/projects/xingou-4.webp"
+                ],
                 description: "2026.03 - 2026.06 | 中国大学生计算机设计大赛<br>设计微服务架构，FastAPI独立部署ML服务实现前后端解耦<br>Chinese-CLIP图文相似度 + SVM虚假评论识别 + 豆包大模型<br>开发ECharts可视化大屏，实时展示商品可信度评分<br>设计色差检测算法，解决服装退货率70-90%行业痛点",
                 tech: ["Vue3", "Element Plus", "Spring Boot", "FastAPI", "Chinese-CLIP", "豆包大模型", "MySQL"]
             },
@@ -589,6 +634,27 @@
                         dots.appendChild(d);
                     });
                     div.appendChild(dots);
+                    // 左右箭头（悬停出现）
+                    const mkNav = (dir) => {
+                        const b = document.createElement("button");
+                        b.type = "button";
+                        b.className = "project-slider__img-nav " + dir;
+                        b.setAttribute("aria-label", dir === "prev" ? "上一张" : "下一张");
+                        b.innerHTML = dir === "prev"
+                            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
+                            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+                        b.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            const list = div.querySelectorAll("img");
+                            const cur = div._imgIdx || 0;
+                            const nxt = (cur + (dir === "next" ? 1 : list.length - 1)) % list.length;
+                            this.showImage(div, nxt);
+                            this.startImageLoop(); // 从当前图重新计时
+                        });
+                        return b;
+                    };
+                    div.appendChild(mkNav("prev"));
+                    div.appendChild(mkNav("next"));
                 }
                 return div;
             }
@@ -772,6 +838,26 @@
                     this.go(diff > 0 ? "next" : "prev");
                 }, 1800);
                 window.addEventListener("touchend", onTouchEnd, { passive: true });
+
+                // 项目内图片轮播 - 正面卡片上水平滑动切换
+                let imgTsX = 0, imgTsY = 0;
+                this.imagesEl.addEventListener("touchstart", (e) => {
+                    imgTsX = e.touches[0].clientX;
+                    imgTsY = e.touches[0].clientY;
+                }, { passive: true });
+                this.imagesEl.addEventListener("touchend", (e) => {
+                    const dx = e.changedTouches[0].clientX - imgTsX;
+                    const dy = e.changedTouches[0].clientY - imgTsY;
+                    if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(dy)) return;
+                    const front = this.slideEls.find(s => s.step === 0);
+                    if (!front) return;
+                    const list = front.el.querySelectorAll("img");
+                    if (list.length < 2) return;
+                    const cur = front.el._imgIdx || 0;
+                    const nxt = (cur + (dx < 0 ? 1 : list.length - 1)) % list.length;
+                    this.showImage(front.el, nxt);
+                    this.startImageLoop();
+                });
 
                 // Keyboard
                 window.addEventListener("keydown", (e) => {
