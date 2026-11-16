@@ -4,42 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>旋轨迷途</title>
+<link rel="stylesheet" href="../loader-screen.css">
 <style>
 * { box-sizing: border-box; }
 
-.back-btn {
-    position: fixed;
-    top: 80px;
-    right: 24px;
-    z-index: 101;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(45, 122, 45, 0.1);
-    border: 1px solid rgba(45, 122, 45, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    text-decoration: none;
-}
-.back-btn:hover {
-    background: rgba(45, 122, 45, 0.2);
-    border-color: rgba(45, 122, 45, 0.4);
-    transform: scale(1.08);
-}
-.back-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: #2d7a2d;
-    stroke-width: 2;
-    fill: none;
-}
-@media (max-width: 768px) {
-    .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
-    .back-btn svg { width: 16px; height: 16px; }
-}
 
 body {
   margin: 0;
@@ -210,8 +178,41 @@ canvas {
 .levels { display: none; }
 </style>
 <base target="_blank">
+    <link rel="stylesheet" href="../../css/back-btn.css">
 </head>
 <body>
+<div id="loading-screen">
+    <div class="loader-container">
+        <div class="portal-pulse"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-ring-inner"></div>
+    </div>
+    <div class="loading-text">正在铺设轨道</div>
+    <div class="loading-subtext">准备关卡数据中...</div>
+    <div class="loading-progress">
+        <div class="loading-progress-bar" id="loading-bar"></div>
+    </div>
+    <div class="loading-percent" id="loading-percent">0%</div>
+</div>
+<script src="../loader-screen.js"></script>
+<script>
+    // 真实里程碑：页面脚本执行完毕 + 首帧渲染后揭幕
+    (function () {
+        if (!window.PageLoader) return;
+        window.PageLoader.set(18, '正在铺设轨道...');
+        document.addEventListener('DOMContentLoaded', function () {
+            window.PageLoader.set(64, '正在校准立方体...');
+        });
+        window.addEventListener('load', function () {
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    window.PageLoader.set(100, '轨道已就绪');
+                    window.PageLoader.done();
+                });
+            });
+        });
+    })();
+</script>
 <a href="../../works/works-games.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
     <svg viewBox="0 0 24 24">
         <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -626,7 +627,7 @@ instruction: 绿色轨道随网格旋转，但指向始终不变
 <pre id="pivot-5x5-2" data-blurb="★★">
 . . .-.-@
         
-. .<. . .
+. .&lt;. . .
         
 .>. . . .
 | !      
@@ -638,7 +639,7 @@ instruction: 绿色轨道随网格旋转，但指向始终不变
 <pre id="pivot-5x5-swirly" data-blurb="★★★">
 . . . . .
       ^ 
-.<. . . *
+.&lt;. . . *
         
 . . . . .
         
@@ -650,7 +651,7 @@ instruction: 绿色轨道随网格旋转，但指向始终不变
 <pre id="pivot-5x5-1" data-blurb="★★★">
 . .-. . .
       ^ 
-. .<.=.=.
+. .&lt;.=.=.
         
 .>. . .-@
         
@@ -668,7 +669,7 @@ instruction: 绿色轨道随网格旋转，但指向始终不变
          
 @-. . . .
     v   
-.<. . . .
+.&lt;. . . .
 </pre>
 
 <pre id="pivot-5x5-4" data-blurb="★★★">
@@ -704,7 +705,7 @@ instruction: 绿色轨道随网格旋转，但指向始终不变
          
 . . . . .
          
-. *>.<. .
+. *>.&lt;. .
 </pre>
 
 <pre id="pivot-5x5-7" data-blurb="★★★">
@@ -757,7 +758,7 @@ v
     ^      
 . . . . . .
 |          
-. .-.<. . .
+. .-.&lt;. . .
 ! |       |
 . . . .>.-@
 </pre>
@@ -812,7 +813,7 @@ v v v v   v
 </pre>
 
 <pre id="m48" data-blurb="★">
-.-.<.>.=. .
+.-.&lt;.>.=. .
 W !       |
 . . .A. . *
     |   |  
@@ -822,7 +823,7 @@ W !       |
           | 
 . . .-.-. .
 |          
-.#.=. .<. .
+.#.=. .&lt;. .
     v     v
 </pre>
 
@@ -951,7 +952,7 @@ instruction: 红色轨道固定不动，但会随网格一起旋转
 </pre>
 
 <pre id="rotate-6x6-2" data-blurb="★★★">
-. . *<. . .
+. . *&lt;. . .
           
 .=. .-. . .
         5

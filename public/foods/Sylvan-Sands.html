@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>林间秘境・沙海幻镜 (Optimized)</title>
     <style>
-        @import url(https://fonts.googleapis.com/css?family=Open+Sans:800&display=swap);
 
         * {
             margin: 0;
@@ -18,39 +17,8 @@
             -webkit-text-size-adjust: 100%;
             touch-action: none;
         }
-
-        .back-btn {
-            position: fixed;
-            top: 80px;
-            right: 24px;
-            z-index: 101;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.08);
-        }
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #fff;
-            stroke-width: 2;
-            fill: none;
-        }
-        @media (max-width: 768px) {
-            .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
-            .back-btn svg { width: 16px; height: 16px; }
+
+        @media (max-width: 768px) {
             #instructions {
                 bottom: 40px;
                 left: 20px;
@@ -219,10 +187,12 @@
         }
 </style>
 <base target="_blank">
+    <link rel="stylesheet" href="../../css/back-btn.css">
+    <link rel="stylesheet" href="../../fonts/fonts.css">
 </head>
 
 <body>
-    <a href="../../works/works-web.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
+    <a href="../../works/works-web.html" class="back-btn on-dark" aria-label="返回" target="_self" onclick="history.back(); return false;">
         <svg viewBox="0 0 24 24">
             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -314,9 +284,9 @@
         import { EventEmitter } from "https://esm.sh/events";
 
         const FILES = {
-            desertFile: "https://assets.codepen.io/264161/desert33.glb",
-            forestFile: "https://assets.codepen.io/264161/forest33.glb",
-            noiseFile: "https://assets.codepen.io/264161/noise_1.jpg"
+            desertFile: "desert33.glb",
+            forestFile: "forest33.glb",
+            noiseFile: "noise_1.jpg"
         };
         const ASSETS = {};
 

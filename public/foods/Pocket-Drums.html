@@ -6,42 +6,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>掌上架子鼓</title>
+<link rel="stylesheet" href="../loader-screen.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.back-btn {
-    position: fixed;
-    top: 80px;
-    right: 24px;
-    z-index: 101;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    text-decoration: none;
-}
-.back-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.08);
-}
-.back-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: #fff;
-    stroke-width: 2;
-    fill: none;
-}
-@media (max-width: 768px) {
-    .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
-    .back-btn svg { width: 16px; height: 16px; }
-}
 
 html, body {
 	width: 100%;
@@ -139,9 +108,66 @@ svg {
 	pointer-events: none;
 }
 </style>
+    <link rel="stylesheet" href="../../css/back-btn.css">
 </head>
 <body>
-<a href="../../works/works-web.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
+<div id="loading-screen">
+    <div class="loader-container">
+        <div class="portal-pulse"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-ring-inner"></div>
+    </div>
+    <div class="loading-text">正在调音</div>
+    <div class="loading-subtext">装载鼓组音色...</div>
+    <div class="loading-progress">
+        <div class="loading-progress-bar" id="loading-bar"></div>
+    </div>
+    <div class="loading-percent" id="loading-percent">0%</div>
+</div>
+<script src="../loader-screen.js"></script>
+<script>
+    // 真实进度：8 个音频文件逐个就绪，进度按就绪数推进
+    (function () {
+        if (!window.PageLoader) return;
+        window.PageLoader.set(8, '正在调音...');
+        document.addEventListener('DOMContentLoaded', function () {
+            var audios = Array.prototype.slice.call(document.querySelectorAll('audio'));
+            if (!audios.length) { window.PageLoader.done(); return; }
+
+            var ready = 0;
+            var total = audios.length;
+
+            function mark() {
+                if (this && this.dataset && this.dataset.counted) return;
+                if (this && this.dataset) this.dataset.counted = '1';
+                ready++;
+                var pct = 8 + (ready / total) * 90;
+                if (ready >= total) {
+                    window.PageLoader.set(100, '鼓已就位');
+                    window.PageLoader.done();
+                } else {
+                    window.PageLoader.set(pct, '装载音色 ' + ready + '/' + total);
+                }
+            }
+
+            audios.forEach(function (a) {
+                if (a.readyState >= 3) { mark.call(a); return; }
+                a.addEventListener('canplaythrough', mark, { once: true });
+                a.addEventListener('loadeddata', mark, { once: true });
+                a.addEventListener('error', mark, { once: true });
+            });
+
+            // 兜底：4 秒内没齐也放行，避免某台设备 preload 策略不同导致卡在黑屏
+            setTimeout(function () {
+                if (ready < total) {
+                    window.PageLoader.set(100, '鼓已就位');
+                    window.PageLoader.done();
+                }
+            }, 4000);
+        });
+    })();
+</script>
+<a href="../../works/works-web.html" class="back-btn on-dark" aria-label="返回" target="_self" onclick="history.back(); return false;">
     <svg viewBox="0 0 24 24">
         <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -564,28 +590,28 @@ svg {
 </div>
 
 <audio id="Crash-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Crash.mp3" type="audio/mp3">
+	<source src="drums/Crash.mp3" type="audio/mp3">
 </audio>
 <audio id="Small-Rack-Tom-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Small-Rack-Tom.mp3" type="audio/mp3">
+	<source src="drums/Small-Rack-Tom.mp3" type="audio/mp3">
 </audio>
 <audio id="Big-Rack-Tom-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Big-Rack-Tom.mp3" type="audio/mp3">
+	<source src="drums/Big-Rack-Tom.mp3" type="audio/mp3">
 </audio>
 <audio id="Hi-Hat-Closed-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Hi-Hat-Closed.mp3" type="audio/mp3">
+	<source src="drums/Hi-Hat-Closed.mp3" type="audio/mp3">
 </audio>
 <audio id="Hi-Hat-Open-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/High-Hat-Open.mp3" type="audio/mp3">
+	<source src="drums/High-Hat-Open.mp3" type="audio/mp3">
 </audio>
 <audio id="Kick-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Kick.mp3" type="audio/mp3">
+	<source src="drums/Kick.mp3" type="audio/mp3">
 </audio>
 <audio id="Floor-Tom-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Floor-Tom.mp3" type="audio/mp3">
+	<source src="drums/Floor-Tom.mp3" type="audio/mp3">
 </audio>
 <audio id="Snare-Audio" preload="auto">
-	<source src="https://s3.amazonaws.com/iamjoshellis-codepen/pens-of-rock/drums/Snare.mp3" type="audio/mp3">
+	<source src="drums/Snare.mp3" type="audio/mp3">
 </audio>
 
 <script>

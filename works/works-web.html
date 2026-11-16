@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web 3D 交互 | 陈少辉</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link
-        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@500;600&family=Inter:wght@300;400;500&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../css/header.css">
+    <!-- 预连接零食跳转页用到的 CDN（咖啡地图 amcharts、拂狮 jsdelivr、荒漠森林/镜中追兔 esm.sh） -->
+    <link rel="preconnect" href="https://cdn.amcharts.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://esm.sh" crossorigin>
+<link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
     <link rel="stylesheet" href="../css/loader.css">
@@ -22,11 +23,13 @@
 
         body {
             min-height: 100vh;
-            font-family: "Inter", sans-serif;
+            font-family: "Inter", "Noto Sans SC", sans-serif;
             background: var(--gray1, #f0f1f3);
             color: var(--color-text, #1a1a2e);
             transition: background 0.8s ease;
             padding-top: 70px;
+            /* 预留固定 footer 的高度，避免内容被压住 */
+            padding-bottom: 70px;
         }
 
         .page-wrapper {
@@ -36,16 +39,6 @@
             min-height: calc(100vh - 120px - 70px);
             padding: 2rem 1rem;
             position: relative;
-        }
-
-        .page-wrapper::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at center,
-                    transparent,
-                    rgba(0, 0, 0, 0.05));
         }
 
         .scene {
@@ -59,11 +52,10 @@
             z-index: 1;
         }
 
-
         .subtitle {
             margin-top: 0.4rem;
             font-size: 0.95rem;
-            font-family: "Inter", sans-serif;
+            font-family: "Inter", "Noto Sans SC", sans-serif;
             color: #6b7280;
             margin-bottom: 1.8rem;
         }
@@ -123,7 +115,7 @@
         .snack span {
             display: block;
             margin-top: 0.3rem;
-            font-family: "Inter", sans-serif;
+            font-family: "Inter", "Noto Sans SC", sans-serif;
             font-size: 0.8rem;
             color: #4b5563;
             text-align: center;
@@ -144,30 +136,87 @@
         .pudgy-container {
             margin: 1rem auto 0;
             width: clamp(150px, 35vw, 230px);
-            height: clamp(150px, 35vw, 230px);
             text-align: center;
         }
 
         #pudgy {
             display: block;
             width: 100%;
-            height: 100%;
+            aspect-ratio: 1 / 1;
             object-fit: contain;
             border-radius: 12px;
-            transition: filter 0.3s ease;
+            /* 动画未就绪时用占位底色撑住空间（配合 aspect-ratio 常驻），就绪后淡入 */
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.07));
+            opacity: 0;
+            transition: filter 0.3s ease, opacity 0.35s ease;
+        }
+
+        #pudgy.ready {
+            opacity: 1;
+            background: none;
+        }
+
+        /* === Mobile 紧凑化：保证一屏完整放下胖吉 === */
+        @media (max-width: 600px) {
+            .page-wrapper {
+                padding: 1rem 0.8rem;
+                /* dvh 跟随移动端地址栏伸缩，避免浏览器工具栏收起/展开时整页高度跳动 */
+                min-height: calc(100vh - 70px - 70px);
+                min-height: calc(100dvh - 70px - 70px);
+            }
+
+            .subtitle {
+                margin-bottom: 1rem;
+            }
+
+            .observer {
+                margin: 0.4rem 0 0.8rem;
+            }
+
+            .snack-menu {
+                gap: 0.55rem;
+                margin-bottom: 1rem;
+            }
+
+            .snack {
+                height: 92px;
+                padding: 0.5rem;
+                border-radius: 12px;
+            }
+
+            .snack img {
+                height: 44px;
+            }
+
+            .snack span {
+                font-size: 0.72rem;
+                margin-top: 0.2rem;
+            }
+
+            .pudgy-container {
+                width: clamp(120px, 34vw, 160px);
+                margin-top: 0.4rem;
+            }
         }
 
         /* === Reaction === */
         .reaction {
             margin: 1rem auto 0;
             font-size: 1.1rem;
+            line-height: 1.5;
+            min-height: 1.65em;
             text-transform: uppercase;
             letter-spacing: 1.2px;
             opacity: 0;
             transition: opacity 0.3s ease;
             white-space: nowrap;
             text-align: center;
-            width: fit-content;
+            /* 判词比胖吉容器宽，用位移方式以容器中心为基准居中（margin:auto 在溢出时会失效） */
+            width: max-content;
+            max-width: 92vw;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         /* === TRUE STATE === */
@@ -197,58 +246,18 @@
         }
 
         /* === Mobile === */
-        .back-btn {
-            position: fixed;
-            top: 80px;
-            right: 24px;
-            z-index: 101;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(45, 122, 45, 0.1);
-            border: 1px solid rgba(45, 122, 45, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-        }
 
-        .back-btn:hover {
-            background: rgba(45, 122, 45, 0.2);
-            border-color: rgba(45, 122, 45, 0.4);
-            transform: scale(1.08);
-        }
-
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: var(--color-primary);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        @media (max-width: 480px) {
-            .back-btn {
-                top: 70px;
-                right: 16px;
-                width: 38px;
-                height: 38px;
-            }
-
-            .back-btn svg {
-                width: 16px;
-                height: 16px;
-            }
-        }
     </style>
     <base target="_blank">
     <base target="_blank">
+    <link rel="stylesheet" href="../css/back-btn.css">
+    <link rel="stylesheet" href="../fonts/fonts.css">
 </head>
 
 <body>
-    <a href="../works.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
+    <!-- 返回转场遮罩：点击返回键时立即升起，遮住旧内容滞留的空档 -->
+    <div id="back-loader" hidden><div class="loader"><div class="csh-text"><div class="char-c">C</div><div class="char-s">S</div><div class="char-h">H</div></div></div></div>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self" onclick="return showBackLoader(event)">
         <svg viewBox="0 0 24 24">
             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -307,7 +316,7 @@
             </div>
 
             <div class="pudgy-container">
-                <img id="pudgy" alt="胖吉正在判断" style="display:none;">
+                <img id="pudgy" alt="胖吉正在判断">
                 <div class="reaction" id="reactionText"></div>
             </div>
         </div>
@@ -323,27 +332,28 @@
             const body = document.body;
             const reaction = document.getElementById("reactionText");
 
-            // 判断是否在本地开发环境
-            const isLocal = location.hostname === "127.0.0.1" || location.hostname === "localhost";
+            // 统一使用本地动图（480px WebP，比原始 GIF 小 97%，且不依赖境外 CDN）
+            const yesGif = "../images/pudgy/isyes.webp";
+            const noGif = "../images/pudgy/no.webp";
+            const idleGif = "../images/pudgy/idle.webp";
 
-            const yesGif = isLocal
-                ? "../images/pudgy/isyes.gif"
-                : "https://assets.codepen.io/11990995/YES_20251112_175033114.gif";
-
-            const noGif = isLocal
-                ? "../images/pudgy/no.gif"
-                : "https://assets.codepen.io/11990995/NO_20251112_175109062.gif";
-
-            const idleGif = isLocal
-                ? "../images/pudgy/idle.gif"
-                : "https://assets.codepen.io/11990995/pudgy_idle_20251111_021234773.gif";
+            // WebP 时长 bug 已在文件内修复，不再需要时间戳破缓存。
+            // 双版本号交替：URL 每次都变 → 强制从头重播（防移动端同 src 不重绘的怪癖）；
+            // 但只有两个固定值 → 首次下载后全部命中缓存，点击切换零下载、零白闪
+            const PUDGY_VA = "?v=20261113a";
+            const PUDGY_VB = "?v=20261113b";
+            let pudgyFlip = false;
+            function playPudgy(src) {
+                pudgy.src = src + (pudgyFlip ? PUDGY_VA : PUDGY_VB);
+                pudgyFlip = !pudgyFlip;
+            }
 
             // 定时器引用，防止竞态条件
             let jumpTimer = null;
             let resetTimer = null;
             let isAnimating = false;
 
-            // 预加载并等待 idle 就绪后再显示
+            // 预加载全部 6 个 URL（3 动画 × 2 版本），与实际请求完全一致，保证缓存命中
             function preloadImage(src) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
@@ -354,16 +364,16 @@
             }
 
             Promise.all([
-                preloadImage(yesGif),
-                preloadImage(noGif),
-                preloadImage(idleGif)
+                preloadImage(yesGif + PUDGY_VA), preloadImage(yesGif + PUDGY_VB),
+                preloadImage(noGif + PUDGY_VA), preloadImage(noGif + PUDGY_VB),
+                preloadImage(idleGif + PUDGY_VA), preloadImage(idleGif + PUDGY_VB)
             ]).then(() => {
-                pudgy.src = idleGif;
-                pudgy.style.display = "block";
+                playPudgy(idleGif);
+                pudgy.classList.add("ready");
             }).catch(() => {
                 // 即使加载失败也显示，避免空白
-                pudgy.src = idleGif;
-                pudgy.style.display = "block";
+                playPudgy(idleGif);
+                pudgy.classList.add("ready");
             });
 
             snacks.forEach((snack) => {
@@ -398,12 +408,11 @@
                     setTimeout(() => {
                         if (isTrue) {
                             body.classList.add("true");
-                            // 加时间戳强制浏览器重新加载并播放 GIF
-                            pudgy.src = yesGif;
+                            playPudgy(yesGif);
                             reaction.innerText = `通过 → ${name} 已批准`;
                         } else {
                             body.classList.add("false");
-                            pudgy.src = noGif;
+                            playPudgy(noGif);
                             reaction.innerText = `拒绝 → ${name} 被驳回`;
                         }
                     }, 400);
@@ -412,10 +421,10 @@
                     if (isTrue) {
                         jumpTimer = setTimeout(() => {
                             window.location.href = href;
-                        }, 3000);
+                        }, 2100);
                     } else {
                         resetTimer = setTimeout(() => {
-                            pudgy.src = idleGif;
+                            playPudgy(idleGif);
                             reaction.style.opacity = 0;
                             body.classList.remove("false");
                             isAnimating = false;
@@ -424,9 +433,26 @@
                                 if (s.tagName === "BUTTON") s.disabled = false;
                                 s.style.pointerEvents = "";
                             });
-                        }, 3000);
+                        }, 2100);
                     }
                 });
+            });
+
+            // 从子页面返回时可能命中往返缓存（bfcache）：页面以跳转前的状态原样恢复，
+            // 此时 isAnimating 仍为 true 且再无定时器重置 → 八个零食永久点不动。
+            // 恢复时重置全部交互与视觉状态
+            window.addEventListener("pageshow", (e) => {
+                if (!e.persisted) return; // 全新加载走正常初始化，无需处理
+                isAnimating = false;
+                clearTimeout(jumpTimer);
+                clearTimeout(resetTimer);
+                snacks.forEach(s => {
+                    if (s.tagName === "BUTTON") s.disabled = false;
+                    s.style.pointerEvents = "";
+                });
+                body.classList.remove("true", "false");
+                reaction.style.opacity = 0;
+                playPudgy(idleGif);
             });
         });
 
@@ -464,6 +490,7 @@
         // 初始触发
         rotateObserver();
     </script>
+    <script src="../js/back-transition.js"></script>
 </body>
 
 </html>

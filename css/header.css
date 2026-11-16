@@ -1,4 +1,10 @@
 /* ===== Header 样式 ===== */
+/* 统一 footer 异步注入会让页面总高超过视口 → 滚动条突然出现 → 内容整体左移抖动。
+   常驻滚动条槽位，全站视口宽度恒定，杜绝导航后的横向抖动 */
+html {
+    scrollbar-gutter: stable;
+}
+
 :root {
     --color-primary: #2d7a2d;
     --color-text-muted: #5a9a5a;
@@ -281,8 +287,10 @@
 }
 
 .nav-link {
+    /* 导航字体与字号固定声明，不依赖页面级 body 继承与 --fs 变量，保证全站一致 */
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(12px, 1.5vw, 14px);
     color: var(--color-text-muted);
-    font-size: var(--fs-sm);
     text-decoration: none;
     padding: var(--space-xs) var(--space-md);
     border-radius: 25px;

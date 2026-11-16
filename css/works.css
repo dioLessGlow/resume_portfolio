@@ -39,52 +39,6 @@ body {
     line-height: 1.6;
 }
 
-/* Header */
-.site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(200, 230, 201, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(15, 216, 80, 0.3);
-    z-index: 100;
-    padding: clamp(10px, 2vw, 15px) 0;
-}
-
-.header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 clamp(12px, 3vw, 20px);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
-    font-size: var(--fs-lg);
-    font-weight: 700;
-    color: #fff;
-    text-decoration: none;
-}
-
-.header-nav { display: flex; gap: clamp(10px, 2vw, 30px); }
-
-.nav-link {
-    color: var(--color-text-muted);
-    font-size: var(--fs-sm);
-    text-decoration: none;
-    padding: var(--space-xs) var(--space-md);
-    border-radius: 25px;
-    transition: all 0.3s;
-}
-
-.nav-link:hover, .nav-link.active {
-    background: rgba(15, 216, 80, 0.1);
-    color: var(--color-primary);
-}
-
 /* Main */
 .main-wrapper {
     padding-top: clamp(60px, 10vw, 80px);
@@ -226,45 +180,6 @@ body {
     color: var(--color-primary);
 }
 
-/* Footer */
-.site-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(200, 230, 201, 0.95);
-    border-top: 1px solid rgba(15, 216, 80, 0.3);
-    padding: clamp(8px, 2vw, 20px) var(--space-sm);
-    z-index: 100;
-}
-
-.footer-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: clamp(8px, 2vw, 50px);
-    flex-wrap: wrap;
-    padding: 0 var(--space-sm);
-}
-
-.footer-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    color: var(--color-text-muted);
-    font-size: clamp(10px, 2vw, var(--fs-xs));
-    text-decoration: none;
-    padding: var(--space-xs);
-    border-radius: 15px;
-    background: rgba(15, 216, 80, 0.05);
-    transition: all 0.3s;
-    white-space: nowrap;
-}
-
-.footer-link:hover {
-    background: rgba(15, 216, 80, 0.15);
-    color: var(--color-primary);
-}
 
 /* 响应式 */
 @media (max-width: 768px) {

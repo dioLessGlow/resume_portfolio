@@ -6,11 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>实战项目 | 陈少辉</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link
-        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
     <link rel="stylesheet" href="../css/loader.css">
@@ -35,6 +31,19 @@
         }
 
         .project-slider {
+            /* 桌面排版基准：所有几何值都由这几个变量推导，五个项目共用同一套尺寸 */
+            --sl-gutter: 32px;
+            --sl-pad-top: 88px;
+            --sl-pad-bottom: 40px;
+            --sl-left-w: 52%;
+            --sl-title-gap: 28px;
+            --sl-desc-w: 620px;
+            /* 描述最后一行与技术栈标签之间的固定间距（整块内部节奏） */
+            --sl-block-gap: 18px;
+            /* 卡片宽度 = 右栏可用的 92%；高度按 2.07 反算，教务百事通的卡片高度保持不变 */
+            --sl-card-h: calc((100vw - var(--sl-gutter) * 2) * 0.48 * 0.92 / 2.07);
+            --sl-content-h: calc(100dvh - var(--sl-pad-top) - var(--sl-pad-bottom));
+
             width: 100%;
             height: 100vh;
             height: 100dvh;
@@ -42,15 +51,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        .project-slider__header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 32px;
-            flex-shrink: 0;
-        }
-
 
         .project-slider__body {
             flex: 1;
@@ -93,22 +93,36 @@
         }
 
         .project-slider__description {
+            font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
             font-size: 14px;
             letter-spacing: 0.5px;
             color: rgba(51, 51, 51, 0.9);
-            line-height: 1.8;
+            line-height: 1.85;
+            /* 不加底色/边框：保持干净的裸文本，只靠行长与行距拉开呼吸感 */
+            max-width: 620px;
+            padding-left: 2px;
+        }
+
+        .project-slider__description strong {
+            font-weight: 700;
+        }
+
+        .project-slider__description .award-green {
+            color: #92d050;
+            font-weight: 600;
         }
 
         .project-slider__tech {
             display: flex;
             flex-wrap: wrap;
-            gap: 2px;
-            padding-bottom: 10px;
+            gap: 8px;
+            margin-top: 14px;
         }
 
         .project-slider__tech span {
+            font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
             font-size: 12px;
-            padding: 3px 6px;
+            padding: 4px 11px;
             border-radius: 20px;
             background: rgba(45, 122, 45, 0.15);
             color: #2d7a2d;
@@ -149,8 +163,9 @@
         .project-slider__slide img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            filter: brightness(0.9);
+            /* contain 而非 cover：截图整张完整呈现，与放大视图完全一致，不裁切边缘 */
+            object-fit: contain;
+            background: #fff;
         }
 
         /* 项目内图片轮播（多图时启用） */
@@ -246,7 +261,7 @@
         .lightbox {
             position: fixed;
             inset: 0;
-            z-index: 999;
+            z-index: 9999;
             background: rgba(17, 20, 14, .92);
             display: flex;
             align-items: center;
@@ -278,45 +293,50 @@
 
         .lightbox__btn {
             position: absolute;
-            width: 44px;
-            height: 44px;
+            width: clamp(38px, 9vw, 48px);
+            height: clamp(38px, 9vw, 48px);
             border-radius: 50%;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, .3);
             padding: 0;
-            background: rgba(255, 255, 255, .12);
+            background: rgba(28, 32, 24, .5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
             color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background .25s, transform .25s;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+            transition: background .25s, transform .25s, border-color .25s, box-shadow .25s;
+            z-index: 2;
+        }
+
+        /* 隐形扩大点击热区，手机上更好按 */
+        .lightbox__btn::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
         }
 
         .lightbox__btn:hover {
             background: rgba(255, 255, 255, .24);
+            border-color: rgba(255, 255, 255, .6);
+            box-shadow: 0 8px 26px rgba(0, 0, 0, .38);
         }
 
         .lightbox__btn svg {
-            width: 18px;
-            height: 18px;
+            width: clamp(16px, 3.8vw, 20px);
+            height: clamp(16px, 3.8vw, 20px);
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
         }
 
-        .lightbox__close {
-            top: 28px;
-            right: 32px;
-        }
-
-        .lightbox__nav {
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .lightbox__nav:hover {
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        .lightbox__nav.prev { left: 28px; }
-        .lightbox__nav.next { right: 28px; }
+        .lightbox__close { top: 28px; right: 32px; }
+        .lightbox__close:hover { transform: scale(1.08); }
+        .lightbox__nav { top: 50%; transform: translateY(-50%); }
+        .lightbox__nav:hover { transform: translateY(-50%) scale(1.08); }
+        .lightbox__nav.prev { left: 32px; }
+        .lightbox__nav.next { right: 32px; }
 
         .lightbox__counter {
             position: absolute;
@@ -329,29 +349,55 @@
         }
 
         @media screen and (max-width: 768px) {
-            .lightbox__nav.prev { left: 10px; }
-            .lightbox__nav.next { right: 10px; }
+            .lightbox__btn { width: 32px; height: 32px; }
+            .lightbox__btn svg { width: 14px; height: 14px; }
+            .lightbox__nav.prev { left: 12px; }
+            .lightbox__nav.next { right: 12px; }
             .lightbox__close { top: 16px; right: 16px; }
         }
 
-
-
-
         @media screen and (max-width: 768px) {
-            .project-slider__header {
-                padding: 40px 32px;
+            /* 手机上导航/footer 是 fixed 悬浮层：底部由 body 的 padding 预留 footer 高度 */
+            .project-slider__body {
+                padding: 56px 20px 66px;
             }
 
-            .project-slider__body {
-                padding: 0 24px 56px;
+            /* 手机版重排：标题 → 大图 → 描述，图片回到文档流不再漂在覆盖层上 */
+            .project-slider__left {
+                display: contents;
+            }
+
+            .project-slider__title {
+                order: 1;
+                font-size: clamp(40px, 13vw, 64px);
+                margin: 4px 0 8px;
+            }
+
+            .project-slider__right {
+                order: 2;
+                position: static;
+                width: auto;
+                height: auto;
+                /* 三个项目的三个分区高度严格一致（取最高内容 MES 为基准）：
+                   图片区 = 100vh - 480px，任何项目都不收缩、不裁切 */
+                flex: 0 0 auto;
+                height: calc(100vh - 480px);
+                min-height: 120px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .project-slider__footer {
-                margin-top: 48px;
+                order: 3;
+                margin-top: 12px;
+                flex-shrink: 0;
             }
 
             .project-slider__slide {
-                width: 60%;
+                top: 50%;
+                /* 卡片高度（宽/2.07）不得超过图片区高度，矮屏时按区高反算宽度 */
+                width: min(86%, calc((100vh - 480px) * 1.95));
             }
 
             .project-slider__cursor {
@@ -359,29 +405,56 @@
                 height: 88px;
             }
 
+            /* 手机端维持原有观感，桌面端的新排版不渗透到窄屏 */
             .project-slider__description {
                 font-size: 13px;
+                line-height: 1.8;
+                max-width: none;
+                padding-left: 0;
+            }
+
+            .project-slider__tech {
+                padding-bottom: 0;
+                gap: 2px;
+                margin-top: 0;
             }
 
             .project-slider__tech span {
                 font-size: 11px;
+                padding: 3px 6px;
+            }
+        }
+
+        /* ≤1023px：图片区为绝对定位覆盖层，文字层会挡住卡片点击，放行 */
+        @media screen and (max-width: 1023px) {
+            .project-slider__left {
+                pointer-events: none;
             }
         }
 
         @media screen and (min-width: 1024px) {
             .project-slider__body {
                 flex-direction: row;
+                /* 桌面顶部预留固定导航净空，防止标题被裁切 */
+                padding: var(--sl-pad-top) var(--sl-gutter) var(--sl-pad-bottom);
             }
 
             .project-slider__left {
-                width: 55%;
-                flex-shrink: 0;
+                width: var(--sl-left-w);
+                flex: 0 0 var(--sl-left-w);
                 z-index: auto;
+                /* 固定起点：不再随文案长短上下居中。标题顶边对齐图片卡顶边 */
+                justify-content: flex-start;
+                padding-top: max(0px, calc((var(--sl-content-h) - var(--sl-card-h)) / 2));
             }
 
             .project-slider__title {
-                margin-top: auto;
-                margin-bottom: auto;
+                /* 固定单行标题槽：任何项目名都只占一行，高度不随字数变化 */
+                margin: 0 0 var(--sl-title-gap);
+                font-size: clamp(40px, min(5vw, 14vh), 104px);
+                line-height: 1.12;
+                height: 1.12em;
+                white-space: nowrap;
             }
 
             .project-slider__right {
@@ -395,8 +468,29 @@
                 pointer-events: auto;
             }
 
+            /* 桌面：卡片放大并在图片区内垂直居中，消除右上悬空、中部留白 */
             .project-slider__slide {
-                width: 68%;
+                top: 50%;
+                width: 92%;
+            }
+
+            .project-slider__footer {
+                margin-top: 0;
+                /* 日期 + 描述 + 标签是一个整体块：内部按固定间距紧凑排列，不再被撑开 */
+                display: flex;
+                flex-direction: column;
+                gap: var(--sl-block-gap);
+            }
+
+            .project-slider__description {
+                width: min(100%, var(--sl-desc-w));
+                max-width: var(--sl-desc-w);
+                /* 不设固定槽：描述有多少行就占多少，标签紧跟末行，整块保持紧凑 */
+                min-height: 0;
+            }
+
+            .project-slider__tech {
+                margin-top: 0;
             }
         }
 
@@ -408,58 +502,16 @@
             }
         }
 
-        .back-btn {
-            position: fixed;
-            top: 80px;
-            right: 24px;
-            z-index: 101;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(45, 122, 45, 0.1);
-            border: 1px solid rgba(45, 122, 45, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            background: rgba(45, 122, 45, 0.2);
-            border-color: rgba(45, 122, 45, 0.4);
-            transform: scale(1.08);
-        }
-
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #2d7a2d;
-            stroke-width: 2;
-            fill: none;
-        }
-
-        @media (max-width: 768px) {
-            .back-btn {
-                top: 70px;
-                right: 16px;
-                width: 38px;
-                height: 38px;
-            }
-
-            .back-btn svg {
-                width: 16px;
-                height: 16px;
-            }
-        }
     </style>
     <base target="_blank">
-<base target="_blank">
+    <link rel="stylesheet" href="../css/back-btn.css">
+    <link rel="stylesheet" href="../fonts/fonts.css">
 </head>
 
 <body>
-    <a href="../works.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
+    <!-- 返回转场遮罩：点击返回键时立即升起，遮住旧内容滞留的空档 -->
+    <div id="back-loader" hidden><div class="loader"><div class="csh-text"><div class="char-c">C</div><div class="char-s">S</div><div class="char-h">H</div></div></div></div>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self" onclick="return showBackLoader(event)">
         <svg viewBox="0 0 24 24">
             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -468,9 +520,6 @@
     <div id="header-container"></div>
 
     <section class="project-slider">
-        <div class="project-slider__header">
-        </div>
-
         <div class="project-slider__body">
             <div class="project-slider__left">
                 <h2 class="project-slider__title" aria-live="polite"></h2>
@@ -488,7 +537,7 @@
     <div id="footer-container"></div>
 
     <script type="module" src="../js/components.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../js/vendor/gsap.min.js"></script>
     <script>
         /* ========================================
            UTILITIES
@@ -527,11 +576,33 @@
         ======================================== */
         const PROJECTS = [
             {
-                name: "信购AI",
-                image: "../images/projects/xingou-1.png",
+                // 第 1 个项目：教务百事通（2026.10 - 至今）
+                name: "教务百事通",
+                image: "../images/projects/jiaowu-2.jpg",
                 images: [
-                    "../images/projects/xingou-1.png",
-                    "../images/projects/xingou-2.png",
+                    "../images/projects/jiaowu-1.jpg",
+                    "../images/projects/jiaowu-2.jpg",
+                    "../images/projects/jiaowu-3.jpg"
+                ],
+                description: "<strong>2026.10 - 至今</strong> | <span class=\"award-green\">校内教务问答机器人 · 独立开发</span><br>1. 对接 WPS 协作服务台协议，教务知识库 49 条原文直出，从机制上抑制模型幻觉<br>2. 设计八段式判定链：计算器 → 筛选 → 直查 → 社交情绪 → 审视 → 提炼 → 推断综合 → 兜底，兜底才调大模型<br>3. 内置本地计算器（ast 白名单求值，0ms 响应）与 37 条术语库，综合回答前自动注入概念定义<br>4. 访问口令 + 校园网 IP 白名单 + 限流防爆破，83 条知识库探针全量审计",
+                tech: ["Python", "Flask", "LLM", "RAG", "HMAC 验签"]
+            },
+            {
+                // 西山居实习项目：图片待替换，placeholder-5.webp 是临时占位
+                name: "TestPlus",
+                image: "../images/projects/placeholder-5.webp",
+                images: [
+                    "../images/projects/placeholder-5.webp"
+                ],
+                description: "<strong>2026.07 - 2026.10</strong> | <span class=\"award-green\">西山居 · 前端开发实习生（开发测试工具方向）</span><br>1. 主导 TestPlus 游戏性能分析平台前端开发，支撑 FPS / MS / DrawCall / 内存多维性能数据可视化<br>2. 实现场景级联筛选、热力图聚合与多报告对比，覆盖 GPU / CPU / 植被三条业务线<br>3. 完成 GPU 报告详情页四类数据 Tab 与动态可用列表计算，按数据可用性动态渲染<br>4. gzip 大数据解压 + D3 火焰图 + 虚拟化树表，保障大体量报告流畅交互",
+                tech: ["Umi4", "Ant Design Pro", "TypeScript", "dva/MobX", "D3"]
+            },
+            {
+                name: "信购AI",
+                image: "../images/projects/xingou-1.webp",
+                images: [
+                    "../images/projects/xingou-1.webp",
+                    "../images/projects/xingou-2.webp",
                     "../images/projects/xingou-3.jpg",
                     "../images/projects/xingou-4.jpg",
                     "../images/projects/xingou-5.jpg",
@@ -539,20 +610,30 @@
                     "../images/projects/xingou-7.jpg",
                     "../images/projects/xingou-8.jpg"
                 ],
-                description: "2026.03 - 2026.06 | 中国大学生计算机设计大赛<br>设计微服务架构，FastAPI独立部署ML服务实现前后端解耦<br>Chinese-CLIP图文相似度 + SVM虚假评论识别 + 豆包大模型<br>开发ECharts可视化大屏，实时展示商品可信度评分<br>设计色差检测算法，解决服装退货率70-90%行业痛点",
+                description: "<strong>2026.03 - 2026.06</strong> | <span class=\"award-green\">海峡两岸暨港澳大学生计算机创新赛 优秀奖</span><br>1. 设计微服务架构，FastAPI独立部署ML服务实现前后端解耦<br>2. Chinese-CLIP图文相似度 + SVM虚假评论识别 + 豆包大模型<br>3. 开发ECharts可视化大屏，实时展示商品可信度评分<br>4. 设计色差检测算法，解决服装退货率70-90%行业痛点",
                 tech: ["Vue3", "Element Plus", "Spring Boot", "FastAPI", "Chinese-CLIP", "豆包大模型", "MySQL"]
             },
             {
                 name: "MES系统",
-                image: "../images/projects/双碳管理系统.webp",
-                description: "2025.12 - 2026.04 | 广东省职业院校技能大赛省二等奖<br>独立完成产品原型设计（Axure）→ 前后端开发 → 部署测试全链路<br>搭建三端部署架构（管理端/用户端/可视化大屏），Nginx反向代理<br>开发实时数据可视化大屏，集成能耗仪表盘、动态图表<br>使用JMeter完成接口压力测试，保障系统稳定性",
+                image: "../images/projects/mes-1.jpg",
+                images: [
+                    "../images/projects/mes-1.jpg",
+                    "../images/projects/mes-2.jpg",
+                    "../images/projects/mes-3.jpg",
+                    "../images/projects/mes-4.jpg",
+                    "../images/projects/mes-5.jpg",
+                    "../images/projects/mes-6.jpg",
+                    "../images/projects/mes-7.jpg",
+                    "../images/projects/mes-8.jpg"
+                ],
+                description: "<strong>2025.12 - 2026.04</strong> | <span class=\"award-green\">广东省职业院校技能大赛 省二等奖</span><br>1. 独立完成产品原型设计（Axure）→ 前后端开发 → 部署测试全链路<br>2. 搭建三端部署架构（管理端/用户端/可视化大屏），Nginx反向代理<br>3. 开发实时数据可视化大屏，集成能耗仪表盘、动态图表<br>4. 使用JMeter完成接口压力测试，保障系统稳定性",
                 tech: ["Vue.js", "Element UI", "Spring Boot", "MySQL", "Nginx", "JMeter"]
             },
             {
                 name: "岐青乡望",
                 image: "../images/projects/岐青乡望.jpg",
-                description: "独立开发 | 志愿服务小程序<br>独立完成前端页面开发与云函数编写，实现义教报名、志愿者签到、服务时长统计<br>服务家乡教育公益，累计覆盖岐石村及周边地区",
-                tech: ["uni-app", "Vue.js", "uniCloud"]
+                description: "<strong>2025.07 - 至今</strong> | <span class=\"award-green\">岐青年 · 教育公益团队 | 独立开发微信小程序</span><br>1. 基于 uni-app + uniCloud 云开发，独立完成 20 个页面与 10+ 云函数<br>2. 四大模块：乡村支教报名、志愿服务签到与时长统计、公益捐款、个人中心<br>3. 捐款电子证书由云函数按订单自动生成，捐赠记录云端永久可查<br>4. 服务团队教育公益事业，覆盖岐石村及周边地区",
+                tech: ["uni-app", "Vue.js", "uniCloud", "云函数", "Serverless"]
             }
         ];
 
@@ -571,6 +652,8 @@
                 this.titleEl = document.querySelector(".project-slider__title");
                 this.descEl = document.querySelector(".project-slider__description");
                 this.techEl = document.querySelector(".project-slider__tech");
+                /* 描述 + 标签是一个整体块：切换时一起动、一起换，高度平滑过渡 */
+                this.footerEl = document.querySelector(".project-slider__footer");
                 this.imagesEl = document.querySelector(".project-slider__images");
                 this.slideEls = [];
                 this.currentLine = null;
@@ -592,9 +675,14 @@
                 return ((n % this.total) + this.total) % this.total;
             }
 
-            preload() {
-                PROJECTS.forEach((p) => {
-                    this.imgsOf(p).forEach((src) => { new Image().src = src; });
+            preload(idx) {
+                // 仅预载当前 + 下一个项目的首图，其余按浏览进度按需加载
+                const start = idx === undefined ? this.current : idx;
+                [start, this.mod(start + 1)].forEach((i) => {
+                    const p = PROJECTS[this.mod(i)];
+                    if (!p) return;
+                    const first = this.imgsOf(p)[0];
+                    if (first) new Image().src = first;
                 });
             }
 
@@ -686,23 +774,48 @@
                 tl.to(oldChars, { y: -h * dir, stagger, duration, ease: "expo.inOut" }, 0);
                 tl.to(newChars, { y: 0, stagger, duration, ease: "expo.inOut" }, 0);
 
-                // 描述和技术栈动画
-                gsap.to(this.descEl, {
-                    opacity: 0, duration: 0.3, onComplete: () => {
-                        this.descEl.innerHTML = newProject.description;
-                        gsap.to(this.descEl, { opacity: 1, duration: 0.3 });
-                    }
-                });
+                // 描述 + 技术栈：作为同一个整体块切换。
+                // 描述不设固定槽，标签跟在末行后面；所以要让标签「滑动」而不是「瞬跳」，
+                // 必须补间描述块自身的可用高度 —— 补间 footer 高度只会裁掉底部，标签仍会跳。
+                const footer = this.footerEl;
+                const oldDescH = this.descEl.offsetHeight;
 
-                gsap.to(this.techEl, {
-                    opacity: 0, duration: 0.3, onComplete: () => {
+                gsap.to(footer, {
+                    opacity: 0,
+                    duration: this.reducedMotion ? 0.01 : 0.22,
+                    ease: "power1.out",
+                    onComplete: () => {
+                        this.descEl.innerHTML = newProject.description;
+
                         this.techEl.innerHTML = "";
                         newProject.tech.forEach(t => {
                             const span = document.createElement("span");
                             span.textContent = t;
                             this.techEl.appendChild(span);
                         });
-                        gsap.to(this.techEl, { opacity: 1, duration: 0.3 });
+
+                        if (this.reducedMotion) {
+                            gsap.set(footer, { opacity: 1 });
+                            return;
+                        }
+
+                        const newDescH = this.descEl.scrollHeight;
+                        if (newDescH !== oldDescH) {
+                            this.descEl.style.overflow = "hidden";
+                            gsap.fromTo(this.descEl,
+                                { height: oldDescH },
+                                {
+                                    height: newDescH,
+                                    duration: 0.42,
+                                    ease: "power2.out",
+                                    onComplete: () => {
+                                        this.descEl.style.height = "";
+                                        this.descEl.style.overflow = "";
+                                    }
+                                });
+                        }
+
+                        gsap.to(footer, { opacity: 1, duration: 0.32, ease: "power1.out" });
                     }
                 });
 
@@ -804,7 +917,9 @@
                 const imgs = this.imgsOf(p);
                 imgs.forEach((src, i) => {
                     const img = document.createElement("img");
-                    img.src = src;
+                    // 首图立即加载，其余延后到真正展示时再取（避免一次性拉全量截图）
+                    if (i === 0) img.src = src;
+                    else img.dataset.src = src;
                     img.alt = p.name;
                     img.decoding = "async";
                     if (i > 0) img.classList.add("is-hidden");
@@ -848,10 +963,30 @@
                     div.appendChild(mkNav("prev"));
                     div.appendChild(mkNav("next"));
                 }
+                // 鼠标移入 / 手指按下时冻结轮播：保证「看到哪张，点开放大就是哪张」
+                div.addEventListener("pointerenter", () => {
+                    if (!div.classList.contains("is-front")) return;
+                    this.stopImageLoop();
+                });
+                div.addEventListener("pointerleave", () => {
+                    if (!div.classList.contains("is-front")) return;
+                    this.startImageLoop();
+                });
+                div.addEventListener("pointerdown", () => {
+                    if (!div.classList.contains("is-front")) return;
+                    this.stopImageLoop();
+                });
+
                 // 点击正面卡片放大查看
                 div.addEventListener("click", () => {
                     if (!div.classList.contains("is-front")) return;
-                    this.openLightbox(imgs, div._imgIdx || 0, div);
+                    this.stopImageLoop();
+                    // 以「当前真正可见的那张」为准（而非可能刚被轮播改掉的索引）
+                    let idx = div._imgIdx || 0;
+                    const all = div.querySelectorAll("img");
+                    const visible = [...all].findIndex(el => !el.classList.contains("is-hidden"));
+                    if (visible >= 0) idx = visible;
+                    this.openLightbox(imgs, idx, div);
                 });
                 return div;
             }
@@ -860,7 +995,11 @@
             showImage(slide, i) {
                 const imgs = slide.querySelectorAll("img");
                 const dots = slide.querySelectorAll(".project-slider__dot");
-                imgs.forEach((im, k) => im.classList.toggle("is-hidden", k !== i));
+                imgs.forEach((im, k) => {
+                    // 懒加载：切换到哪张才真正请求哪张
+                    if (k === i && im.dataset.src && !im.getAttribute("src")) im.src = im.dataset.src;
+                    im.classList.toggle("is-hidden", k !== i);
+                });
                 dots.forEach((d, k) => d.classList.toggle("is-active", k === i));
                 slide._imgIdx = i;
             }
@@ -890,6 +1029,7 @@
 
             getSlideProps(step) {
                 const h = this.imagesEl.offsetHeight;
+                const compact = this.imagesEl.offsetWidth < 520; // 手机：隐藏装饰卡片，只保留正面卡
                 const positions = [
                     { x: -0.35, y: -0.95, rot: -30, s: 1.35, b: 16, o: 0 },
                     { x: -0.18, y: -0.5, rot: -15, s: 1.15, b: 8, o: 0.55 },
@@ -905,7 +1045,7 @@
                     rotation: p.rot,
                     scale: p.s,
                     blur: p.b,
-                    opacity: p.o,
+                    opacity: (compact && Math.abs(step) === 1) ? 0 : p.o,
                     zIndex: Math.abs(step) === 0 ? 3 : Math.abs(step) === 1 ? 2 : 1
                 };
             }
@@ -1007,6 +1147,7 @@
                         this.animating = false;
                         this.updateFrontClass();
                         this.startImageLoop();
+                        this.preload(nextIdx); // 提前备好下一个项目的首图
                     }
                 });
 
@@ -1103,6 +1244,7 @@
             new ProjectSlider();
         });
     </script>
+    <script src="../js/back-transition.js"></script>
 </body>
 
 </html>

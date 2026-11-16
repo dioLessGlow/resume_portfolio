@@ -1,0 +1,62 @@
+/* 全站统一返回键（13 个页面共用） */
+.back-btn {
+    position: fixed;
+    top: 100px;
+    right: 24px;
+    z-index: 9999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(45, 122, 45, 0.1);
+    border: 1px solid rgba(45, 122, 45, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.back-btn:hover {
+    background: rgba(45, 122, 45, 0.2);
+    border-color: rgba(45, 122, 45, 0.4);
+    transform: scale(1.08);
+}
+
+.back-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--color-primary, #2d7a2d);
+    stroke-width: 2;
+    fill: none;
+}
+
+/* 深色场景变体：形状位置不变，颜色反白保证可见 */
+.back-btn.on-dark {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.back-btn.on-dark:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.back-btn.on-dark svg {
+    stroke: #fff;
+}
+
+@media (max-width: 768px) {
+    .back-btn {
+        top: 70px;
+        right: 16px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .back-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+}

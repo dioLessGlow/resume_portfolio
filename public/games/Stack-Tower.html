@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>堆塔大师</title>
-<link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
+<link rel="stylesheet" href="../loader-screen.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
 <style>
@@ -18,40 +18,6 @@ html, body {
 	background: #D0CBC7;
 }
 
-.back-btn {
-    position: fixed;
-    top: 80px;
-    right: 24px;
-    z-index: 9999;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(45, 122, 45, 0.1);
-    border: 1px solid rgba(45, 122, 45, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    text-decoration: none;
-    pointer-events: auto;
-}
-.back-btn:hover {
-    background: rgba(45, 122, 45, 0.2);
-    border-color: rgba(45, 122, 45, 0.4);
-    transform: scale(1.08);
-}
-.back-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: #2d7a2d;
-    stroke-width: 2;
-    fill: none;
-}
-@media (max-width: 768px) {
-    .back-btn { top: 70px; right: 16px; width: 38px; height: 38px; }
-    .back-btn svg { width: 16px; height: 16px; }
-}
 
 #container {
 	width: 100%;
@@ -177,8 +143,34 @@ html, body {
 }
 </style>
 <base target="_blank">
+    <link rel="stylesheet" href="../../css/back-btn.css">
+    <link rel="stylesheet" href="../../fonts/fonts.css">
 </head>
 <body>
+<div id="loading-screen">
+	<div class="loader-container">
+		<div class="portal-pulse"></div>
+		<div class="loader-ring"></div>
+		<div class="loader-ring-inner"></div>
+	</div>
+	<div class="loading-text">正在搭建高塔</div>
+	<div class="loading-subtext">准备方块中...</div>
+	<div class="loading-progress">
+		<div class="loading-progress-bar" id="loading-bar"></div>
+	</div>
+	<div class="loading-percent" id="loading-percent">0%</div>
+</div>
+<script src="../loader-screen.js"></script>
+<script>
+	// 真实里程碑：three.js 场景与首块方块就绪后揭幕
+	(function () {
+		if (!window.PageLoader) return;
+		window.PageLoader.set(15, '正在搭建高塔...');
+		window.addEventListener('load', function () {
+			window.PageLoader.set(88, '校准基座...');
+		});
+	})();
+</script>
 <a href="../../works/works-games.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
     <svg viewBox="0 0 24 24">
         <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -508,6 +500,11 @@ class Game {
 }
 
 let game = new Game();
+// 场景与首块方块已就绪 → 揭幕
+if (window.PageLoader) {
+	window.PageLoader.set(100, '塔已就绪');
+	window.PageLoader.done();
+}
 </script>
 
 </body>

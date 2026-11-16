@@ -13,12 +13,18 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     margin: 0;
+    /* 内容少的页面不滚动：header/footer 之外的空间全给主体 */
+    display: flex;
+    flex-direction: column;
 }
 
 .main-wrapper {
     padding-top: 80px;
-    min-height: 100vh;
-    padding-bottom: 80px;
+    padding-bottom: 40px;
+    /* 占据 header 与 footer 之间的剩余空间 */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .container { 
@@ -35,6 +41,8 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    /* 富余空间时垂直居中；内容超高（如悬停打出的两行文字）时自动改为可滚动，不会裁掉顶部 */
+    margin: auto;
 }
 
 .home-hero h1 {
@@ -121,11 +129,11 @@ body {
     width: 50px;
 }
 
-/* 按钮下方打字信息 */
+/* 按钮下方打字信息（预留两行高度，出现文字时不顶动布局） */
 .typewriter-info {
     font-size: 12px;
     color: var(--color-primary);
-    min-height: 36px;
+    min-height: 40px;
     font-weight: 500;
     line-height: 1.6;
 }

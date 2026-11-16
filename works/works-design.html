@@ -9,10 +9,7 @@
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&family=IM+Fell+DW+Pica+SC&family=Londrina+Solid&display=swap"
-        rel="stylesheet">
-    <style>
+<style>
         * {
             border: 0;
             box-sizing: border-box;
@@ -36,29 +33,41 @@
         }
 
         body {
-            font-family: "Space Grotesk", sans-serif;
+            font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
             min-height: 100vh;
         }
 
         .main-wrapper {
+            position: relative;
             padding-top: 80px;
             padding-bottom: 40px;
         }
 
+        /* 标题绝对定位：完全不参与布局、不占位。
+           文件夹位置由 #app 高度决定，与标题显隐无关，切换时纹丝不动 */
         .page-header {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
             text-align: center;
-            padding: 60px 20px 50px;
-            border-bottom: 1px solid rgba(15, 216, 80, 0.2);
+            padding: 0 20px;
+            pointer-events: none;
         }
 
         .page-header h1 {
             font-size: var(--fs-xl);
             color: var(--color-text);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .page-header p {
             color: var(--color-text-muted);
+        }
+
+        /* 打开照片墙后隐藏标题（标题不占位，隐藏不引起任何位移） */
+        body.folder-open .page-header {
+            visibility: hidden;
         }
 
         .works-container {
@@ -67,60 +76,25 @@
         }
 
         #app {
-            min-height: 600px;
+            /* 标题已脱离文档流，这里直接吃到视口底部：底部位置恒定，文件夹不动 */
+            min-height: calc(100dvh - 126px);
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* 文件夹靠页面底部（页脚上方）落位，把留白全部集中到上方 */
+            justify-content: flex-end;
             padding: 20px;
         }
 
-        .back-btn {
-            position: fixed;
-            top: 80px;
-            right: 24px;
-            z-index: 101;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(45, 122, 45, 0.1);
-            border: 1px solid rgba(45, 122, 45, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            background: rgba(45, 122, 45, 0.2);
-            border-color: rgba(45, 122, 45, 0.4);
-            transform: scale(1.08);
-        }
-
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: var(--color-primary);
-            stroke-width: 2;
-            fill: none;
-        }
-
         @media (max-width: 768px) {
-            .back-btn {
-                top: 70px;
-                right: 16px;
-                width: 38px;
-                height: 38px;
-            }
 
-            .back-btn svg {
-                width: 16px;
-                height: 16px;
+            .main-wrapper {
+                padding-top: 64px;
             }
 
             .page-header {
-                padding: 24px 16px;
+                top: 64px;
+                padding: 0 16px;
             }
 
             .page-header h1 {
@@ -131,17 +105,161 @@
                 font-size: 0.85rem;
             }
 
+            /* 手机端：整页锁成一屏。文件夹行永远钉在底部不动，展开的照片墙吃掉上方剩余空间，
+               卡片高度按「3 行塞进剩余高度」反算，所以展开也不需要滚动 */
             #app {
                 padding: 12px;
-                min-height: auto;
+                /* 标题不占位，直接吃满到视口底部；上沿 64px 是固定导航 */
+                height: calc(100dvh - 104px);
+                min-height: 0;
+                overflow: hidden;
+                --pc-w: 100%;
+                --pc-minh: 0px;
+                --pc-imgmin: clamp(50px, calc((100dvh - 504px) / 3), 132px);
+                --pc-imgmax: var(--pc-imgmin);
+                --root-py: 8px;
+                /* 墙与文件夹行之间留足空隙，避免文件夹的耳朵压到照片卡 */
+                --root-gap: 26px;
             }
+
+            #app > div {
+                height: 100%;
+                /* 根容器撑满后，文件夹靠底对齐，展开前后位置一致 */
+                justify-content: flex-end;
+            }
+
+            .pc-grid-wrap {
+                flex: 1 1 auto;
+                min-height: 0;
+            }
+
+            .pc-grid {
+                height: 100%;
+                align-content: center;
+                padding: 0 !important;
+            }
+
+            .pc-folders {
+                flex: 0 0 auto;
+            }
+        }
+
+        /* ============ 点击放大 Lightbox（与实战项目页一致） ============ */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(17, 20, 14, .92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .25s ease, visibility .25s;
+        }
+
+        /* lightbox 挂在 #app 内，会被手机端「#app > div 靠底对齐」规则误伤成靠右。
+           这里用更高优先级把它拉回水平居中、去掉继承来的满高 */
+        #app > div.lightbox {
+            justify-content: center;
+            height: auto;
+        }
+
+        .lightbox.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lightbox__img {
+            max-width: min(1400px, 92vw);
+            max-height: 86vh;
+            border-radius: 10px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .5);
+            transform: scale(.94);
+            transition: transform .3s cubic-bezier(.22, .8, .3, 1);
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .lightbox.is-open .lightbox__img {
+            transform: scale(1);
+        }
+
+        .lightbox__btn {
+            position: absolute;
+            width: clamp(38px, 9vw, 48px);
+            height: clamp(38px, 9vw, 48px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, .3);
+            padding: 0;
+            background: rgba(28, 32, 24, .5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+            transition: background .25s, transform .25s, border-color .25s, box-shadow .25s;
+            z-index: 2;
+        }
+
+        /* 隐形扩大点击热区，手机上更好按 */
+        .lightbox__btn::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+        }
+
+        .lightbox__btn:hover {
+            background: rgba(255, 255, 255, .24);
+            border-color: rgba(255, 255, 255, .6);
+            box-shadow: 0 8px 26px rgba(0, 0, 0, .38);
+        }
+
+        .lightbox__btn svg {
+            width: clamp(16px, 3.8vw, 20px);
+            height: clamp(16px, 3.8vw, 20px);
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+        }
+
+        .lightbox__close { top: 28px; right: 32px; }
+        .lightbox__close:hover { transform: scale(1.08); }
+        .lightbox__nav { top: 50%; transform: translateY(-50%); }
+        .lightbox__nav:hover { transform: translateY(-50%) scale(1.08); }
+        .lightbox__nav.prev { left: 32px; }
+        .lightbox__nav.next { right: 32px; }
+
+        .lightbox__counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, .75);
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .lightbox__btn { width: 32px; height: 32px; }
+            .lightbox__btn svg { width: 14px; height: 14px; }
+            .lightbox__nav.prev { left: 12px; }
+            .lightbox__nav.next { right: 12px; }
+            .lightbox__close { top: 16px; right: 16px; }
         }
     </style>
 <base target="_blank">
+    <link rel="stylesheet" href="../css/loader.css">
+    <link rel="stylesheet" href="../css/back-btn.css">
+    <link rel="stylesheet" href="../fonts/fonts.css">
 </head>
 
 <body>
-    <a href="../works.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
+    <!-- 返回转场遮罩：点击返回键时立即升起，遮住旧内容滞留的空档 -->
+    <div id="back-loader" hidden><div class="loader"><div class="csh-text"><div class="char-c">C</div><div class="char-s">S</div><div class="char-h">H</div></div></div></div>
+    <a href="../works.html" class="back-btn" aria-label="返回" target="_self" onclick="return showBackLoader(event)">
         <svg viewBox="0 0 24 24">
             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -150,6 +268,7 @@
     <div id="header-container"></div>
 
     <div class="main-wrapper">
+        <!-- 只在文件夹视图显示；点开照片墙后由 React 隐藏 -->
         <div class="page-header">
             <h1>设计作品</h1>
             <p>海报、品牌视觉、UI设计</p>
@@ -167,7 +286,7 @@
     <script type="module" src="../js/components.js"></script>
 
     <script type="module">
-        import React, { useState } from "https://esm.sh/react@19";
+        import React, { useState, useEffect, useRef } from "https://esm.sh/react@19";
         import { createRoot } from "https://esm.sh/react-dom@19/client";
         import { motion, AnimatePresence } from "https://esm.sh/framer-motion@11";
 
@@ -224,17 +343,19 @@
         // 照片卡片 - 自适应比例 + 统一视觉
         const PhotoCard = ({ src, name, index, onClick }) => {
             return React.createElement(motion.div, {
-                initial: { opacity: 0, y: 40, scale: 0.8 },
-                animate: { opacity: 1, y: 0, scale: 1 },
-                exit: { opacity: 0, y: -20, scale: 0.8 },
+                /* 去掉 y 位移：切换时卡片只在原位淡入淡出，不再上下窜。
+                   scale 是 transform，不参与 flex 布局计算，不影响墙高 */
+                initial: { opacity: 0, scale: 0.92 },
+                animate: { opacity: 1, scale: 1 },
+                exit: { opacity: 0, scale: 0.92 },
                 transition: {
-                    type: 'spring',
-                    bounce: 0.15,
-                    delay: index * 0.06
+                    duration: 0.16,
+                    ease: 'easeOut',
+                    delay: index * 0.02
                 },
                 style: {
-                    width: '140px',
-                    minHeight: '180px',
+                    width: 'var(--pc-w, 140px)',
+                    minHeight: 'var(--pc-minh, 180px)',
                     backgroundColor: '#f5f5dc',
                     padding: '10px 10px 8px 10px',
                     cursor: 'pointer',
@@ -259,8 +380,8 @@
                         backgroundColor: '#e8e4d9',
                         overflow: 'hidden',
                         position: 'relative',
-                        minHeight: '100px',
-                        maxHeight: '160px',
+                        minHeight: 'var(--pc-imgmin, 100px)',
+                        maxHeight: 'var(--pc-imgmax, 160px)',
                         borderRadius: '2px'
                     }
                 },
@@ -305,6 +426,66 @@
                         justifyContent: 'center'
                     }
                 }, name)
+            );
+        };
+
+        // 点击放大 Lightbox：深色遮罩 + 大图 + 左右切换 + 计数 + 手机横滑
+        const CloseIcon = () => React.createElement("svg", {
+            viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+            "stroke-width": 2.4, "stroke-linecap": "round"
+        },
+            React.createElement("line", { x1: 5, y1: 5, x2: 19, y2: 19 }),
+            React.createElement("line", { x1: 19, y1: 5, x2: 5, y2: 19 })
+        );
+        const ArrowIcon = ({ dir }) => React.createElement("svg", {
+            viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+            "stroke-width": 2.4, "stroke-linecap": "round", "stroke-linejoin": "round"
+        }, React.createElement("polyline", {
+            points: dir === "prev" ? "15 18 9 12 15 6" : "9 18 15 12 9 6"
+        }));
+
+        const Lightbox = ({ open, list, index, onClose, onStep }) => {
+            const photo = list[index] || list[0];
+            const multi = list.length > 1;
+            const touchX = useRef(null);
+            return React.createElement("div", {
+                // 纯 CSS class 切换：避开 motion 合成层，截图/渲染都稳，淡入淡出由 CSS 负责
+                className: "lightbox" + (open ? " is-open" : ""),
+                "aria-hidden": open ? "false" : "true",
+                // 点背景关闭；横滑切大图
+                onClick: onClose,
+                onTouchStart: (e) => { touchX.current = e.touches[0].clientX; },
+                onTouchEnd: (e) => {
+                    if (touchX.current == null) return;
+                    const dx = e.changedTouches[0].clientX - touchX.current;
+                    touchX.current = null;
+                    if (Math.abs(dx) >= 40) onStep(dx < 0 ? "next" : "prev");
+                }
+            },
+                React.createElement("img", {
+                    className: "lightbox__img",
+                    src: photo.src,
+                    alt: photo.name,
+                    onClick: (e) => e.stopPropagation()
+                }),
+                React.createElement("button", {
+                    type: "button", className: "lightbox__btn lightbox__close",
+                    "aria-label": "关闭",
+                    onClick: (e) => { e.stopPropagation(); onClose(); }
+                }, React.createElement(CloseIcon)),
+                multi && React.createElement("button", {
+                    type: "button", className: "lightbox__btn lightbox__nav prev",
+                    "aria-label": "上一张",
+                    onClick: (e) => { e.stopPropagation(); onStep("prev"); }
+                }, React.createElement(ArrowIcon, { dir: "prev" })),
+                multi && React.createElement("button", {
+                    type: "button", className: "lightbox__btn lightbox__nav next",
+                    "aria-label": "下一张",
+                    onClick: (e) => { e.stopPropagation(); onStep("next"); }
+                }, React.createElement(ArrowIcon, { dir: "next" })),
+                multi && React.createElement("div", {
+                    className: "lightbox__counter"
+                }, (index + 1) + " / " + list.length)
             );
         };
 
@@ -481,36 +662,65 @@
 
         const App = () => {
             const [expandedFolder, setExpandedFolder] = useState(null);
+            const [lightboxIdx, setLightboxIdx] = useState(null);
+            // 标题只在文件夹视图显示：打开照片墙时挂 body.folder-open，由 CSS 隐藏标题并压缩布局
+            useEffect(() => {
+                document.body.classList.toggle('folder-open', !!expandedFolder);
+            }, [expandedFolder]);
 
             const handleToggle = (folderId) => {
                 setExpandedFolder(prev => prev === folderId ? null : folderId);
             };
 
+            // Lightbox：打开/关闭/前后切换 + ESC 键
             const currentPhotos = expandedFolder
                 ? FOLDERS.find(f => f.id === expandedFolder)?.photos
                 : [];
 
-            return React.createElement("div", {
-                style: {
-                    fontFamily: '"IM Fell DW Pica SC", serif',
+            const lbStep = (dir) => {
+                setLightboxIdx(prev => {
+                    const n = currentPhotos.length;
+                    return (prev + (dir === "next" ? 1 : n - 1)) % n;
+                });
+            };
+            useEffect(() => {
+                if (lightboxIdx === null) return;
+                const onKey = (e) => {
+                    if (e.key === "Escape") setLightboxIdx(null);
+                    else if (e.key === "ArrowLeft") lbStep("prev");
+                    else if (e.key === "ArrowRight") lbStep("next");
+                };
+                window.addEventListener("keydown", onKey);
+                return () => window.removeEventListener("keydown", onKey);
+            });
+
+            return React.createElement(React.Fragment, null,
+                React.createElement("div", {
+                    style: {
+                        fontFamily: '"IM Fell DW Pica SC", serif',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '36px',
-                    padding: '24px 0',
+                    gap: 'var(--root-gap, 36px)',
+                    padding: 'var(--root-py, 24px) 0',
                     userSelect: 'none',
-                    minHeight: '600px',
+                    /* 不再撑 600px 空白：让内容自身高度决定，文件夹才能贴到底部 */
                     width: '100%'
                 }
             },
                 /* ===== 共享展开网格 ===== */
-                React.createElement(AnimatePresence, null,
+                React.createElement(AnimatePresence, { mode: "wait" },
                     expandedFolder && React.createElement(motion.div, {
-                        key: `grid-${expandedFolder}`,
-                        initial: { opacity: 0, height: 0 },
-                        animate: { opacity: 1, height: 'auto' },
-                        exit: { opacity: 0, height: 0 },
-                        transition: { duration: 0.3, ease: 'easeInOut' },
+                        /* 容器 key 固定：切换文件夹时不卸载整墙（免去退场等待），
+                           只换里面的卡片，卡片自身做快速淡入 */
+                        key: "grid",
+                        className: "pc-grid-wrap",
+                        /* 只做淡入淡出：高度由 flex 锁定，不再用 height 动画参与 flex 计算，
+                           配合 mode="wait" 让旧墙先退、新墙后进，切换时卡片不再上下窜 */
+                        initial: { opacity: 0 },
+                        animate: { opacity: 1 },
+                        exit: { opacity: 0 },
+                        transition: { duration: 0.12, ease: 'easeInOut' },
                         style: {
                             display: 'flex',
                             alignItems: 'center',
@@ -520,6 +730,7 @@
                         }
                     },
                         React.createElement("div", {
+                            className: "pc-grid",
                             style: {
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
@@ -537,7 +748,7 @@
                                     src: p.src,
                                     name: p.name,
                                     index: i,
-                                    onClick: () => setExpandedFolder(null)
+                                    onClick: () => setLightboxIdx(i)
                                 })
                             )
                         )
@@ -546,6 +757,7 @@
 
                 /* ===== 三个文件夹 ===== */
                 React.createElement("div", {
+                    className: "pc-folders",
                     style: {
                         display: 'grid',
                         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -556,22 +768,33 @@
                         justifyItems: 'center'
                     }
                 },
-                    FOLDERS.map(folder =>
-                        React.createElement(FolderItem, {
-                            key: folder.id,
-                            folder: folder,
-                            isExpanded: expandedFolder === folder.id,
-                            isLifted: expandedFolder !== folder.id,
-                            onToggle: () => handleToggle(folder.id)
-                        })
+                        FOLDERS.map(folder =>
+                            React.createElement(FolderItem, {
+                                key: folder.id,
+                                folder: folder,
+                                isExpanded: expandedFolder === folder.id,
+                                isLifted: expandedFolder !== folder.id,
+                                onToggle: () => handleToggle(folder.id)
+                            })
+                        )
                     )
-                )
+                ),
+
+                /* ===== 点击放大 Lightbox（脱离 flex，固定全屏） ===== */
+                currentPhotos.length > 0 && React.createElement(Lightbox, {
+                    open: lightboxIdx !== null,
+                    list: currentPhotos,
+                    index: lightboxIdx == null ? 0 : lightboxIdx,
+                    onClose: () => setLightboxIdx(null),
+                    onStep: lbStep
+                })
             );
         };
 
         const root = createRoot(document.getElementById("app"));
         root.render(React.createElement(App));
     </script>
+    <script src="../js/back-transition.js"></script>
 </body>
 
 </html>

@@ -39,56 +39,6 @@ body {
     min-height: 100vh;
 }
 
-/* Header */
-.site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(200, 230, 201, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(15, 216, 80, 0.3);
-    z-index: 100;
-    padding: clamp(10px, 2vw, 15px) 0;
-}
-
-.header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 clamp(12px, 3vw, 20px);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-family: 'ZCOOL KuaiLe', 'Space Grotesk', sans-serif;
-    font-size: var(--fs-lg);
-    font-weight: 700;
-    color: #fff;
-    text-decoration: none;
-}
-
-.header-nav {
-    display: flex;
-    gap: clamp(10px, 2vw, 30px);
-}
-
-.nav-link {
-    color: var(--color-text-muted);
-    font-size: var(--fs-sm);
-    text-decoration: none;
-    padding: var(--space-xs) var(--space-md);
-    border-radius: 25px;
-    transition: all 0.3s;
-}
-
-.nav-link:hover,
-.nav-link.active {
-    background: white;
-    color: var(--color-primary);
-}
-
 /* Main */
 .main-wrapper {
     padding-top: clamp(60px, 10vw, 80px);
@@ -157,6 +107,123 @@ body {
     object-fit: contain;
     /* 完整展示，不裁剪 */
     border-radius: 8px;
+}
+
+/* 双图布局：左 logo + 右截图（教务百事通卡片） */
+.project-image.dual {
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.project-image.dual .logo-img {
+    width: 28%;
+    flex-shrink: 0;
+}
+
+.project-image.dual .dash-img {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    object-fit: contain;
+}
+
+/* ============ 点击放大 Lightbox（与作品集页一致） ============ */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(17, 20, 14, .92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s ease, visibility .35s;
+}
+
+.lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lightbox__img {
+    max-width: min(1400px, 92vw);
+    max-height: 86vh;
+    border-radius: 10px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .5);
+    transform: scale(.94);
+    transition: transform .35s cubic-bezier(.22, .8, .3, 1);
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.lightbox.is-open .lightbox__img {
+    transform: scale(1);
+}
+
+.lightbox__btn {
+    position: absolute;
+    width: clamp(38px, 9vw, 48px);
+    height: clamp(38px, 9vw, 48px);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .3);
+    padding: 0;
+    background: rgba(28, 32, 24, .5);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+    transition: background .25s, transform .25s, border-color .25s, box-shadow .25s;
+    z-index: 2;
+}
+
+/* 隐形扩大点击热区，手机上更好按 */
+.lightbox__btn::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+}
+
+.lightbox__btn:hover {
+    background: rgba(255, 255, 255, .24);
+    border-color: rgba(255, 255, 255, .6);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, .38);
+}
+
+.lightbox__btn svg {
+    width: clamp(16px, 3.8vw, 20px);
+    height: clamp(16px, 3.8vw, 20px);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+}
+
+.lightbox__close { top: 28px; right: 32px; }
+.lightbox__close:hover { transform: scale(1.08); }
+.lightbox__nav { top: 50%; transform: translateY(-50%); }
+.lightbox__nav:hover { transform: translateY(-50%) scale(1.08); }
+.lightbox__nav.prev { left: 32px; }
+.lightbox__nav.next { right: 32px; }
+
+.lightbox__counter {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, .75);
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+@media screen and (max-width: 768px) {
+    .lightbox__btn { width: 32px; height: 32px; }
+    .lightbox__btn svg { width: 14px; height: 14px; }
+    .lightbox__nav.prev { left: 12px; }
+    .lightbox__nav.next { right: 12px; }
+    .lightbox__close { top: 16px; right: 16px; }
 }
 
 .project-icon {
@@ -233,6 +300,27 @@ body {
     line-height: 1.8;
 }
 
+/* 教育背景两行式排版：日期/绩点两列左对齐，校名与专业同一左边缘 */
+.edu-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    align-items: baseline;
+    column-gap: 28px;
+    row-gap: 2px;
+    font-size: var(--fs-base);
+    line-height: 1.8;
+    margin-bottom: var(--space-sm);
+}
+
+.edu-date {
+    color: var(--color-text);
+}
+
+.edu-school,
+.edu-gpa {
+    color: var(--color-primary);
+}
+
 .about-text strong {
     color: var(--color-text);
 }
@@ -296,7 +384,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
-    justify-content: center;
+    justify-content: flex-start;
     padding-left: 32px;
 }
 
@@ -355,16 +443,6 @@ body {
     .skill-tags {
         padding-left: 0;
     }
-
-    .level-header {
-        flex-wrap: wrap;
-    }
-
-    .level-label {
-        width: 100%;
-        margin-left: 32px;
-        margin-top: 4px;
-    }
 }
 
 /* 荣誉 */
@@ -407,46 +485,6 @@ body {
 
 .award-year {
     font-size: var(--fs-xs);
-    color: var(--color-primary);
-}
-
-/* Footer */
-.site-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(200, 230, 201, 0.95);
-    border-top: 1px solid rgba(15, 216, 80, 0.3);
-    padding: clamp(8px, 2vw, 20px) var(--space-sm);
-    z-index: 100;
-}
-
-.footer-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: clamp(8px, 2vw, 50px);
-    flex-wrap: wrap;
-    padding: 0 var(--space-sm);
-}
-
-.footer-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    color: var(--color-text-muted);
-    font-size: clamp(10px, 2vw, var(--fs-xs));
-    text-decoration: none;
-    padding: var(--space-xs);
-    border-radius: 15px;
-    background: rgba(15, 216, 80, 0.05);
-    transition: all 0.3s;
-    white-space: nowrap;
-}
-
-.footer-link:hover {
-    background: rgba(15, 216, 80, 0.15);
     color: var(--color-primary);
 }
 
@@ -567,6 +605,19 @@ body {
     .about-grid {
         grid-template-columns: 1fr;
     }
+
+    .edu-list {
+        grid-template-areas:
+            "date gpa"
+            "school school"
+            "major major";
+        row-gap: 0;
+    }
+
+    .edu-date { grid-area: date; }
+    .edu-gpa  { grid-area: gpa; }
+    .edu-school { grid-area: school; }
+    .edu-major  { grid-area: major; }
 
     .main-wrapper {
         padding-bottom: var(--space-xl);

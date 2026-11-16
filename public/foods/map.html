@@ -5,49 +5,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全球咖啡供应链</title>
+    <link rel="stylesheet" href="../loader-screen.css">
     <style>
         #chartdiv {
             max-width: 100%;
             height: 95vh;
         }
 
-        .back-btn {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 9999;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(60, 30, 14, 0.15);
-            border: 1px solid rgba(60, 30, 14, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-            pointer-events: auto;
-        }
-        .back-btn:hover {
-            background: rgba(60, 30, 14, 0.25);
-            transform: scale(1.08);
-        }
-        .back-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #3c1e0e;
-            stroke-width: 2;
-            fill: none;
-        }
-        @media (max-width: 768px) {
-            .back-btn { top: 16px; right: 16px; width: 38px; height: 38px; }
-            .back-btn svg { width: 16px; height: 16px; }
-        }
     </style>
+    <link rel="stylesheet" href="../../css/back-btn.css">
 </head>
 
 <body>
+    <div id="loading-screen">
+        <div class="loader-container">
+            <div class="portal-pulse"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring-inner"></div>
+        </div>
+        <div class="loading-text">正在烘焙世界</div>
+        <div class="loading-subtext">研磨咖啡豆中...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loading-bar"></div>
+        </div>
+        <div class="loading-percent" id="loading-percent">0%</div>
+    </div>
+    <script src="../loader-screen.js"></script>
+    <script>
+        // 真实里程碑：amCharts 四个 CDN 库全部就绪、图表初始化完成后揭幕
+        (function () {
+            if (!window.PageLoader) return;
+            window.PageLoader.set(12, '正在烘焙世界...');
+            window.addEventListener('load', function () {
+                window.PageLoader.set(85, '冲煮供应链...');
+            });
+        })();
+    </script>
     <a href="../../works/works-web.html" class="back-btn" aria-label="返回" target="_self" onclick="history.back(); return false;">
         <svg viewBox="0 0 24 24">
             <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -409,6 +402,12 @@
             e.stopPropagation();
         });
     })();
+
+    // 图表初始化完毕 → 揭幕
+    if (window.PageLoader) {
+        window.PageLoader.set(100, '咖啡已上桌');
+        window.PageLoader.done();
+    }
 </script>
 
 </html>

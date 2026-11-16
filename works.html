@@ -6,10 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>作品集 | 陈少辉</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/intro.css">
     <link rel="stylesheet" href="css/loader.css">
@@ -23,6 +20,48 @@
             padding: 60px 0;
         }
         
+        /* ===== 交互提示标题 ===== */
+        .works-hint {
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 34px !important;
+            user-select: none;
+        }
+
+        .hint-main {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: var(--fs-xl);
+            font-weight: 700;
+            color: var(--color-text);
+            transition: color .35s ease, letter-spacing .35s ease;
+        }
+
+        /* 跟卡片同形的小五边形，循环"翻个身"演示交互 */
+        .hint-flip {
+            width: 20px;
+            height: 20px;
+            flex: none;
+            background: linear-gradient(135deg, var(--color-primary), #27ae60);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            animation: hintFlip 3.6s ease-in-out infinite;
+        }
+
+        @keyframes hintFlip {
+            0%, 50% { transform: rotateY(0deg) scale(1); }
+            68% { transform: rotateY(180deg) scale(1.2); }
+            86%, 100% { transform: rotateY(360deg) scale(1); }
+        }
+
+        .hint-sub {
+            font-size: var(--fs-sm);
+            font-weight: 400;
+            color: var(--color-text-muted);
+            letter-spacing: .14em;
+        }
+
         /* 树干 */
         .poly-grid::before {
             content: '';
@@ -125,10 +164,78 @@
             font-size: 2.5rem;
         }
         
+        /* 整张卡片可交互 */
+        .poly-card {
+            cursor: pointer;
+        }
+        
+        .poly-card h3 {
+            transition: color .35s ease, transform .35s ease;
+        }
+        
+        .poly-card:hover h3,
+        .poly-card:focus-visible h3 {
+            color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+        
+        .poly-card::before {
+            transition: opacity .35s ease, box-shadow .35s ease;
+        }
+        
+        .poly-card:hover::before {
+            opacity: .8;
+            box-shadow: 0 0 8px rgba(15, 216, 80, 0.55);
+        }
+        
+        .poly-card:hover .poly-icon,
+        .poly-card:focus-visible .poly-icon {
+            transform: rotate(180deg) scale(1.08);
+        }
+        
+        .poly-card:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 6px;
+            border-radius: 10px;
+        }
+        
+        /* 点击后过渡：卡片淡出，等待跳转 */
+        .poly-card.is-leaving {
+            opacity: .55;
+        }
+        
+        .poly-card.is-leaving .poly-icon {
+            filter: drop-shadow(0 0 14px rgba(15, 216, 80, 0.85));
+        }
+        
         @media (max-width: 768px) {
+            /* 固定一屏不滚动：标题上移收紧，卡片按视口高度均分（预留 header/标题/footer 空间） */
+            .section-title {
+                margin-bottom: 8px !important;
+            }
+            .hint-main {
+                font-size: 15px;
+                gap: 8px;
+            }
+            .hint-flip {
+                width: 13px;
+                height: 13px;
+            }
+            .hint-sub {
+                display: none;
+            }
+            .main-wrapper {
+                padding-top: 56px;
+                padding-bottom: 56px;
+            }
+            .poly-grid {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
             .poly-card {
                 transform: translateX(0);
-                min-height: 90px;
+                min-height: 0;
+                height: calc((100vh - 190px) / 5);
             }
             .poly-card:nth-child(2n) {
                 flex-direction: row;
@@ -173,41 +280,54 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="fonts/fonts.css">
 </head>
 
 <body>
-    <div id="loader-container"></div>
+    <div id="loader-container"><div class="loader"><div class="csh-text"><div class="char-c">C</div><div class="char-s">S</div><div class="char-h">H</div></div></div></div>
+    <script>
+        // 返回接力：子页返回键已播过 CSH → 本页跳过（同步脚本，执行于首帧绘制前，无闪现）
+        if (sessionStorage.getItem('skipLoader') === '1') {
+            sessionStorage.removeItem('skipLoader');
+            document.getElementById('loader-container').style.display = 'none';
+        }
+        // bfcache 恢复时脚本不会重跑，标记可能残留 → 恢复时清掉，避免下次导航被误跳过
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) sessionStorage.removeItem('skipLoader');
+        });
+    </script>
 
     <div id="header-container"></div>
 
     <div class="main-wrapper">
         <div class="container">
-            <h2 class="section-title" style="text-align: center; margin-bottom: 30px;">
-                请点击多边形卡片
+            <h2 class="section-title works-hint">
+                <span class="hint-main">点一下，它会翻个身<i class="hint-flip" aria-hidden="true"></i></span>
+                <span class="hint-sub">五个枝头 · 随便挑一个</span>
             </h2>
             
             <div class="poly-grid">
-                <article class="poly-card">
+                <article class="poly-card" data-target="works/works-projects.html" tabindex="0" role="link">
                     <h3>实战项目</h3>
                     <div class="poly-icon"><img src="images/icons/项目.webp" alt=""></div>
                 </article>
                 
-                <article class="poly-card">
+                <article class="poly-card" data-target="works/works-games.html" tabindex="0" role="link">
                     <h3>益智小游戏</h3>
                     <div class="poly-icon"><img src="images/icons/游戏.webp" alt=""></div>
                 </article>
                 
-                <article class="poly-card">
+                <article class="poly-card" data-target="works/works-web.html" tabindex="0" role="link">
                     <h3>Web 3D 交互</h3>
                     <div class="poly-icon"><img src="images/icons/UI.webp" alt=""></div>
                 </article>
                 
-                <article class="poly-card">
+                <article class="poly-card" data-target="works/works-design.html" tabindex="0" role="link">
                     <h3>设计作品</h3>
                     <div class="poly-icon"><img src="images/icons/设计.webp" alt=""></div>
                 </article>
                 
-                <article class="poly-card">
+                <article class="poly-card" data-target="works/works-honors.html" tabindex="0" role="link">
                     <h3>荣誉墙</h3>
                     <div class="poly-icon"><img src="images/icons/荣誉证书.webp" alt=""></div>
                 </article>
@@ -220,42 +340,50 @@
     <script type="module" src="js/components.js"></script>
         
     <script>
-        setTimeout(() => {
-            const loader = document.getElementById('loader-container');
-            if (loader) loader.style.display = 'none';
-        }, 1000);
-        
-        // 点击多边形卡片跳转
-        document.querySelectorAll('.poly-icon').forEach((icon, index) => {
-            icon.addEventListener('click', function() {
-                const card = this.closest('.poly-card');
-                const title = card.querySelector('h3').textContent;
-                
-                // 添加旋转动画类
-                this.style.transform = 'rotate(180deg) scale(1.1)';
-                
-                // 动画结束后跳转
-                setTimeout(() => {
-                    switch(title) {
-                        case '荣誉墙':
-                            window.location.href = 'works/works-honors.html';
-                            break;
-                        case '设计作品':
-                            window.location.href = 'works/works-design.html';
-                            break;
-                        case 'Web 3D 交互':
-                            window.location.href = 'works/works-web.html';
-                            break;
-                        case '益智小游戏':
-                            window.location.href = 'works/works-games.html';
-                            break;
-                        case '实战项目':
-                            window.location.href = 'works/works-projects.html';
-                            break;
-                        default:
-                            window.location.href = 'intro.html';
-                    }
-                }, 500);
+        // 点击整张卡片跳转
+        const prefetchedTargets = new Set();
+        document.querySelectorAll('.poly-card').forEach((card) => {
+            const go = () => {
+                const target = card.dataset.target;
+                if (!target) return;
+
+                // 图标翻身 + 卡片淡出，转场更有反馈
+                const icon = card.querySelector('.poly-icon');
+                if (icon) icon.style.transform = 'rotate(180deg) scale(1.1)';
+                card.classList.add('is-leaving');
+
+                setTimeout(() => { window.location.href = target; }, 480);
+            };
+
+            card.addEventListener('click', go);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    go();
+                }
+            });
+
+            // 悬停/按下/聚焦瞬间预取目标页文档：配合直接跳转，把白屏压到最短
+            // （每个目标只取一次；fetch 失败静默，不影响跳转）
+            const prefetchTarget = () => {
+                const t = card.dataset.target;
+                if (!t || prefetchedTargets.has(t)) return;
+                prefetchedTargets.add(t);
+                fetch(t, { cache: 'force-cache' }).catch(() => prefetchedTargets.delete(t));
+            };
+            card.addEventListener('pointerenter', prefetchTarget);
+            card.addEventListener('pointerdown', prefetchTarget);
+            card.addEventListener('focus', prefetchTarget);
+        });
+
+        // 从子页面返回命中往返缓存（bfcache）时，卡片会停留在跳转前的淡出状态，
+        // 恢复时重置为可见，避免出现"凭空消失的卡片"
+        window.addEventListener('pageshow', (e) => {
+            if (!e.persisted) return;
+            document.querySelectorAll('.poly-card.is-leaving').forEach((card) => {
+                card.classList.remove('is-leaving');
+                const icon = card.querySelector('.poly-icon');
+                if (icon) icon.style.transform = '';
             });
         });
     </script>

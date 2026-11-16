@@ -6,14 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>欢迎 | 陈少辉</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Space+Grotesk:wght@400;600;700;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="css/welcome.css">
+<link rel="stylesheet" href="css/welcome.css">
     <link rel="stylesheet" href="css/loader.css">
 <base target="_blank">
+    <link rel="stylesheet" href="fonts/fonts.css">
 </head>
 
 <body>
@@ -44,6 +40,21 @@
     </div>
 
     <script type="module" src="js/components.js"></script>
+
+    <script>
+        // 空闲时预取首页全套资源：访客在欢迎页停留的几秒足够拉完 ~1.1MB，
+        // 点「请进」时全部缓存命中，进入近乎瞬时。fetch 失败静默忽略，不影响任何现有行为
+        const warmHome = () => {
+            [
+                'home.html',
+                'header.html', 'footer.html', 'loader.html',
+                'css/header.css', 'css/footer.css', 'css/index.css', 'css/loader.css',
+                'fonts/fonts.css',
+                'js/components.js', 'js/vendor/gsap.min.js', 'js/vendor/CustomEase.min.js'
+            ].forEach(u => fetch(u, { cache: 'force-cache' }).catch(() => {}));
+        };
+        ('requestIdleCallback' in window ? requestIdleCallback : (f) => setTimeout(f, 800))(warmHome);
+    </script>
 </body>
 
 </html>
