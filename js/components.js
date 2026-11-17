@@ -105,12 +105,14 @@ async function initComponents() {
     if (loaderContainer && rawPage !== 'index' && !loaderSkipped) {
         // loader 标记已内联在 HTML 里（与内容同帧绘制，避免"内容先闪现再出遮罩"的竞态）。
         // 老页面没有内联标记时，退回 fetch 注入
+        // 下拉刷新重载：跳过 CSH 字母动画，立即揭幕直接呈现内容
+        const noAnim = document.documentElement.getAttribute('data-pr-noanim') === '1';
         const setupLoader = (loader) => {
             loader.style.display = 'flex';
 
             // 揭幕条件：hideTime 计时结束 且 header 已注入完成（防止 header 迟到闪现）
             const delay = (ms) => new Promise((r) => setTimeout(r, ms));
-            Promise.all([headerLoaded, delay(900)]).then(() => {
+            Promise.all([headerLoaded, delay(noAnim ? 0 : 900)]).then(() => {
                 loader.classList.add('hidden');
                 loader.style.display = 'none';
                 loader.style.opacity = '0';
