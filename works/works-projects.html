@@ -22,6 +22,9 @@
         body {
             height: 100%;
             overflow: hidden;
+            /* 禁用下拉刷新/橡皮筋/边缘返回，避免垂直滑动手势被浏览器原生行为抢走 */
+            overscroll-behavior: none;
+            overscroll-behavior-y: none;
             background: var(--color-bg, #fdfbf7);
         }
 
@@ -48,6 +51,8 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
+            /* 垂直手势交给 JS 切换项目，阻止浏览器把它当成页面滚动/下拉刷新 */
+            touch-action: none;
             display: flex;
             flex-direction: column;
         }
@@ -895,6 +900,10 @@
                 this.lbList = list;
                 this.lbIdx = idx;
                 this.lbSlide = slideEl;
+                // 打开放大图时一次性预热该项目全部图片，左右切换不再临时请求、无延迟
+                (list || []).forEach(src => {
+                    if (src) new Image().src = src;
+                });
                 this.updateLightbox();
                 this.lightboxEl.classList.add("is-open");
                 // 打开期间暂停两套自动轮播
@@ -1156,26 +1165,42 @@
             }
 
             bind() {
-                // Wheel - 带节流
-                const onWheel = throttle((e) => {
+                // Wheel —— 防连击交给 go() 里的 animating 标志，动画一结束即可再次切换
+                const onWheel = (e) => {
                     if (this.animating || this.isLightboxOpen()) return;
                     this.go(e.deltaY > 0 ? "next" : "prev");
-                }, 1800);
+                };
                 window.addEventListener("wheel", onWheel, { passive: true });
 
                 // Touch
                 let touchStartY = 0;
+                let touchStartX = 0;
+                let swipeHandled = false;
                 window.addEventListener("touchstart", (e) => {
                     touchStartY = e.touches[0].clientY;
+                    touchStartX = e.touches[0].clientX;
+                    swipeHandled = false;
                 }, { passive: true });
 
-                const onTouchEnd = throttle((e) => {
-                    if (this.animating || this.isLightboxOpen()) return;
+                // 垂直滑动时阻止原生滚动/下拉刷新/边缘返回手势（lightbox 打开时放行，交给它自己横滑）
+                window.addEventListener("touchmove", (e) => {
+                    if (this.isLightboxOpen()) return;
+                    const dy = Math.abs(e.touches[0].clientY - touchStartY);
+                    const dx = Math.abs(e.touches[0].clientX - touchStartX);
+                    if (dy > dx) e.preventDefault();
+                }, { passive: false });
+
+                const finishSwipe = (e) => {
+                    if (swipeHandled || this.animating || this.isLightboxOpen()) return;
                     const diff = touchStartY - e.changedTouches[0].clientY;
                     if (Math.abs(diff) < 40) return;
+                    swipeHandled = true;
                     this.go(diff > 0 ? "next" : "prev");
-                }, 1800);
-                window.addEventListener("touchend", onTouchEnd, { passive: true });
+                };
+                // 不用固定时长的节流：go() 的 animating 在动画结束时才释放，避免"动画完了还要再等一会儿"的死区
+                window.addEventListener("touchend", finishSwipe, { passive: true });
+                // 手势被系统中断时也按一次滑动处理，避免下滑被系统抢走后完全无响应
+                window.addEventListener("touchcancel", finishSwipe, { passive: true });
 
                 // 项目内图片轮播 - 正面卡片上水平滑动切换
                 let imgTsX = 0, imgTsY = 0;

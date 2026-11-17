@@ -668,6 +668,25 @@
                 document.body.classList.toggle('folder-open', !!expandedFolder);
             }, [expandedFolder]);
 
+            // 预加载海报图：避免点开文件夹那一刻才开始请求、出现灰块。
+            // 先立即预热折叠态要露出的前 4 张，其余等浏览器空闲再补齐。
+            useEffect(() => {
+                const all = [];
+                FOLDERS.forEach(f => f.photos.forEach(p => {
+                    if (!all.includes(p.src)) all.push(p.src);
+                }));
+                const warm = (src) => { const im = new Image(); im.src = src; };
+                // 首屏缩略图：三个文件夹各前 4 张，立即预热
+                FOLDERS.forEach(f => f.photos.slice(0, 4).forEach(p => warm(p.src)));
+                // 其余图片空闲预热，不阻塞首屏
+                const rest = all.filter(src => !FOLDERS.some(f => f.photos.slice(0, 4).some(p => p.src === src)));
+                const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 600));
+                const handle = idle(() => rest.forEach(warm), { timeout: 2000 });
+                return () => {
+                    if (window.cancelIdleCallback) window.cancelIdleCallback(handle);
+                };
+            }, []);
+
             const handleToggle = (folderId) => {
                 setExpandedFolder(prev => prev === folderId ? null : folderId);
             };
