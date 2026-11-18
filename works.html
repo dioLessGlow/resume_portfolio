@@ -347,17 +347,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
 <body>
     <div id="loader-container"><div class="loader"><div class="csh-text"><div class="char-c">C</div><div class="char-s">S</div><div class="char-h">H</div></div></div></div>
-    <script>
-        // 返回接力：子页返回键已播过 CSH → 本页跳过（同步脚本，执行于首帧绘制前，无闪现）
-        if (sessionStorage.getItem('skipLoader') === '1') {
-            sessionStorage.removeItem('skipLoader');
-            document.getElementById('loader-container').style.display = 'none';
-        }
-        // bfcache 恢复时脚本不会重跑，标记可能残留 → 恢复时清掉，避免下次导航被误跳过
-        window.addEventListener('pageshow', (e) => {
-            if (e.persisted) sessionStorage.removeItem('skipLoader');
-        });
-    </script>
+    <!-- 遮罩与内容同帧内联在此，所以「从子页返回」和「点导航进入」看到的是同一套 CSH 开场：
+         首帧就是遮罩 → C/S/H 弹入 → header/footer 就绪后揭幕。转场只在这一处播，子页不再播。 -->
 
     <div id="header-container"></div>
 

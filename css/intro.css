@@ -203,10 +203,6 @@ body {
 
 .lightbox__close { top: 28px; right: 32px; }
 .lightbox__close:hover { transform: scale(1.08); }
-.lightbox__nav { top: 50%; transform: translateY(-50%); }
-.lightbox__nav:hover { transform: translateY(-50%) scale(1.08); }
-.lightbox__nav.prev { left: 32px; }
-.lightbox__nav.next { right: 32px; }
 
 .lightbox__counter {
     position: absolute;
@@ -221,8 +217,6 @@ body {
 @media screen and (max-width: 768px) {
     .lightbox__btn { width: 32px; height: 32px; }
     .lightbox__btn svg { width: 14px; height: 14px; }
-    .lightbox__nav.prev { left: 12px; }
-    .lightbox__nav.next { right: 12px; }
     .lightbox__close { top: 16px; right: 16px; }
 }
 

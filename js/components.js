@@ -98,10 +98,34 @@ async function initComponents() {
             });
     });
 
+    // 加载 footer（提前发起：返回接力揭幕要等它，否则底部会空一帧再补上）
+    const footerContainer = document.getElementById('footer-container');
+    const footerLoaded = footerContainer ? new Promise((resolveFooter) => {
+        fetch(basePath + 'footer.html')
+            .then(response => response.text())
+            .then(html => {
+                footerContainer.innerHTML = html;
+
+                // footer 点击展开（移动端）
+                const footer = footerContainer.querySelector('.site-footer');
+                if (footer) {
+                    footer.addEventListener('click', function (e) {
+                        this.classList.toggle('expanded');
+                    });
+                }
+                resolveFooter();
+            })
+            .catch(err => {
+                console.error('Footer 加载失败:', err);
+                resolveFooter();
+            });
+    }) : Promise.resolve();
+
     // 加载 loader（欢迎页 index.html 不放开场动画，直接呈现内容）
     const loaderContainer = document.getElementById('loader-container');
-    // works.html 首帧同步脚本可能已隐藏容器（返回接力：子页刚播过 CSH）
+    // 老页面（极少）首帧把容器 display:none 掉，这种就不再揭幕
     const loaderSkipped = loaderContainer && loaderContainer.style.display === 'none';
+
     if (loaderContainer && rawPage !== 'index' && !loaderSkipped) {
         // loader 标记已内联在 HTML 里（与内容同帧绘制，避免"内容先闪现再出遮罩"的竞态）。
         // 老页面没有内联标记时，退回 fetch 注入
@@ -110,9 +134,10 @@ async function initComponents() {
         const setupLoader = (loader) => {
             loader.style.display = 'flex';
 
-            // 揭幕条件：hideTime 计时结束 且 header 已注入完成（防止 header 迟到闪现）
+            // 揭幕条件：动画播完 + header/footer 都注入完成
+            // （footer 也等，否则底部会空一帧再补上，看起来像"页面往下长了一截"）
             const delay = (ms) => new Promise((r) => setTimeout(r, ms));
-            Promise.all([headerLoaded, delay(noAnim ? 0 : 900)]).then(() => {
+            Promise.all([headerLoaded, footerLoaded, delay(noAnim ? 0 : 900)]).then(() => {
                 loader.classList.add('hidden');
                 loader.style.display = 'none';
                 loader.style.opacity = '0';
@@ -139,25 +164,6 @@ async function initComponents() {
     } else {
         // 欢迎页或无容器页面：仍需通知页面入场动画可以开始
         window.dispatchEvent(new CustomEvent('loader:hidden'));
-    }
-
-    // 加载 footer
-    const footerContainer = document.getElementById('footer-container');
-    if (footerContainer) {
-        fetch(basePath + 'footer.html')
-            .then(response => response.text())
-            .then(html => {
-                footerContainer.innerHTML = html;
-
-                // footer 点击展开（移动端）
-                const footer = footerContainer.querySelector('.site-footer');
-                if (footer) {
-                    footer.addEventListener('click', function (e) {
-                        this.classList.toggle('expanded');
-                    });
-                }
-            })
-            .catch(err => console.error('Footer 加载失败:', err));
     }
 }
 

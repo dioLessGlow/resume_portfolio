@@ -1,62 +1,125 @@
-/* 全站统一返回键（13 个页面共用） */
+/* 全站统一返回键（13 个页面共用）：左向箭头牌 + 牌里一张会眨眼的笑脸，形状即语义 */
 .back-btn {
     position: fixed;
     top: 100px;
     right: 24px;
     z-index: 9999;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(45, 122, 45, 0.1);
-    border: 1px solid rgba(45, 122, 45, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 56px;
+    height: 42px;
+    /* 箭头轮廓 + 白色描边 + 微笑嘴，一并画进背景；drop-shadow 按箭头形状投影 */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 42'%3E%3Cpath d='M18 4 L3 21 L18 38 L44 38 Q52 38 52 30 L52 12 Q52 4 44 4 Z' fill='%23f6c945' stroke='%23ffffff' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M29 27 q6 5 12 0' fill='none' stroke='%232f6b2f' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
     cursor: pointer;
-    transition: all 0.25s ease;
     text-decoration: none;
     box-sizing: border-box;
+    filter: drop-shadow(0 4px 9px rgba(120, 84, 10, 0.32));
+    transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1), filter 0.25s ease, opacity 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.back-btn:hover {
-    background: rgba(45, 122, 45, 0.2);
-    border-color: rgba(45, 122, 45, 0.4);
-    transform: scale(1.08);
+/* 两只眼睛：嵌在箭头身体上半部，定时眨眼；右眼略延迟偶尔像抛媚眼 */
+.back-btn::before,
+.back-btn::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    width: 7px;
+    height: 11px;
+    background: #2f6b2f;
+    border-radius: 5px;
+    transform-origin: center center;
+    animation: bbBlink 4.2s infinite;
+    transition: height 0.2s ease, top 0.2s ease;
 }
 
+.back-btn::before {
+    left: 27px;
+}
+
+.back-btn::after {
+    left: 39px;
+    animation-delay: 0.12s;
+}
+
+@keyframes bbBlink {
+    0%, 40%, 44%, 100% { transform: scaleY(1); }
+    42% { transform: scaleY(0.08); }
+}
+
+/* HTML 里原来的直线箭头 SVG 不再需要（造型已由背景承担） */
 .back-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: var(--color-primary, #2d7a2d);
-    stroke-width: 2;
-    fill: none;
+    display: none;
 }
 
-/* 深色场景变体：形状位置不变，颜色反白保证可见 */
+/* 悬停：整枚箭头往左探一下、微微上浮歪头，眼睛眨得更快更亮 */
+.back-btn:hover {
+    transform: translate(-4px, -2px) rotate(-5deg);
+    filter: drop-shadow(0 7px 15px rgba(120, 84, 10, 0.42));
+}
+
+.back-btn:hover::before,
+.back-btn:hover::after {
+    animation-duration: 1.6s;
+    height: 13px;
+    top: 11px;
+}
+
+/* 按下：缩一下并眯眼 */
+.back-btn:active {
+    transform: scale(0.92) rotate(2deg);
+    filter: drop-shadow(0 3px 7px rgba(120, 84, 10, 0.36));
+}
+
+.back-btn:active::before,
+.back-btn:active::after {
+    animation: none;
+    transform: scaleY(0.25);
+}
+
+/* 深色场景：加强白色外发光，箭头在深/红底上更醒目 */
 .back-btn.on-dark {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.35);
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.55)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
 }
 
 .back-btn.on-dark:hover {
-    background: rgba(255, 255, 255, 0.24);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.back-btn.on-dark svg {
-    stroke: #fff;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7)) drop-shadow(0 7px 14px rgba(0, 0, 0, 0.46));
 }
 
 @media (max-width: 768px) {
     .back-btn {
         top: 70px;
         right: 16px;
-        width: 38px;
-        height: 38px;
+        width: 48px;
+        height: 36px;
     }
 
-    .back-btn svg {
-        width: 16px;
-        height: 16px;
+    .back-btn::before,
+    .back-btn::after {
+        top: 10px;
+        width: 6px;
+        height: 9px;
+        border-radius: 4px;
     }
+
+    .back-btn::before { left: 23px; }
+    .back-btn::after { left: 33px; }
+
+    .back-btn:hover::before,
+    .back-btn:hover::after {
+        height: 11px;
+        top: 9px;
+    }
+}
+
+/* 尊重系统减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+    .back-btn,
+    .back-btn::before,
+    .back-btn::after {
+        animation: none;
+        transition: none;
+    }
+    .back-btn:hover { transform: none; }
 }

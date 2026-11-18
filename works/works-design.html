@@ -5,9 +5,18 @@
 <script>/*pull-to-refresh-v2*/(function(){
 try{if(sessionStorage.getItem('__prNoAnim')==='1'){sessionStorage.removeItem('__prNoAnim');document.documentElement.setAttribute('data-pr-noanim','1');}}catch(e){}
 if(document.documentElement.getAttribute('data-pr-noanim')==='1'){try{if(history.scrollRestoration)history.scrollRestoration='manual';window.addEventListener('load',function(){window.scrollTo(0,0);});document.addEventListener('DOMContentLoaded',function(){window.scrollTo(0,0);});}catch(e){}var __st=document.createElement('style');__st.textContent='html[data-pr-noanim] .welcome-text,html[data-pr-noanim] .welcome-text::after,html[data-pr-noanim] .sub-text,html[data-pr-noanim] .hint{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}html[data-pr-noanim] .welcome-text::after{width:clamp(100px,20vw,200px)!important}html[data-pr-noanim] .loader{display:none!important}@keyframes __prBounceIn{0%{opacity:0;transform:translateY(42px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}html[data-pr-noanim] body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style){animation:__prBounceIn .62s cubic-bezier(.34,1.42,.64,1) backwards}';document.head.appendChild(__st);}
-var sy=0,sx=0,dragging=false,pull=0,clr=null,ui=null,ico=null,txt=null,loading=false;
+var sy=0,sx=0,dragging=false,pull=0,clr=null,ui=null,ico=null,txt=null,loading=false,scroller=null;
 var MAX=90,TH=56;
 function body(){return document.body;}
+/* 找到触点所在的最近可滚祖先：照片墙局部滚动时用墙的边界判断，其余回退整页 */
+function findScroller(el){
+  while(el&&el.nodeType===1){
+    var oy=getComputedStyle(el).overflowY;
+    if((oy==='auto'||oy==='scroll')&&el.scrollHeight>el.clientHeight+1)return el;
+    el=el.parentElement;
+  }
+  return document.scrollingElement||document.documentElement;
+}
 var SEL='body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style)';function movers(){return document.querySelectorAll(SEL);}function setMoveY(p,trans){var els=movers();for(var i=0;i<els.length;i++){els[i].style.transition=trans||'none';els[i].style.transform=p?('translateY('+p+'px)'):'';}return els;}
 function ensureUI(){
   if(ui)return ui;
@@ -48,12 +57,13 @@ function doRefresh(){
   try{sessionStorage.setItem('__prNoAnim','1');}catch(e){}
   setTimeout(function(){location.reload();},450);
 }
-document.addEventListener('touchstart',function(e){var t=e.touches[0];if(!t)return;sy=t.clientY;sx=t.clientX;dragging=true;if(clr){clearTimeout(clr);clr=null;}},{passive:true});
+document.addEventListener('touchstart',function(e){var t=e.touches[0];if(!t)return;sy=t.clientY;sx=t.clientX;dragging=true;scroller=findScroller(e.target);if(clr){clearTimeout(clr);clr=null;}},{passive:true});
 document.addEventListener('touchmove',function(e){
   var t=e.touches[0];if(!t)return;
   var dy=t.clientY-sy,dx=t.clientX-sx;
   if(Math.abs(dy)<=Math.abs(dx)){if(pull)setPull(0);return;}
-  var se=document.scrollingElement||document.documentElement,max=se.scrollHeight-window.innerHeight;
+  var se=scroller||document.scrollingElement||document.documentElement;
+  var max=se.scrollHeight-(se===document.documentElement?window.innerHeight:se.clientHeight);
   if(max<=0)return;
   var y=se.scrollTop;
   if(dy>0&&y<=0){e.preventDefault();setPull(Math.min(MAX,dy*0.55));}
@@ -137,9 +147,26 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             margin: 0 auto;
         }
 
+        /* 文件夹一排横向滚动：隐藏滚动条但保留滑动手感 */
+        .pc-folders {
+            flex: 0 0 auto;
+            /* 永远钉在容器底部：墙不足一屏时留白落在墙与文件夹之间 */
+            margin-top: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+        }
+        .pc-folders::-webkit-scrollbar {
+            display: none;
+        }
+
         #app {
             /* 标题已脱离文档流，这里直接吃到视口底部：底部位置恒定，文件夹不动 */
-            min-height: calc(100dvh - 126px);
+            /* 锁一屏高度：展开照片墙时不再把整排文件夹往下推，改由墙内部滚动 */
+            height: calc(100dvh - 126px);
+            min-height: 0;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -147,6 +174,27 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             justify-content: flex-end;
             padding: 20px;
         }
+
+        /* 根容器铺满一屏：墙贴顶、文件夹靠底，展开前后文件夹位置一致 */
+        #app > div {
+            height: 100%;
+            justify-content: flex-start;
+        }
+
+        /* 照片墙：吃掉文件夹之上的剩余空间，内容超出时墙内滚动（桌面/手机一致） */
+        .pc-grid-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            /* !important 压过 motion.div 内联的 overflow:hidden，否则滚不动 */
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+            /* safe center：内容超高时从顶部对齐，避免第一行被切在可视区上方 */
+            align-items: flex-start !important;
+            align-items: safe center !important;
+        }
+        .pc-grid-wrap::-webkit-scrollbar { display: none; }
 
         @media (max-width: 768px) {
 
@@ -177,32 +225,29 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 overflow: hidden;
                 --pc-w: 100%;
                 --pc-minh: 0px;
-                --pc-imgmin: clamp(50px, calc((100dvh - 504px) / 3), 132px);
+                /* 局部滚动：卡片高度固定、图更大；照片墙超出时自身滚动，不再按行数硬压缩 */
+                --pc-imgmin: clamp(116px, 32vw, 150px);
                 --pc-imgmax: var(--pc-imgmin);
                 --root-py: 8px;
                 /* 墙与文件夹行之间留足空隙，避免文件夹的耳朵压到照片卡 */
                 --root-gap: 26px;
             }
 
-            #app > div {
-                height: 100%;
-                /* 根容器撑满后，文件夹靠底对齐，展开前后位置一致 */
-                justify-content: flex-end;
-            }
-
             .pc-grid-wrap {
-                flex: 1 1 auto;
-                min-height: 0;
+                /* 手机锁定 2 行可视高度；桌面按剩余空间自适应。
+                   flex-shrink 允许：屏幕矮时先让墙收缩（墙内滚动），
+                   文件夹行永远保住自己的位置，不会被图片挤下去 */
+                flex: 0 1 auto;
+                height: calc(var(--pc-imgmin) * 2 + 136px);
+                max-height: 100%;
+                /* 从导航下方往下挪一点，不贴着顶 */
+                margin-top: clamp(12px, 4vw, 22px);
             }
 
             .pc-grid {
-                height: 100%;
-                align-content: center;
+                height: auto;
+                align-content: start;
                 padding: 0 !important;
-            }
-
-            .pc-folders {
-                flex: 0 0 auto;
             }
         }
 
@@ -289,10 +334,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
         .lightbox__close { top: 28px; right: 32px; }
         .lightbox__close:hover { transform: scale(1.08); }
-        .lightbox__nav { top: 50%; transform: translateY(-50%); }
-        .lightbox__nav:hover { transform: translateY(-50%) scale(1.08); }
-        .lightbox__nav.prev { left: 32px; }
-        .lightbox__nav.next { right: 32px; }
 
         .lightbox__counter {
             position: absolute;
@@ -307,14 +348,13 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         @media (max-width: 768px) {
             .lightbox__btn { width: 32px; height: 32px; }
             .lightbox__btn svg { width: 14px; height: 14px; }
-            .lightbox__nav.prev { left: 12px; }
-            .lightbox__nav.next { right: 12px; }
             .lightbox__close { top: 16px; right: 16px; }
         }
     </style>
 <base target="_blank">
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/back-btn.css">
+    <link rel="stylesheet" href="../css/lightbox-arrows.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
 </head>
 
@@ -333,7 +373,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         <!-- 只在文件夹视图显示；点开照片墙后由 React 隐藏 -->
         <div class="page-header">
             <h1>设计作品</h1>
-            <p>海报、品牌视觉、UI设计</p>
+            <p>海报、品牌视觉、UI设计、插画与漫画</p>
         </div>
 
         <div class="works-container">
@@ -355,16 +395,36 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         const FOLDERS = [
             {
                 id: 'poster',
-                name: '海报设计',
+                name: '海报宣传',
                 color: '#c7d2fe',
                 textColor: '#1e1b4b',
                 photos: [
-                    { name: '春', src: '../images/posters/春.webp' },
-                    { name: '镜鉴电诈', src: '../images/posters/镜鉴电诈.webp' },
-                    { name: '夏', src: '../images/posters/夏.webp' },
-                    { name: '秋', src: '../images/posters/秋.webp' },
-                    { name: '绿色出行', src: '../images/posters/绿色出行-海报.webp' },
-                    { name: '冬', src: '../images/posters/冬.webp' },
+                    // 四季 / 节气系列，四张连排
+                    { name: "春", src: '../images/posters/春.webp' },
+                    { name: "夏", src: '../images/posters/夏.webp' },
+                    { name: "秋", src: '../images/posters/秋.webp' },
+                    { name: "冬", src: '../images/posters/冬.webp' },
+                    { name: "立冬可爱版", src: '../images/posters/gallery/kh-14.webp' },
+                    // 反诈系列
+                    { name: "镜鉴电诈", src: '../images/posters/镜鉴电诈.webp' },
+                    { name: "反诈海报", src: '../images/posters/gallery2/jm1-2.webp' },
+                    // 公益 / 主题
+                    { name: "绿色出行", src: '../images/posters/绿色出行-海报.webp' },
+                    { name: "世界读书日", src: '../images/posters/gallery/kh-12.webp' },
+                    { name: "亲子活动封面", src: '../images/posters/gallery/kh-10.webp' },
+                    // 地域文化 / 字体
+                    { name: "三灶鹤舞", src: '../images/posters/gallery/kh-02.webp' },
+                    { name: "台山", src: '../images/posters/gallery/kh-05.webp' },
+                    { name: "岭南", src: '../images/posters/gallery/kh-06.webp' },
+                    { name: "广科", src: '../images/posters/gallery/kh-07.webp' },
+                    { name: "好奇一下", src: '../images/posters/gallery/kh-01.webp' },
+                    { name: "青春当燃", src: '../images/posters/gallery/kh-16.webp' },
+                    // 系列插画海报
+                    { name: "浪漫少女 1", src: '../images/posters/gallery2/jm2-1.webp' },
+                    { name: "浪漫少女 2", src: '../images/posters/gallery2/jm2-2.webp' },
+                    { name: "浪漫少女 3", src: '../images/posters/gallery2/jm2-3.webp' },
+                    { name: "浪漫少女 4", src: '../images/posters/gallery2/jm2-4.webp' },
+                    { name: "浪漫少女 5", src: '../images/posters/gallery2/jm2-5.webp' }
                 ]
             },
             {
@@ -373,12 +433,14 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 color: '#fec7c7',
                 textColor: '#4b1b1b',
                 photos: [
-                    { name: '谷物包装', src: '../images/posters/1.webp' },
-                    { name: '丰收满仓', src: '../images/posters/2.webp' },
-                    { name: '粒粒金黄', src: '../images/posters/3.webp' },
-                    { name: '荣誉锦旗', src: '../images/posters/4.webp' },
-                    { name: '荣誉奖杯', src: '../images/posters/5.webp' },
-                    { name: '文化海报', src: '../images/posters/6.webp' },
+                    { name: "谷物包装", src: '../images/posters/1.webp' },
+                    { name: "丰收满仓", src: '../images/posters/2.webp' },
+                    { name: "粒粒金黄", src: '../images/posters/3.webp' },
+                    { name: "荣誉锦旗", src: '../images/posters/4.webp' },
+                    { name: "荣誉奖杯", src: '../images/posters/5.webp' },
+                    { name: "文化海报", src: '../images/posters/6.webp' },
+                    { name: "齿轮启鸣·标志", src: '../images/posters/gallery/kh-08.webp' },
+                    { name: "作品简介", src: '../images/posters/gallery/kh-04.webp' }
                 ]
             },
             {
@@ -387,12 +449,94 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 color: '#c7fed2',
                 textColor: '#1b4b2e',
                 photos: [
-                    { name: '后台系统', src: '../images/posters/ui4.webp' },
-                    { name: '管理后台', src: '../images/posters/ui5.webp' },
-                    { name: '网页界面', src: '../images/posters/ui6.webp' },
-                    { name: '产品展示', src: '../images/posters/ui1.webp' },
-                    { name: '电商主图', src: '../images/posters/ui2.webp' },
-                    { name: '移动端UI', src: '../images/posters/ui3.webp' },
+                    { name: "后台系统", src: '../images/posters/ui4.webp' },
+                    { name: "管理后台", src: '../images/posters/ui5.webp' },
+                    { name: "网页界面", src: '../images/posters/ui6.webp' },
+                    { name: "产品展示", src: '../images/posters/ui1.webp' },
+                    { name: "电商主图", src: '../images/posters/ui2.webp' },
+                    { name: "移动端UI", src: '../images/posters/ui3.webp' }
+                ]
+            },
+            {
+                id: 'g-illust',
+                name: '插画',
+                color: '#ffd9e8',
+                textColor: '#4b1b3a',
+                photos: [
+                    { name: "立体古书 1", src: '../images/posters/gallery2/jm3-1.webp' },
+                    { name: "立体古书 2", src: '../images/posters/gallery2/jm3-2.webp' },
+                    { name: "立体古书 3", src: '../images/posters/gallery2/jm3-3.webp' },
+                    { name: "立体古书 4", src: '../images/posters/gallery2/jm3-4.webp' },
+                    { name: "立体古书 5", src: '../images/posters/gallery2/jm3-5.webp' },
+                    { name: "立体古书 6", src: '../images/posters/gallery2/jm3-6.webp' },
+                    { name: "星空小镇 1", src: '../images/posters/gallery2/jm4-1.webp' },
+                    { name: "星空小镇 2", src: '../images/posters/gallery2/jm4-2.webp' },
+                    { name: "星空小镇 3", src: '../images/posters/gallery2/jm4-3.webp' },
+                    { name: "星空小镇 4", src: '../images/posters/gallery2/jm4-4.webp' },
+                    { name: "星空小镇 5", src: '../images/posters/gallery2/jm4-5.webp' },
+                    { name: "星空小镇 6", src: '../images/posters/gallery2/jm4-6.webp' },
+                    { name: "星空小镇 7", src: '../images/posters/gallery2/jm4-7.webp' },
+                    { name: "锦鲤 1", src: '../images/posters/gallery2/jm5-1.webp' },
+                    { name: "锦鲤 2", src: '../images/posters/gallery2/jm5-2.webp' },
+                    { name: "锦鲤 3", src: '../images/posters/gallery2/jm5-3.webp' },
+                    { name: "锦鲤 4", src: '../images/posters/gallery2/jm5-4.webp' },
+                    { name: "樱花卷轴 1", src: '../images/posters/gallery2/jm7-1.webp' },
+                    { name: "樱花卷轴 2", src: '../images/posters/gallery2/jm7-2.webp' },
+                    { name: "樱花卷轴 3", src: '../images/posters/gallery2/jm7-3.webp' },
+                    { name: "樱花卷轴 4", src: '../images/posters/gallery2/jm7-4.webp' },
+                    { name: "书店插画 1", src: '../images/posters/gallery2/jm10-1.webp' },
+                    { name: "书店插画 2", src: '../images/posters/gallery2/jm10-2.webp' },
+                    { name: "书店插画 3", src: '../images/posters/gallery2/jm10-3.webp' },
+                    { name: "书店插画 4", src: '../images/posters/gallery2/jm10-4.webp' },
+                    { name: "线稿 1", src: '../images/posters/gallery2/jm11-1.webp' },
+                    { name: "线稿 2", src: '../images/posters/gallery2/jm11-2.webp' },
+                    { name: "线稿 3", src: '../images/posters/gallery2/jm11-3.webp' },
+                    { name: "线稿 4", src: '../images/posters/gallery2/jm11-4.webp' },
+                    { name: "海边小镇 1", src: '../images/posters/gallery2/jm12-1.webp' },
+                    { name: "海边小镇 2", src: '../images/posters/gallery2/jm12-2.webp' },
+                    { name: "海边小镇 3", src: '../images/posters/gallery2/jm12-3.webp' },
+                    { name: "海边小镇 4", src: '../images/posters/gallery2/jm12-4.webp' },
+                    { name: "海边小镇 5", src: '../images/posters/gallery2/jm12-5.webp' },
+                    { name: "老宅插画 1", src: '../images/posters/gallery2/jm13-1.webp' },
+                    { name: "老宅插画 2", src: '../images/posters/gallery2/jm13-2.webp' },
+                    { name: "老宅插画 3", src: '../images/posters/gallery2/jm13-3.webp' },
+                    { name: "老宅插画 4", src: '../images/posters/gallery2/jm13-4.webp' }
+                ]
+            },
+            {
+                id: 'g-banner',
+                name: '横版宣传',
+                color: '#c7f0fe',
+                textColor: '#1b3a4b',
+                photos: [
+                    { name: "陕里阅唐 1", src: '../images/posters/gallery2/jm8-1.webp' },
+                    { name: "陕里阅唐 2", src: '../images/posters/gallery2/jm8-2.webp' },
+                    { name: "陕里阅唐 3", src: '../images/posters/gallery2/jm8-3.webp' },
+                    { name: "陕里阅唐 4", src: '../images/posters/gallery2/jm8-4.webp' },
+                    { name: "陕里阅唐 5", src: '../images/posters/gallery2/jm8-5.webp' },
+                    { name: "麦田卷轴 1", src: '../images/posters/gallery2/jm9-1.webp' },
+                    { name: "麦田卷轴 2", src: '../images/posters/gallery2/jm9-2.webp' },
+                    { name: "麦田卷轴 3", src: '../images/posters/gallery2/jm9-3.webp' },
+                    { name: "麦田卷轴 4", src: '../images/posters/gallery2/jm9-4.webp' },
+                    { name: "水墨邀请函", src: '../images/posters/gallery/kh-15.webp' },
+                    { name: "会议视觉 1", src: '../images/posters/gallery/meng-1.webp' },
+                    { name: "会议视觉 2", src: '../images/posters/gallery/meng-2.webp' }
+                ]
+            },
+            {
+                id: 'g-comic',
+                name: '漫画',
+                color: '#fff0c2',
+                textColor: '#4b3a1b',
+                photos: [
+                    { name: "萝卜漫画 1", src: '../images/posters/gallery2/jm6-1.webp' },
+                    { name: "萝卜漫画 2", src: '../images/posters/gallery2/jm6-2.webp' },
+                    { name: "萝卜漫画 3", src: '../images/posters/gallery2/jm6-3.webp' },
+                    { name: "萝卜漫画 4", src: '../images/posters/gallery2/jm6-4.webp' },
+                    { name: "名著漫画 1", src: '../images/posters/gallery/pyq-1.webp' },
+                    { name: "名著漫画 2", src: '../images/posters/gallery/pyq-2.webp' },
+                    { name: "名著漫画 3", src: '../images/posters/gallery/pyq-3.webp' },
+                    { name: "名著漫画 4", src: '../images/posters/gallery/pyq-4.webp' }
                 ]
             }
         ];
@@ -439,7 +583,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#e8e4d9',
+                        backgroundColor: '#efece0',
                         overflow: 'hidden',
                         position: 'relative',
                         minHeight: 'var(--pc-imgmin, 100px)',
@@ -447,6 +591,21 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         borderRadius: '2px'
                     }
                 },
+                    // 模糊底：同一张图放大铺满，把竖图两侧的死灰空白换成主色调柔光
+                    React.createElement("div", {
+                        style: {
+                            position: 'absolute',
+                            inset: 0,
+                            zIndex: 0,
+                            backgroundImage: `url("${src}")`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            filter: 'blur(18px) saturate(1.15)',
+                            transform: 'scale(1.25)',
+                            opacity: 0.42,
+                            pointerEvents: 'none'
+                        }
+                    }),
                     React.createElement("img", {
                         src: src,
                         alt: name,
@@ -456,18 +615,21 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                             width: 'auto',
                             height: 'auto',
                             objectFit: 'contain',
-                            display: 'block'
+                            display: 'block',
+                            position: 'relative',
+                            zIndex: 1
                         },
                         onError: (e) => {
                             e.target.style.display = 'none';
                             e.target.parentElement.style.backgroundColor = '#d4cfc4';
                         }
                     }),
-                    // 内阴影保持复古感
+                    // 内阴影保持复古感（zIndex 2：压在模糊底和海报之上）
                     React.createElement("div", {
                         style: {
                             position: 'absolute',
                             inset: 0,
+                            zIndex: 2,
                             boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.1)',
                             pointerEvents: 'none'
                         }
@@ -536,15 +698,15 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     onClick: (e) => { e.stopPropagation(); onClose(); }
                 }, React.createElement(CloseIcon)),
                 multi && React.createElement("button", {
-                    type: "button", className: "lightbox__btn lightbox__nav prev",
+                    type: "button", className: "lb-arrow lb-arrow--prev",
                     "aria-label": "上一张",
                     onClick: (e) => { e.stopPropagation(); onStep("prev"); }
-                }, React.createElement(ArrowIcon, { dir: "prev" })),
+                }),
                 multi && React.createElement("button", {
-                    type: "button", className: "lightbox__btn lightbox__nav next",
+                    type: "button", className: "lb-arrow lb-arrow--next",
                     "aria-label": "下一张",
                     onClick: (e) => { e.stopPropagation(); onStep("next"); }
-                }, React.createElement(ArrowIcon, { dir: "next" })),
+                }),
                 multi && React.createElement("div", {
                     className: "lightbox__counter"
                 }, (index + 1) + " / " + list.length)
@@ -556,12 +718,13 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             return React.createElement(motion.div, {
                 style: {
                     position: 'relative',
-                    width: '100%',
-                    maxWidth: '160px',
+                    flex: '0 0 auto',
+                    width: 'clamp(96px, 25vw, 160px)',
                     aspectRatio: '5/4',
                     borderRadius: '12px',
                     cursor: 'pointer',
-                    zIndex: 5
+                    zIndex: 5,
+                    scrollSnapAlign: 'center'
                 },
                 animate: {
                     y: isLifted ? -14 : 0,
@@ -725,9 +888,14 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         const App = () => {
             const [expandedFolder, setExpandedFolder] = useState(null);
             const [lightboxIdx, setLightboxIdx] = useState(null);
+            const gridWrapRef = useRef(null);
             // 标题只在文件夹视图显示：打开照片墙时挂 body.folder-open，由 CSS 隐藏标题并压缩布局
             useEffect(() => {
                 document.body.classList.toggle('folder-open', !!expandedFolder);
+            }, [expandedFolder]);
+            // 切换/打开文件夹后照片墙滚回顶部，避免停在上一个文件夹的中段
+            useEffect(() => {
+                if (gridWrapRef.current) gridWrapRef.current.scrollTop = 0;
             }, [expandedFolder]);
 
             // 预加载海报图：避免点开文件夹那一刻才开始请求、出现灰块。
@@ -795,6 +963,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         /* 容器 key 固定：切换文件夹时不卸载整墙（免去退场等待），
                            只换里面的卡片，卡片自身做快速淡入 */
                         key: "grid",
+                        ref: gridWrapRef,
                         className: "pc-grid-wrap",
                         /* 只做淡入淡出：高度由 flex 锁定，不再用 height 动画参与 flex 计算，
                            配合 mode="wait" 让旧墙先退、新墙后进，切换时卡片不再上下窜 */
@@ -840,13 +1009,16 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 React.createElement("div", {
                     className: "pc-folders",
                     style: {
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        display: 'flex',
+                        flexWrap: 'nowrap',
                         gap: 'clamp(16px, 4vw, 36px)',
                         width: '100%',
                         maxWidth: '560px',
-                        padding: '0 20px',
-                        justifyItems: 'center'
+                        padding: '34px 20px 12px',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        scrollSnapType: 'x proximity',
+                        alignItems: 'center'
                     }
                 },
                         FOLDERS.map(folder =>
@@ -854,7 +1026,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                                 key: folder.id,
                                 folder: folder,
                                 isExpanded: expandedFolder === folder.id,
-                                isLifted: expandedFolder !== folder.id,
+                                // 被点开的那张上浮突出，其余保持原位——避免整排一起位移
+                                isLifted: expandedFolder === folder.id,
                                 onToggle: () => handleToggle(folder.id)
                             })
                         )
@@ -875,6 +1048,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         const root = createRoot(document.getElementById("app"));
         root.render(React.createElement(App));
     </script>
+    <script src="../js/lightbox-arrows.js" defer></script>
     <script src="../js/back-transition.js"></script>
 </body>
 

@@ -71,6 +71,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/intro.css">
     <link rel="stylesheet" href="css/loader.css">
+    <link rel="stylesheet" href="css/lightbox-arrows.css">
     <link rel="stylesheet" href="fonts/fonts.css">
 </head>
 <body>
@@ -397,6 +398,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
     <div id="footer-container"></div>
 
+    <script src="js/lightbox-arrows.js" defer></script>
     <script type="module" src="js/components.js"></script>
         
     <script>
@@ -430,10 +432,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 '<img class="lightbox__img" alt="项目截图预览">' +
                 '<button type="button" class="lightbox__btn lightbox__close" aria-label="关闭">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' +
-                '<button type="button" class="lightbox__btn lightbox__nav prev" aria-label="上一张">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>' +
-                '<button type="button" class="lightbox__btn lightbox__nav next" aria-label="下一张">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>' +
+                '<button type="button" class="lb-arrow lb-arrow--prev" aria-label="上一张"></button>' +
+                '<button type="button" class="lb-arrow lb-arrow--next" aria-label="下一张"></button>' +
                 '<div class="lightbox__counter"></div>';
             document.body.appendChild(lb);
 
@@ -447,8 +447,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 lbImg.src = list[idx];
                 lbCounter.textContent = (idx + 1) + ' / ' + list.length;
                 const multi = list.length > 1;
-                lb.querySelectorAll('.lightbox__nav').forEach(b => {
-                    b.style.display = multi ? 'flex' : 'none';
+                lb.querySelectorAll('.lb-arrow').forEach(b => {
+                    b.style.display = multi ? 'block' : 'none';
                 });
                 lbCounter.style.display = multi ? 'block' : 'none';
             }
@@ -490,11 +490,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 e.stopPropagation();
                 close();
             });
-            lb.querySelector('.lightbox__nav.prev').addEventListener('click', (e) => {
+            lb.querySelector('.lb-arrow--prev').addEventListener('click', (e) => {
                 e.stopPropagation();
                 step('prev');
             });
-            lb.querySelector('.lightbox__nav.next').addEventListener('click', (e) => {
+            lb.querySelector('.lb-arrow--next').addEventListener('click', (e) => {
                 e.stopPropagation();
                 step('next');
             });

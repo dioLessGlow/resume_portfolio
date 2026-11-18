@@ -1,0 +1,165 @@
+/* 全站图片浏览的左右切换键
+   —— 造型沿用返回键：黄色箭头牌 + 白描边 + 眨眼笑脸，形状即语义
+   —— 位置由 js/lightbox-arrows.js 写入 top，对齐「大图」的垂直中线
+   —— 四个页面共用：intro / works-projects / works-design / works-honors */
+
+.lb-arrow {
+    position: absolute;
+    /* JS 未执行时的兜底位置 */
+    top: 50%;
+    /* 与 JS 写入的 top 配合做垂直居中（translate 与 transform 互不干扰，
+       hover 的位移/旋转放在 transform 上） */
+    translate: 0 -50%;
+    width: 58px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    cursor: pointer;
+    z-index: 3;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, .38)) drop-shadow(0 5px 12px rgba(0, 0, 0, .45));
+    transition: transform .25s cubic-bezier(.34, 1.4, .64, 1), filter .25s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lb-arrow--prev {
+    left: clamp(6px, 1.6vw, 24px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 42'%3E%3Cpath d='M18 4 L3 21 L18 38 L44 38 Q52 38 52 30 L52 12 Q52 4 44 4 Z' fill='%23f6c945' stroke='%23ffffff' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M29 27 q6 5 12 0' fill='none' stroke='%232f6b2f' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.lb-arrow--next {
+    right: clamp(6px, 1.6vw, 24px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 42'%3E%3Cpath d='M38 4 L53 21 L38 38 L12 38 Q4 38 4 30 L4 12 Q4 4 12 4 Z' fill='%23f6c945' stroke='%23ffffff' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M27 27 q-6 5 -12 0' fill='none' stroke='%232f6b2f' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* 牌上的眼睛：与返回键同一套眨眼节奏 */
+.lb-arrow::before,
+.lb-arrow::after {
+    content: "";
+    position: absolute;
+    top: 13px;
+    width: 7px;
+    height: 11px;
+    background: #2f6b2f;
+    border-radius: 5px;
+    transform-origin: center center;
+    animation: lbArrowBlink 4.2s infinite;
+    transition: height .2s ease, top .2s ease;
+}
+
+.lb-arrow--prev::before { left: 48.2%; }
+.lb-arrow--prev::after { left: 69.6%; animation-delay: .12s; }
+
+.lb-arrow--next::before { left: 17.9%; }
+.lb-arrow--next::after { left: 39.3%; }
+
+@keyframes lbArrowBlink {
+    0%, 40%, 44%, 100% { transform: scaleY(1); }
+    42% { transform: scaleY(.08); }
+}
+
+/* 悬停：沿箭头方向探一下、微微歪头，眼睛睁大眨得更快 */
+.lb-arrow--prev:hover {
+    transform: translate(-4px, -2px) rotate(-5deg);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, .55)) drop-shadow(0 7px 15px rgba(0, 0, 0, .5));
+}
+
+.lb-arrow--next:hover {
+    transform: translate(4px, -2px) rotate(5deg);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, .55)) drop-shadow(0 7px 15px rgba(0, 0, 0, .5));
+}
+
+.lb-arrow:hover::before,
+.lb-arrow:hover::after {
+    animation-duration: 1.6s;
+    height: 13px;
+    top: 12px;
+}
+
+/* 按下：缩一下并眯眼 */
+.lb-arrow:active {
+    transform: scale(.92);
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, .4)) drop-shadow(0 3px 8px rgba(0, 0, 0, .45));
+}
+
+.lb-arrow:active::before,
+.lb-arrow:active::after {
+    animation: none;
+    transform: scaleY(.25);
+}
+
+.lb-arrow:focus-visible {
+    outline: 2px solid #f6c945;
+    outline-offset: 4px;
+    border-radius: 6px;
+}
+
+/* 大图浏览时把页面右上角的返回键收起来：
+   它固定在 top:100px / right:24px 且 z-index 9999，会浮在遮罩上当多余的箭头 */
+body:has(.lightbox.is-open) .back-btn,
+body:has(.honor-lb.is-open) .back-btn {
+    opacity: 0;
+    transform: translateY(-8px) scale(.9);
+    pointer-events: none;
+}
+
+/* 两侧要给箭头留出落脚位，大图不再顶到屏幕边。
+   特异性高于各页自带的 .lightbox__img 规则，可稳定覆盖。 */
+.lightbox .lightbox__img,
+.honor-lb .honor-lb__img {
+    max-width: min(1400px, calc(100vw - 152px));
+}
+
+@media (max-width: 768px) {
+
+    /* 手机上屏幕小，箭头收到 34×26，眼睛按同比例缩小 */
+    .lb-arrow {
+        width: 34px;
+        height: 26px;
+    }
+
+    .lb-arrow::before,
+    .lb-arrow::after {
+        top: 7px;
+        width: 4px;
+        height: 6px;
+        border-radius: 2px;
+    }
+
+    .lb-arrow:hover::before,
+    .lb-arrow:hover::after {
+        height: 8px;
+        top: 6px;
+    }
+
+    /* 手机上的探身幅度也收一点，小尺寸下 4px 显得夸张 */
+    .lb-arrow--prev:hover { transform: translate(-2px, -1px) rotate(-4deg); }
+    .lb-arrow--next:hover { transform: translate(2px, -1px) rotate(4deg); }
+
+    /* 手机上箭头压在大图上方：图片几乎满宽，箭头自带描边和投影，
+       落在图上比挤在两边留白里更好按，图也能看全 */
+    .lightbox .lightbox__img,
+    .honor-lb .honor-lb__img {
+        max-width: calc(100vw - 24px);
+    }
+
+    .lb-arrow {
+        /* 压图时靠深色外发光把黄色牌面从画面里托出来 */
+        filter: drop-shadow(0 0 2px rgba(0, 0, 0, .45)) drop-shadow(0 3px 8px rgba(0, 0, 0, .5));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lb-arrow,
+    .lb-arrow::before,
+    .lb-arrow::after {
+        animation: none;
+        transition: none;
+    }
+    .lb-arrow:hover {
+        transform: none;
+    }
+}

@@ -399,10 +399,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
         .lightbox__close { top: 28px; right: 32px; }
         .lightbox__close:hover { transform: scale(1.08); }
-        .lightbox__nav { top: 50%; transform: translateY(-50%); }
-        .lightbox__nav:hover { transform: translateY(-50%) scale(1.08); }
-        .lightbox__nav.prev { left: 32px; }
-        .lightbox__nav.next { right: 32px; }
 
         .lightbox__counter {
             position: absolute;
@@ -417,8 +413,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         @media screen and (max-width: 768px) {
             .lightbox__btn { width: 32px; height: 32px; }
             .lightbox__btn svg { width: 14px; height: 14px; }
-            .lightbox__nav.prev { left: 12px; }
-            .lightbox__nav.next { right: 12px; }
             .lightbox__close { top: 16px; right: 16px; }
         }
 
@@ -571,6 +565,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     </style>
     <base target="_blank">
     <link rel="stylesheet" href="../css/back-btn.css">
+    <link rel="stylesheet" href="../css/lightbox-arrows.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
 </head>
 
@@ -896,10 +891,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     '<img class="lightbox__img" alt="项目截图预览">' +
                     '<button type="button" class="lightbox__btn lightbox__close" aria-label="关闭">' +
                     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' +
-                    '<button type="button" class="lightbox__btn lightbox__nav prev" aria-label="上一张">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>' +
-                    '<button type="button" class="lightbox__btn lightbox__nav next" aria-label="下一张">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>' +
+                    '<button type="button" class="lb-arrow lb-arrow--prev" aria-label="上一张"></button>' +
+                    '<button type="button" class="lb-arrow lb-arrow--next" aria-label="下一张"></button>' +
                     '<div class="lightbox__counter"></div>';
                 document.body.appendChild(lb);
                 this.lightboxEl = lb;
@@ -914,7 +907,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     this.closeLightbox();
                 });
                 const nav = (dir) => {
-                    lb.querySelector(".lightbox__nav." + dir).addEventListener("click", (e) => {
+                    lb.querySelector(".lb-arrow--" + dir).addEventListener("click", (e) => {
                         e.stopPropagation();
                         this.lbStep(dir);
                     });
@@ -951,8 +944,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 this.lbImg.src = this.lbList[this.lbIdx];
                 this.lbCounter.textContent = (this.lbIdx + 1) + " / " + this.lbList.length;
                 const multi = this.lbList.length > 1;
-                this.lightboxEl.querySelectorAll(".lightbox__nav").forEach(b => {
-                    b.style.display = multi ? "flex" : "none";
+                this.lightboxEl.querySelectorAll(".lb-arrow").forEach(b => {
+                    b.style.display = multi ? "block" : "none";
                 });
                 this.lbCounter.style.display = multi ? "block" : "none";
             }
@@ -1330,6 +1323,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             new ProjectSlider();
         });
     </script>
+    <script src="../js/lightbox-arrows.js" defer></script>
     <script src="../js/back-transition.js"></script>
 </body>
 

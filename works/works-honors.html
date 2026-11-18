@@ -99,7 +99,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             }
 
             .scroll-body {
-                /* 8 张卡片，每张需要足够的滚动距离来触发 step */
+                /* 9 张卡片，每张一格，滚满 9 步正好转一圈回到起始 */
                 height: 800svh;
                 margin: 0;
 
@@ -107,8 +107,9 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 animation-timeline: scroll(nearest block);
                 animation-timing-function: steps(var(--cards));
 
-                /* 卡片总数，与 HTML 中卡片数量一致 */
-                --cards: 8;
+                /* 卡片总数，必须与 HTML 中卡片数量一致（9），
+                   否则每步转的角度与卡片间隔不匹配，会逐格漂移、跳卡 */
+                --cards: 9;
             }
 
             @keyframes --page-rotate {
@@ -135,7 +136,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 top: calc(50% + var(--radius) + var(--card-height) * 2.5);
                 left: 50%;
                 transform-origin: center center;
-                transform: translateX(-50%) rotate(calc(var(--rotate) * 360deg));
+                /* offset-path: circle() 的 0% 在 3 点钟方向，而视觉焦点在 12 点钟，
+                   所以整体先转 270° 把第 1 张顶到焦点；之后每步逆向转 1/--cards 圈，
+                   第 n 张依次接班（正向顺序浏览） */
+                transform: translateX(-50%) rotate(calc(270deg - var(--rotate) * 360deg));
                 transition: transform 300ms linear;
                 z-index: 1;
             }
@@ -147,9 +151,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 --card-offset-radius: circle(var(--radius) at 50% 50%);
                 --card-offset-distance: calc((var(--card-i) - 1) / var(--cards) * 100%);
 
-                /* 相对于焦点的位置计算 */
-                --card-phase: calc((var(--card-i) - 1) / var(--cards) - 0.75);
-                --card-pos: mod(calc(var(--card-phase) + var(--rotate) + 1), 1);
+                /* 相对于焦点的位置计算
+                   --card-pos = 0 表示这张卡正落在焦点（12 点钟）上。
+                   视觉相位 = offset + 0.75(焦点角度) - rotate，减去焦点即 offset - rotate */
+                --card-phase: calc((var(--card-i) - 1) / var(--cards));
+                --card-pos: mod(calc(var(--card-phase) - var(--rotate) + 1), 1);
                 --card-dist: min(var(--card-pos), calc(1 - var(--card-pos)));
 
                 /* 灰度：离焦点越远越灰 */
@@ -430,12 +436,202 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             }
 
         }
+
+        /* ========================================
+           点击放大：荣誉证书大图
+           （不放进 @layer，unlayered 优先级最高，能压过 demo 层）
+        ======================================== */
+        .wrapper>div {
+            cursor: zoom-in;
+        }
+
+        /* 键盘聚焦时给出可见轮廓（卡片本身是 div，需要手动加） */
+        .wrapper>div:focus-visible {
+            outline: 3px solid var(--color-primary);
+            outline-offset: 4px;
+        }
+
+        .honor-lb {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(56px, 9vh, 90px) clamp(16px, 7vw, 88px);
+            background: rgba(14, 18, 12, .94);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .26s ease, visibility .26s;
+        }
+
+        .honor-lb.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .honor-lb__figure {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .honor-lb__img {
+            max-width: min(1100px, 92vw);
+            max-height: min(74vh, 860px);
+            width: auto;
+            height: auto;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 26px 80px rgba(0, 0, 0, .55);
+            transform: scale(.94);
+            transition: transform .3s cubic-bezier(.22, .8, .3, 1), opacity .2s ease;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .honor-lb.is-open .honor-lb__img {
+            transform: scale(1);
+        }
+
+        .honor-lb__cap {
+            text-align: center;
+            color: #f3f5ee;
+            /* 图还没加载完时不闪 */
+            min-height: 46px;
+        }
+
+        .honor-lb__title {
+            font-size: clamp(16px, 2.1vw, 21px);
+            font-weight: 700;
+            letter-spacing: .06em;
+        }
+
+        .honor-lb__meta {
+            margin-top: 6px;
+            font-size: clamp(12px, 1.5vw, 14px);
+            color: rgba(243, 245, 238, .66);
+            letter-spacing: .1em;
+        }
+
+        .honor-lb__btn {
+            position: absolute;
+            width: clamp(38px, 8vw, 46px);
+            height: clamp(38px, 8vw, 46px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, .28);
+            padding: 0;
+            background: rgba(28, 32, 24, .55);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
+            transition: background .22s, transform .22s, border-color .22s;
+            z-index: 2;
+        }
+
+        /* 手机上扩大点击热区 */
+        .honor-lb__btn::after {
+            content: "";
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+        }
+
+        .honor-lb__btn:hover {
+            background: rgba(255, 255, 255, .22);
+            border-color: rgba(255, 255, 255, .6);
+        }
+
+        .honor-lb__btn:focus-visible {
+            outline: 2px solid #9ad19a;
+            outline-offset: 3px;
+        }
+
+        .honor-lb__btn svg {
+            width: clamp(15px, 3.4vw, 19px);
+            height: clamp(15px, 3.4vw, 19px);
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .35));
+        }
+
+        .honor-lb__close {
+            top: clamp(16px, 3vh, 30px);
+            right: clamp(16px, 3vw, 34px);
+        }
+
+        .honor-lb__close:hover {
+            transform: scale(1.08);
+        }
+
+
+        .honor-lb__counter {
+            position: absolute;
+            bottom: clamp(14px, 3vh, 26px);
+            left: 50%;
+            translate: -50% 0;
+            font-size: 12px;
+            letter-spacing: .16em;
+            color: rgba(243, 245, 238, .55);
+            font-variant-numeric: tabular-nums;
+            pointer-events: none;
+        }
+
+        /* 大图打开时锁住背景滚动 */
+        body.honor-lb-open {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* 单张时隐藏左右按钮 */
+        .honor-lb.single .lb-arrow,
+        .honor-lb.single .honor-lb__counter {
+            display: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .honor-lb,
+            .honor-lb__img,
+            .honor-lb__btn {
+                transition: none;
+            }
+        }
+
+        /* 手机竖屏：证书是横版，左右按钮会压在图边上，
+           所以把切换按钮移到图下方居中，计数器移到顶部 */
+        @media (max-width: 640px) {
+            .honor-lb {
+                padding: 76px 14px 120px;
+            }
+
+            .honor-lb__img {
+                max-width: 100%;
+                max-height: 56vh;
+            }
+
+            .honor-lb__counter {
+                top: 32px;
+                bottom: auto;
+            }
+        }
     </style>
 
 
     <base target="_blank">
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/back-btn.css">
+    <link rel="stylesheet" href="../css/lightbox-arrows.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
 </head>
 
@@ -552,6 +748,25 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
     <div id="footer-container"></div>
 
+    <!-- 点击放大：证书大图 -->
+    <div class="honor-lb" id="honor-lb" role="dialog" aria-modal="true" aria-label="证书大图" aria-hidden="true">
+        <button type="button" class="honor-lb__btn honor-lb__close" aria-label="关闭">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+        </button>
+        <button type="button" class="lb-arrow lb-arrow--prev" aria-label="上一张"></button>
+        <button type="button" class="lb-arrow lb-arrow--next" aria-label="下一张"></button>
+        <figure class="honor-lb__figure">
+            <img class="honor-lb__img" alt="">
+            <figcaption class="honor-lb__cap">
+                <div class="honor-lb__title"></div>
+                <div class="honor-lb__meta"></div>
+            </figcaption>
+        </figure>
+        <div class="honor-lb__counter">1 / 9</div>
+    </div>
+
     <script type="module" src="../js/components.js"></script>
     <script>
         // 打字效果
@@ -593,11 +808,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                             span.textContent = titleChars[titleIndex];
                             this.titleEl.appendChild(span);
                             titleIndex++;
-                            this.currentTimeout = setTimeout(typeChar, 60);
+                            this.currentTimeout = setTimeout(typeChar, 45);
                         } else if (subtitleChars.length > 0) {
                             // 标题打完，开始副标题
                             phase = 'subtitle';
-                            this.currentTimeout = setTimeout(typeChar, 200);
+                            this.currentTimeout = setTimeout(typeChar, 120);
                         }
                     } else {
                         if (subtitleIndex < subtitleChars.length) {
@@ -606,7 +821,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                             span.textContent = subtitleChars[subtitleIndex];
                             this.subtitleEl.appendChild(span);
                             subtitleIndex++;
-                            this.currentTimeout = setTimeout(typeChar, 40);
+                            this.currentTimeout = setTimeout(typeChar, 26);
                         }
                     }
                 };
@@ -631,37 +846,36 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             const subtitleEl = document.querySelector('.typing-subtitle');
             const writer = new TypeWriter(titleEl, subtitleEl);
 
-            const cards = document.querySelectorAll('.wrapper > div');
+            const cards = [...document.querySelectorAll('.wrapper > div')];
+            const N = cards.length;
             let currentIndex = -1;
 
-            // 滚动监听，使用 Intersection Observer
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const card = entry.target;
-                        const title = card.getAttribute('data-title');
-                        const badge = card.querySelector('.badge');
-                        const year = card.querySelector('.year');
-                        const category = card.querySelector('.category');
+            /* 标题跟随圆环焦点。
+               不用 IntersectionObserver：圆环上多张卡片会同时进入视口，
+               谁最后触发谁就胜出，标题必然错张。
+               这里按滚动进度算当前是第几格，与 CSS steps(N) 的分界严格一致。 */
+            function syncCaption() {
+                const max = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+                // 转满一圈时（progress=1）视觉回到第 1 张，索引也要回到 0
+                const idx = Math.floor(progress * N) % N;
 
-                        const badgeText = badge ? badge.textContent : '';
-                        const info = [year ? year.textContent : '', category ? category.textContent : ''].filter(Boolean).join(' · ');
-                        const subtitle = badgeText + (info ? ' · ' + info : '');
+                if (idx === currentIndex) return;
+                currentIndex = idx;
 
-                        writer.type(title, subtitle);
+                const card = cards[idx];
+                if (!card) return;
 
-                        // 更新当前索引
-                        const idx = [...cards].indexOf(card);
-                        if (idx !== currentIndex) {
-                            currentIndex = idx;
-                        }
-                    }
-                });
-            }, {
-                threshold: 0.5
-            });
+                const badge = card.querySelector('.badge');
+                const year = card.querySelector('.year');
+                const category = card.querySelector('.category');
 
-            cards.forEach(card => observer.observe(card));
+                const badgeText = badge ? badge.textContent.trim() : '';
+                const info = [year ? year.textContent.trim() : '', category ? category.textContent.trim() : '']
+                    .filter(Boolean).join(' · ');
+
+                writer.type(card.getAttribute('data-title') || '', badgeText + (info ? ' · ' + info : ''));
+            }
 
             // 滚动提示切换
             const scrollBody = document.querySelector('.scroll-body');
@@ -683,10 +897,151 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 }
             }
 
-            window.addEventListener('scroll', updateHint, { passive: true });
+            // 同一帧里只处理一次滚动，避免高频重排
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    ticking = false;
+                    syncCaption();
+                    updateHint();
+                });
+            }, { passive: true });
+
+            syncCaption();
             updateHint(); // 初始化
+
+            /* ============ 点击放大 ============ */
+            const lb = document.getElementById('honor-lb');
+            if (lb) {
+                const lbImg = lb.querySelector('.honor-lb__img');
+                const lbTitle = lb.querySelector('.honor-lb__title');
+                const lbMeta = lb.querySelector('.honor-lb__meta');
+                const lbCounter = lb.querySelector('.honor-lb__counter');
+                const btnPrev = lb.querySelector('.lb-arrow--prev');
+                const btnNext = lb.querySelector('.lb-arrow--next');
+
+                let lbIndex = 0;
+                let lockY = 0;
+                let lbOpen = false;
+
+                function fillLb(i) {
+                    const card = cards[i];
+                    if (!card) return;
+                    const img = card.querySelector('img');
+                    const badge = card.querySelector('.badge');
+                    const year = card.querySelector('.year');
+                    const category = card.querySelector('.category');
+
+                    lbImg.src = img.currentSrc || img.src;
+                    lbImg.alt = img.alt || card.getAttribute('data-title') || '';
+                    lbTitle.textContent = card.getAttribute('data-title') || '';
+                    lbMeta.textContent = [
+                        badge ? badge.textContent.trim() : '',
+                        year ? year.textContent.trim() : '',
+                        category ? category.textContent.trim() : ''
+                    ].filter(Boolean).join(' · ');
+                    lbCounter.textContent = (i + 1) + ' / ' + N;
+                    lb.classList.toggle('single', N <= 1);
+                }
+
+                function openLb(i) {
+                    lbIndex = (i + N) % N;
+                    fillLb(lbIndex);
+
+                    lockY = window.scrollY || 0;
+                    document.body.style.top = '-' + lockY + 'px';
+                    document.body.classList.add('honor-lb-open');
+
+                    lb.classList.add('is-open');
+                    lb.setAttribute('aria-hidden', 'false');
+                    lbOpen = true;
+                    // 焦点移进弹层，Esc / ←→ 随手可用
+                    lb.querySelector('.honor-lb__close').focus({ preventScroll: true });
+                    // 箭头对齐到图片中线：共享脚本会在 class 变化时自动处理，
+                    // 这里补一次是因为缓存的图片不会再触发 load
+                    requestAnimationFrame(() => window.alignLightboxArrows && window.alignLightboxArrows());
+                }
+
+                function closeLb() {
+                    lb.classList.remove('is-open');
+                    lb.setAttribute('aria-hidden', 'true');
+                    lbOpen = false;
+
+                    document.body.classList.remove('honor-lb-open');
+                    document.body.style.top = '';
+                    // 解除锁定后把滚动位置放回去，圆环不会回到第一张
+                    window.scrollTo(0, lockY);
+                    if (cards[lbIndex]) cards[lbIndex].focus({ preventScroll: true });
+                }
+
+                function stepLb(dir) {
+                    if (N <= 1) return;
+                    lbIndex = (lbIndex + dir + N) % N;
+                    fillLb(lbIndex);
+                    // 换图时轻微淡入，避免大图硬切
+                    if (lbImg.animate) {
+                        lbImg.animate(
+                            [{ opacity: .3, transform: 'scale(.985)' }, { opacity: 1, transform: 'scale(1)' }],
+                            { duration: 220, easing: 'ease-out' }
+                        );
+                    }
+                }
+
+
+                cards.forEach((card, i) => {
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('tabindex', '0');
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openLb(i);
+                    });
+                    card.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openLb(i);
+                        }
+                    });
+                });
+
+                lb.querySelector('.honor-lb__close').addEventListener('click', closeLb);
+                btnPrev.addEventListener('click', (e) => { e.stopPropagation(); stepLb(-1); });
+                btnNext.addEventListener('click', (e) => { e.stopPropagation(); stepLb(1); });
+
+                // 点遮罩空白处关闭（点图片 / 文字 / 按钮都不关）
+                lb.addEventListener('click', (e) => {
+                    if (e.target === lb) closeLb();
+                });
+
+                // 键盘：ESC 关闭，左右切换
+                document.addEventListener('keydown', (e) => {
+                    if (!lbOpen) return;
+                    if (e.key === 'Escape') { closeLb(); }
+                    else if (e.key === 'ArrowLeft') { e.preventDefault(); stepLb(-1); }
+                    else if (e.key === 'ArrowRight') { e.preventDefault(); stepLb(1); }
+                });
+
+                // 手机左右滑动切换
+                let touchX = 0, touchY = 0;
+                lb.addEventListener('touchstart', (e) => {
+                    const t = e.changedTouches[0];
+                    touchX = t.clientX;
+                    touchY = t.clientY;
+                }, { passive: true });
+
+                lb.addEventListener('touchend', (e) => {
+                    const t = e.changedTouches[0];
+                    const dx = t.clientX - touchX;
+                    const dy = t.clientY - touchY;
+                    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+                        stepLb(dx < 0 ? 1 : -1);
+                    }
+                }, { passive: true });
+            }
         });
     </script>
+    <script src="../js/lightbox-arrows.js" defer></script>
     <script src="../js/back-transition.js"></script>
 </body>
 
