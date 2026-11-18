@@ -138,6 +138,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 var(--color-text-muted) 100%
             );
             transform: translateX(-50%);
+            pointer-events: none;
         }
         
         .poly-card {
@@ -163,6 +164,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             background: var(--color-text-muted);
             opacity: 0.3;
             transform: translateY(-50%);
+            /* 树枝只是装饰：不参与命中测试，否则细线横穿文字会把 hover 打断 */
+            pointer-events: none;
         }
         
         /* 奇数行左倾 */
@@ -192,6 +195,13 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             width: 40%;
             text-align: center;
             padding: 20px;
+            /* 布局仍由 h3 撑开（40% 宽 + 内边距），但热区只认文字本身 */
+            pointer-events: none;
+        }
+
+        .poly-card h3 span {
+            display: inline-block;
+            pointer-events: auto;
         }
         
         .poly-card .poly-icon {
@@ -209,10 +219,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         
         .poly-card:nth-child(2n) .poly-icon {
             clip-path: polygon(50% 100%, 0% 62%, 18% 0%, 82% 0%, 100% 62%);
-        }
-        
-        .poly-card .poly-icon:hover {
-            transform: rotate(180deg) scale(1.1);
         }
         
         .poly-card .poly-icon img {
@@ -235,22 +241,27 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             transition: color .35s ease, transform .35s ease;
         }
         
-        .poly-card:hover h3,
+        /* hover 只认「文字 / 图标」本体：整行盒子仍是点击区（点空白也能进），
+           但鼠标停在树枝上或行内空白处不再触发翻转 */
+        .poly-card:has(h3 span:hover) h3,
+        .poly-card:has(.poly-icon:hover) h3,
         .poly-card:focus-visible h3 {
             color: var(--color-primary);
             transform: translateY(-2px);
         }
-        
+
         .poly-card::before {
             transition: opacity .35s ease, box-shadow .35s ease;
         }
         
-        .poly-card:hover::before {
+        .poly-card:has(h3 span:hover)::before,
+        .poly-card:has(.poly-icon:hover)::before {
             opacity: .8;
             box-shadow: 0 0 8px rgba(15, 216, 80, 0.55);
         }
         
-        .poly-card:hover .poly-icon,
+        .poly-card:has(h3 span:hover) .poly-icon,
+        .poly-card:has(.poly-icon:hover) .poly-icon,
         .poly-card:focus-visible .poly-icon {
             transform: rotate(180deg) scale(1.08);
         }
@@ -375,27 +386,27 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             
             <div class="poly-grid">
                 <article class="poly-card" data-target="works/works-projects.html" tabindex="0" role="link">
-                    <h3>实战项目</h3>
+                    <h3><span>实战项目</span></h3>
                     <div class="poly-icon"><img src="images/icons/项目.webp" alt=""></div>
                 </article>
                 
                 <article class="poly-card" data-target="works/works-games.html" tabindex="0" role="link">
-                    <h3>益智小游戏</h3>
+                    <h3><span>益智小游戏</span></h3>
                     <div class="poly-icon"><img src="images/icons/游戏.webp" alt=""></div>
                 </article>
                 
                 <article class="poly-card" data-target="works/works-web.html" tabindex="0" role="link">
-                    <h3>Web 3D 交互</h3>
+                    <h3><span>Web 3D 交互</span></h3>
                     <div class="poly-icon"><img src="images/icons/UI.webp" alt=""></div>
                 </article>
                 
                 <article class="poly-card" data-target="works/works-design.html" tabindex="0" role="link">
-                    <h3>设计作品</h3>
+                    <h3><span>设计作品</span></h3>
                     <div class="poly-icon"><img src="images/icons/设计.webp" alt=""></div>
                 </article>
                 
                 <article class="poly-card" data-target="works/works-honors.html" tabindex="0" role="link">
-                    <h3>荣誉墙</h3>
+                    <h3><span>荣誉墙</span></h3>
                     <div class="poly-icon"><img src="images/icons/荣誉证书.webp" alt=""></div>
                 </article>
             </div>
