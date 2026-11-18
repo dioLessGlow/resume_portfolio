@@ -347,8 +347,22 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
 <body>
     <div id="loader-container"><div class="loader"><div class="csh-text"><div class="char-c">C</div><div class="char-s">S</div><div class="char-h">H</div></div></div></div>
-    <!-- 遮罩与内容同帧内联在此，所以「从子页返回」和「点导航进入」看到的是同一套 CSH 开场：
-         首帧就是遮罩 → C/S/H 弹入 → header/footer 就绪后揭幕。转场只在这一处播，子页不再播。 -->
+    <script>
+        /* 从子页返回：转场已经在子页播完，这里直接呈现内容，不再播第二遍。
+           用 3 秒时间窗判断，而不是「读一次就删」——本地 dev 热重连可能让文档意外重载两次，
+           标记若被清掉，第二次就会漏播；时间窗让多次重载都仍然跳过。 */
+        (function () {
+            try {
+                var t = Number(sessionStorage.getItem('skipLoaderAt') || 0);
+                if (t && Date.now() - t < 3000) {
+                    var box = document.getElementById('loader-container');
+                    if (box) box.style.display = 'none';
+                }
+            } catch (err) { }
+        })();
+    </script>
+    <!-- 首次进入（点导航 / 直接打开）：首帧就是遮罩 → C/S/H 弹入 → header/footer 就绪后揭幕。
+         从子页返回时由上面的脚本跳过，因为转场已经在子页播过了。 -->
 
     <div id="header-container"></div>
 
