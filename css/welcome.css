@@ -300,18 +300,27 @@ body {
     pointer-events: none;
 }
 
-.enter-btn:hover::before,
-.enter-btn:focus-visible::before {
-    opacity: 1;
-    transform: scale(1);
-}
+/* hover 系列只对真正有鼠标指针的设备生效：
+   触屏上 tap 会先命中 :hover 且抬起后不释放，按钮会残留上浮/高光/箭头偏移 */
+@media (hover: hover) and (pointer: fine) {
 
-.enter-btn:hover {
-    transform: translate3d(0, -2px, 0);
-    box-shadow:
-        0 16px 32px rgba(26, 88, 34, 0.26),
-        0 3px 6px rgba(26, 88, 34, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    .enter-btn:hover::before {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .enter-btn:hover {
+        transform: translate3d(0, -2px, 0);
+        box-shadow:
+            0 16px 32px rgba(26, 88, 34, 0.26),
+            0 3px 6px rgba(26, 88, 34, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .enter-btn:hover .arrow {
+        animation: none;
+        transform: translateX(4px);
+    }
 }
 
 .enter-btn:active {
@@ -320,6 +329,12 @@ body {
         0 6px 14px rgba(26, 88, 34, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.18);
     transition-duration: 0.1s;
+}
+
+/* 键盘聚焦（无鼠标的设备也可能走这里）单独保留 */
+.enter-btn:focus-visible::before {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .enter-btn:focus-visible {
@@ -345,11 +360,6 @@ body {
     width: 19px;
     height: 10px;
     overflow: visible;
-}
-
-.enter-btn:hover .arrow {
-    animation: none;
-    transform: translateX(4px);
 }
 
 @keyframes arrowNudge {
