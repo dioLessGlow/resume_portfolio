@@ -425,18 +425,25 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 });
             }
 
-            Promise.all([
-                preloadImage(yesGif + PUDGY_VA), preloadImage(yesGif + PUDGY_VB),
-                preloadImage(noGif + PUDGY_VA), preloadImage(noGif + PUDGY_VB),
-                preloadImage(idleGif + PUDGY_VA), preloadImage(idleGif + PUDGY_VB)
-            ]).then(() => {
-                playPudgy(idleGif);
+            // 首屏只等 idle 的一个版本（58KB）→ 企鹅立即出现；其余 5 个 URL 后台预热。
+            // 旧写法 Promise.all 等 6 个 URL 全下完（约 578KB）才显示，4G 节流下 LCP 曾达 13s。
+            function showIdle(v) {
+                pudgy.src = idleGif + v;
+                pudgyFlip = (v === PUDGY_VA);
                 pudgy.classList.add("ready");
-            }).catch(() => {
-                // 即使加载失败也显示，避免空白
-                playPudgy(idleGif);
-                pudgy.classList.add("ready");
+            }
+            preloadImage(idleGif + PUDGY_VB)
+                .then(() => showIdle(PUDGY_VB))
+                .catch(() => {
+                    // 即使加载失败也显示，避免空白（切换时另一版本已由后台预热兜底）
+                    showIdle(PUDGY_VA);
+                });
+            // 后台预热剩余 5 个 URL（不阻塞首屏），与实际请求完全一致，保证点击切换零下载
+            [PUDGY_VA, PUDGY_VB].forEach((v) => {
+                preloadImage(yesGif + v);
+                preloadImage(noGif + v);
             });
+            preloadImage(idleGif + PUDGY_VA);
 
             snacks.forEach((snack) => {
                 snack.addEventListener("click", (e) => {
