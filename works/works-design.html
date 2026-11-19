@@ -714,7 +714,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         };
 
         // 文件夹组件
-        const FolderItem = ({ folder, isExpanded, isLifted, onToggle }) => {
+        const FolderItem = ({ folder, isExpanded, isLifted, onToggle, showStack }) => {
             return React.createElement(motion.div, {
                 style: {
                     position: 'relative',
@@ -810,7 +810,9 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                                             flexDirection: 'column'
                                         }
                                     },
-                                        React.createElement("img", {
+                                        // 窗口内才加载真实图片；窗口外渲染空白照片纸（米白卡 + 照片名），
+                                        // 窗口扩到该文件夹时图片才会开始请求
+                                        showStack && React.createElement("img", {
                                             src: p.src,
                                             alt: p.name,
                                             style: {
@@ -898,13 +900,28 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 if (gridWrapRef.current) gridWrapRef.current.scrollTop = 0;
             }, [expandedFolder]);
 
-            // 预加载海报图：避免点开文件夹那一刻才开始请求、出现灰块。
-            // 只预热折叠态要露出的每个文件夹前 4 张；点开文件夹时其余图按需加载，
-            // 不再空闲期全量预热（之前会把 ~10MB / 90+ 张全部拉下来，路过也下载）。
+            // 预加载海报图：滑动窗口策略。
+            // 初始窗口 = 文件夹 1、2、3；打开某个文件夹时把窗口扩到它的左右邻居
+            //（点 2 什么都不补；点 3 只补 4；点 6 补 5、7）。窗口只增不减。
+            // 窗口内：折叠态照片堆叠渲染真实图片；窗口外：只渲染空白照片纸
+            //（白纸 + 照片名，不加载图片）。点开文件夹的照片墙始终按需加载。
+            const [warmedIdx, setWarmedIdx] = useState(() => new Set([0, 1, 2]));
+            const warmFolder = (idx) => {
+                if (idx < 0 || idx >= FOLDERS.length) return;
+                setWarmedIdx(prev => {
+                    if (prev.has(idx)) return prev;
+                    const next = new Set(prev);
+                    next.add(idx);
+                    return next;
+                });
+            };
             useEffect(() => {
-                const warm = (src) => { const im = new Image(); im.src = src; };
-                FOLDERS.forEach(f => f.photos.slice(0, 4).forEach(p => warm(p.src)));
-            }, []);
+                if (expandedFolder === null) return;
+                const idx = FOLDERS.findIndex(f => f.id === expandedFolder);
+                if (idx === -1) return;
+                warmFolder(idx - 1); // 左邻
+                warmFolder(idx + 1); // 右邻
+            }, [expandedFolder]);
 
             const handleToggle = (folderId) => {
                 setExpandedFolder(prev => prev === folderId ? null : folderId);
@@ -1010,14 +1027,15 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         alignItems: 'center'
                     }
                 },
-                        FOLDERS.map(folder =>
+                        FOLDERS.map((folder, i) =>
                             React.createElement(FolderItem, {
                                 key: folder.id,
                                 folder: folder,
                                 isExpanded: expandedFolder === folder.id,
                                 // 被点开的那张上浮突出，其余保持原位——避免整排一起位移
                                 isLifted: expandedFolder === folder.id,
-                                onToggle: () => handleToggle(folder.id)
+                                onToggle: () => handleToggle(folder.id),
+                                showStack: warmedIdx.has(i)
                             })
                         )
                     )
