@@ -4,7 +4,7 @@
 <head>
 <script>/*pull-to-refresh-v2*/(function(){
 try{if(sessionStorage.getItem('__prNoAnim')==='1'){sessionStorage.removeItem('__prNoAnim');document.documentElement.setAttribute('data-pr-noanim','1');}}catch(e){}
-if(document.documentElement.getAttribute('data-pr-noanim')==='1'){try{if(history.scrollRestoration)history.scrollRestoration='manual';window.addEventListener('load',function(){window.scrollTo(0,0);});document.addEventListener('DOMContentLoaded',function(){window.scrollTo(0,0);});}catch(e){}var __st=document.createElement('style');__st.textContent='html[data-pr-noanim] .welcome-text,html[data-pr-noanim] .line,html[data-pr-noanim] .sub-text,html[data-pr-noanim] .hint,html[data-pr-noanim] .enter-btn,html[data-pr-noanim] .decoration,html[data-pr-noanim] .bg{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}html[data-pr-noanim] .loader{display:none!important}@keyframes __prBounceIn{0%{opacity:0;transform:translateY(42px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}html[data-pr-noanim] body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style){animation:__prBounceIn .62s cubic-bezier(.34,1.42,.64,1) backwards}';document.head.appendChild(__st);}
+if(document.documentElement.getAttribute('data-pr-noanim')==='1'){try{if(history.scrollRestoration)history.scrollRestoration='manual';window.addEventListener('load',function(){window.scrollTo(0,0);});document.addEventListener('DOMContentLoaded',function(){window.scrollTo(0,0);});}catch(e){}var __st=document.createElement('style');__st.textContent='html[data-pr-noanim] .welcome-text,html[data-pr-noanim] .line,html[data-pr-noanim] .ch,html[data-pr-noanim] .word,html[data-pr-noanim] .underline,html[data-pr-noanim] .sub-text,html[data-pr-noanim] .hint,html[data-pr-noanim] .enter-btn,html[data-pr-noanim] .decoration,html[data-pr-noanim] .bg,html[data-pr-noanim] .spark{animation:none!important;opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important}html[data-pr-noanim] .underline path{stroke-dashoffset:0!important}html[data-pr-noanim] .loader{display:none!important}@keyframes __prBounceIn{0%{opacity:0;transform:translateY(42px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}html[data-pr-noanim] body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style){animation:__prBounceIn .62s cubic-bezier(.34,1.42,.64,1) backwards}';document.head.appendChild(__st);}
 var sy=0,sx=0,dragging=false,pull=0,clr=null,ui=null,ico=null,txt=null,loading=false;
 var MAX=90,TH=56;
 function body(){return document.body;}
@@ -94,10 +94,17 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         <span class="bg-glow bg-glow--c"></span>
     </div>
 
+    <!-- 缓慢漂浮的星屑点缀 -->
+    <div class="sparks" aria-hidden="true">
+        <i class="spark spark-1"></i>
+        <i class="spark spark-2"></i>
+        <i class="spark spark-3"></i>
+    </div>
+
     <main class="welcome-content">
-        <h1 class="welcome-text">
-            <span class="line">欢迎来到我的</span>
-            <span class="line">小世界<img src="images/icons/欢迎.webp" alt="" aria-hidden="true" class="welcome-icon"></span>
+        <h1 class="welcome-text" aria-label="欢迎来到我的小世界">
+            <span class="line" aria-hidden="true">欢迎来到我的</span>
+            <span class="line" aria-hidden="true"><span class="word">小世界<svg class="underline" viewBox="0 0 120 14" preserveAspectRatio="none" fill="none" aria-hidden="true"><path d="M3 10 C 30 3, 62 13, 117 6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" pathLength="140"/></svg></span><img src="images/icons/欢迎.webp" alt="" aria-hidden="true" class="welcome-icon"></span>
         </h1>
         <p class="sub-text">这里记录了我的成长</p>
         <p class="hint">Click below to enter<span class="hint-arrow" aria-hidden="true"><svg viewBox="0 0 16 10" fill="none"><path d="M1 5h13M11 1.5 14.5 5 11 8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></p>
@@ -117,6 +124,31 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <script type="module" src="js/components.js"></script>
 
     <script>
+        // 标题拆字：逐字弹入用。拆完给 .line 加 split，整行动画让位给逐字动画；
+        // JS 挂掉时保留整行 riseIn 兜底。h1 有 aria-label，拆字不影响读屏。
+        (function () {
+            let i = 0;
+            document.querySelectorAll('.welcome-text .line').forEach(function (line) {
+                const host = line.querySelector('.word') || line;
+                const svg = host.querySelector('svg');
+                const textNode = [...host.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+                if (!textNode) return;
+                const chars = textNode.textContent.replace(/\s+/g, '');
+                host.removeChild(textNode);
+                if (!svg) host.textContent = '';
+                chars.split('').forEach(function (c) {
+                    const s = document.createElement('span');
+                    s.className = 'ch';
+                    s.textContent = c;
+                    s.style.setProperty('--ci', i++);
+                    s.style.setProperty('--tilt', (i % 2 ? 5 : -5) + 'deg');
+                    host.appendChild(s);
+                });
+                if (svg) host.appendChild(svg);
+                line.classList.add('split');
+            });
+        })();
+
         // 入场：字体就绪后再揭幕，动画从头到尾都在最终字形上跑（否则会先用系统字跳一下）
         (function () {
             const root = document.documentElement;
@@ -127,8 +159,38 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 started = true;
                 requestAnimationFrame(() => requestAnimationFrame(() => {
                     root.classList.add('anim-go');
-                    // 动画全部结束后撤掉闸门，让 hover / active 的 transform 重新生效
-                    setTimeout(() => root.classList.remove('anim-armed', 'anim-go'), 1350);
+
+                    // 撤闸门：只撤 anim-armed（保留 anim-go 让 forwards/both 的终态定格）。
+                    // 会压住 hover 的元素逐个「卸载」自己的入场动画：
+                    //   按钮 -> animation:none，transform 交还给 hover/active
+                    //   图标 -> 换成无限浮动
+                    //   hint -> 撤掉 clip-path 定格，恢复完整可选中文本
+                    const btn = document.querySelector('.enter-btn');
+                    const icon = document.querySelector('.welcome-icon');
+                    const hint = document.querySelector('.hint');
+                    let disarmed = false;
+                    const disarm = () => {
+                        if (disarmed) return;
+                        disarmed = true;
+                        root.classList.remove('anim-armed');
+                    };
+                    if (btn) btn.addEventListener('animationend', function h(e) {
+                        if (e.animationName !== 'btnIn') return;
+                        btn.removeEventListener('animationend', h);
+                        btn.style.animation = 'none';
+                        setTimeout(disarm, 150);
+                    });
+                    if (icon) icon.addEventListener('animationend', function h(e) {
+                        if (e.animationName !== 'iconPop') return;
+                        icon.removeEventListener('animationend', h);
+                        icon.style.animation = 'iconBob 3.8s ease-in-out .35s infinite';
+                    });
+                    if (hint) hint.addEventListener('animationend', function h(e) {
+                        if (e.animationName !== 'hintIn') return;
+                        hint.removeEventListener('animationend', h);
+                        hint.style.animation = 'none';
+                    });
+                    setTimeout(disarm, 2600); // animationend 意外没触发时的兜底
                 }));
             };
             // 显式点名要用到的字体子集：fonts.ready 有时只等到已用到的，标题字可能晚一步

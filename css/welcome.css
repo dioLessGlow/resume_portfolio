@@ -164,11 +164,39 @@ body {
     letter-spacing: 0.01em;
 }
 
+/* 逐字弹入：字符块，奇偶交替歪头 */
+.ch {
+    display: inline-block;
+    will-change: transform;
+}
+
+/* 「小世界」词组 + 手绘下划线 */
+.word {
+    position: relative;
+    display: inline-flex;
+}
+
+.underline {
+    position: absolute;
+    left: 0;
+    bottom: -0.16em;
+    width: 100%;
+    height: 0.24em;
+    color: #35934a;
+    transform: rotate(-1.5deg);
+    overflow: visible;
+}
+
+.underline path {
+    stroke-dasharray: 140;
+    stroke-dashoffset: 140;
+}
+
 .welcome-icon {
     width: clamp(28px, 4.4vw, 52px);
     height: auto;
     transform: rotate(-6deg);
-    animation: iconBob 3.8s ease-in-out 1.3s infinite;
+    animation: iconBob 3.8s ease-in-out 0.35s infinite;
 }
 
 @keyframes iconBob {
@@ -181,8 +209,8 @@ body {
     margin-top: clamp(12px, 2.2vh, 20px);
     font-size: var(--fs-sub);
     font-weight: 400;
-    letter-spacing: 0.12em;
-    text-indent: 0.12em; /* 抵消末字后多出的字距，保持视觉居中 */
+    letter-spacing: var(--sub-ls, 0.12em);
+    text-indent: var(--sub-ls, 0.12em); /* 抵消末字后多出的字距，保持视觉居中 */
     color: var(--color-primary);
 }
 
@@ -228,6 +256,7 @@ body {
     color: #fff;
     text-decoration: none;
     border-radius: 999px;
+    overflow: hidden;
     background: linear-gradient(135deg, #276b2a 0%, #2d7a2d 48%, #35934a 100%);
     box-shadow:
         0 10px 24px rgba(26, 88, 34, 0.22),
@@ -238,6 +267,24 @@ body {
         transform 0.28s var(--ease-out-soft),
         box-shadow 0.28s var(--ease-out-soft),
         filter 0.28s var(--ease-out-soft);
+}
+
+/* 落位后的一次性扫光：skew 光带从左划到右，只此一次 */
+.enter-btn::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    left: -45%;
+    width: 45%;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transform: skewX(-18deg) translateX(0);
+    animation: btnShine 0.8s ease-out 2.3s 1;
+    pointer-events: none;
+}
+
+@keyframes btnShine {
+    to { transform: skewX(-18deg) translateX(430%); }
 }
 
 /* 悬停时的白色高光：用缩放代替原来的 width/height 过渡，不触发重排 */
@@ -341,12 +388,32 @@ body {
     40% { transform: translateY(-3px) scale(1.25); opacity: 1; }
 }
 
-/* ===== 入场动画：字体就绪后统一触发，避免字形替换时跳一下 ===== */
+/* ===== 入场动画：字体就绪后统一触发，避免字形替换时跳一下 =====
+   时间线（约 2.0s 走完）：
+   0.12s 标题逐字弹入（每字 +0.05s，奇偶交替歪头）
+   0.95s 「小世界」下划线手绘描边 / Hi 图标弹跳落位
+   1.15s 副标题字距从 .32em 收拢到 .12em
+   1.30s 英文提示横向展开（clip-path）
+   1.45s 按钮弹入（2.3s 落位后扫一道光）
+   1.60s 底部装饰点浮起
+   撤闸门：只撤 anim-armed，保留 anim-go 让终态定格；
+   会压住 hover 的按钮/图标/提示由 JS 在各自 animationend 时卸载入场动画。 */
 .anim-armed .line,
 .anim-armed .sub-text,
 .anim-armed .hint,
 .anim-armed .enter-btn,
-.anim-armed .decoration {
+.anim-armed .decoration,
+.anim-armed .welcome-icon,
+.anim-armed .sparks {
+    opacity: 0;
+}
+
+/* 拆过字的行交给 .ch 自己隐藏，整行保持可见，否则父级透明会吞掉逐字动画 */
+.anim-armed .line.split {
+    opacity: 1;
+}
+
+.anim-armed .ch {
     opacity: 0;
 }
 
@@ -355,27 +422,115 @@ body {
     opacity: 0;
 }
 
-.anim-go .line,
-.anim-go .sub-text,
-.anim-go .hint,
-.anim-go .enter-btn {
+/* JS 失败没拆字时，整行 riseIn 兜底 */
+.anim-go .line {
     animation: riseIn 0.68s var(--ease-out-soft) both;
 }
 
+.anim-go .line.split {
+    animation: none;
+}
+
+/* 逐字弹入：必须显式写 to，否则 armed 期间的 opacity:0 会被当成终点 */
+.anim-go .ch {
+    animation: charIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: calc(0.12s + var(--ci, 0) * 0.05s);
+}
+
+.anim-go .underline path {
+    animation: drawLine 0.55s ease-out 0.95s forwards;
+}
+
+.anim-go .welcome-icon {
+    animation: iconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.95s both;
+}
+
+.anim-go .sub-text {
+    animation: subIn 0.6s var(--ease-out-soft) 1.15s both;
+}
+
+.anim-go .hint {
+    animation: hintIn 0.55s cubic-bezier(0.4, 0, 0.2, 1) 1.3s both;
+}
+
+.anim-go .enter-btn {
+    animation: btnIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 1.45s both;
+}
+
 .anim-go .decoration {
-    animation: fadeIn 0.6s ease both;
+    animation: riseIn 0.6s var(--ease-out-soft) 1.6s both;
 }
 
 .anim-go .bg {
     animation: fadeIn 1s ease both;
 }
 
-.anim-go .line:nth-child(1) { animation-delay: 0s; }
-.anim-go .line:nth-child(2) { animation-delay: 0.09s; }
-.anim-go .sub-text { animation-delay: 0.2s; }
-.anim-go .hint { animation-delay: 0.29s; }
-.anim-go .enter-btn { animation-delay: 0.37s; }
-.anim-go .decoration { animation-delay: 0.5s; }
+.anim-go .sparks {
+    animation: fadeIn 1.2s ease both;
+}
+
+@keyframes charIn {
+    from {
+        opacity: 0;
+        transform: translateY(0.45em) rotate(var(--tilt, 5deg)) scale(0.82);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes iconPop {
+    from {
+        opacity: 0;
+        transform: rotate(-30deg) scale(0.4);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(-6deg) scale(1);
+    }
+}
+
+@keyframes subIn {
+    from {
+        opacity: 0;
+        letter-spacing: 0.32em;
+        text-indent: 0.32em;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        letter-spacing: var(--sub-ls, 0.12em);
+        text-indent: var(--sub-ls, 0.12em);
+        transform: translateY(0);
+    }
+}
+
+@keyframes hintIn {
+    from {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+    }
+    to {
+        opacity: 1;
+        clip-path: inset(0 -6% 0 0);
+    }
+}
+
+@keyframes btnIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.86);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
 @keyframes riseIn {
     from {
@@ -393,16 +548,60 @@ body {
     to { opacity: 1; }
 }
 
+/* ===== 星屑点缀：三颗极淡的小圆点缓慢漂移，给静态画面加生命 ===== */
+.sparks {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.spark {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(45, 122, 45, 0.16);
+    animation: sparkFloat 22s ease-in-out infinite alternate;
+}
+
+.spark-1 {
+    width: 10px;
+    height: 10px;
+    left: 13%;
+    top: 26%;
+    animation-duration: 19s;
+}
+
+.spark-2 {
+    width: 6px;
+    height: 6px;
+    left: 84%;
+    top: 18%;
+    background: rgba(53, 147, 74, 0.22);
+    animation-duration: 26s;
+    animation-delay: -8s;
+}
+
+.spark-3 {
+    width: 14px;
+    height: 14px;
+    left: 72%;
+    top: 74%;
+    background: rgba(45, 122, 45, 0.1);
+    animation-duration: 31s;
+    animation-delay: -15s;
+}
+
+@keyframes sparkFloat {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(4vw, -6vh, 0) scale(1.15); }
+}
+
 /* ===== 小屏 ===== */
 @media (max-width: 400px) {
     :root {
         --fs-title: clamp(40px, 11.4vw, 52px);
         --fs-sub: clamp(15px, 4.4vw, 18px);
-    }
-
-    .sub-text {
-        letter-spacing: 0.08em;
-        text-indent: 0.08em;
+        --sub-ls: 0.08em;
     }
 }
 
@@ -438,5 +637,10 @@ body {
 
     .welcome-icon {
         transform: rotate(-6deg);
+    }
+
+    /* 此路径不走入场闸门，描边动画不会挂上，直接给成品态 */
+    .underline path {
+        stroke-dashoffset: 0;
     }
 }
