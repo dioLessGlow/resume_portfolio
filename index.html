@@ -178,7 +178,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         if (e.animationName !== 'btnIn') return;
                         btn.removeEventListener('animationend', h);
                         btn.style.animation = 'none';
-                        setTimeout(disarm, 150);
+                        disarm(); // armed 的隐藏只管揭幕前，此刻卸载动画回落到基础样式即可见
                     });
                     if (icon) icon.addEventListener('animationend', function h(e) {
                         if (e.animationName !== 'iconPop') return;

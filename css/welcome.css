@@ -408,13 +408,18 @@ body {
    1.60s 底部装饰点浮起
    撤闸门：只撤 anim-armed，保留 anim-go 让终态定格；
    会压住 hover 的按钮/图标/提示由 JS 在各自 animationend 时卸载入场动画。 */
-.anim-armed .line,
-.anim-armed .sub-text,
-.anim-armed .hint,
-.anim-armed .enter-btn,
-.anim-armed .decoration,
-.anim-armed .welcome-icon,
-.anim-armed .sparks {
+/* armed 的隐藏只在揭幕（anim-go）之前生效。
+   anim-go 阶段各动画的 both 填充自己负责：延迟期藏、结束后显；
+   若 armed 一直藏，JS 在 animationend 卸载动画的瞬间终点帧消失，
+   元素会回落到 opacity:0（按钮闪隐 150ms、图标闪隐 ~0.7s），
+   直到撤闸门才重现——这就是「显示又消失再显示」。 */
+.anim-armed:not(.anim-go) .line,
+.anim-armed:not(.anim-go) .sub-text,
+.anim-armed:not(.anim-go) .hint,
+.anim-armed:not(.anim-go) .enter-btn,
+.anim-armed:not(.anim-go) .decoration,
+.anim-armed:not(.anim-go) .welcome-icon,
+.anim-armed:not(.anim-go) .sparks {
     opacity: 0;
 }
 
@@ -428,7 +433,7 @@ body {
 }
 
 /* 背景整层淡入，外层淡入、内层继续漂移，两者不打架 */
-.anim-armed .bg {
+.anim-armed:not(.anim-go) .bg {
     opacity: 0;
 }
 
