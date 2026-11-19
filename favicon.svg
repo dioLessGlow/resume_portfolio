@@ -1,4 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="4" fill="#2d7a2d"/>
-  <text x="16" y="22" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white">CSH</text>
+  <!-- 字母用纯路径（stencil 风格），不再依赖系统字体：任何浏览器/系统渲染完全一致 -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#35934a"/>
+      <stop offset="1" stop-color="#276b2a"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#g)"/>
+  <g fill="#ffffff">
+    <!-- C：上横 + 左竖 + 下横，右侧开口 -->
+    <rect x="2" y="9" width="9" height="3.2" rx="1.3"/>
+    <rect x="2" y="19.8" width="9" height="3.2" rx="1.3"/>
+    <rect x="2" y="9" width="3.2" height="14" rx="1.3"/>
+    <!-- S：三横两竖（左连上中，右连中下） -->
+    <rect x="12.25" y="9" width="7" height="3.2" rx="1.3"/>
+    <rect x="12.25" y="14.4" width="7" height="3.2" rx="1.3"/>
+    <rect x="12.25" y="19.8" width="7" height="3.2" rx="1.3"/>
+    <rect x="12.25" y="9" width="3.2" height="8.6" rx="1.3"/>
+    <rect x="16.05" y="14.4" width="3.2" height="8.6" rx="1.3"/>
+    <!-- H：两竖一横 -->
+    <rect x="20.5" y="9" width="3.2" height="14" rx="1.3"/>
+    <rect x="26.8" y="9" width="3.2" height="14" rx="1.3"/>
+    <rect x="20.5" y="14.4" width="9.5" height="3.2" rx="1.3"/>
+  </g>
 </svg>
