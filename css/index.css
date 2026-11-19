@@ -43,6 +43,9 @@ body {
     gap: 20px;
     /* 富余空间时垂直居中；内容超高（如悬停打出的两行文字）时自动改为可滚动，不会裁掉顶部 */
     margin: auto;
+    /* 整体比几何中心略偏高一点：视口越高偏得越多，小屏自动收敛，最低只移 16px */
+    position: relative;
+    top: max(-40px, -4vh);
 }
 
 .home-hero h1 {
