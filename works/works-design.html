@@ -750,6 +750,99 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     }
                 }),
 
+                /* 文件夹内照片堆叠：独立图层，允许向上探出文件夹顶边、压住左上角标签。
+                   裁剪仍必须发生在包含块上（背景层 overflow 对 absolute 后代无效）；
+                   堆叠层顶部上探 24px 作为裁剪余量，照片定位在顶边上方 14px，
+                   底部/左右仍按文件夹边界裁齐。zIndex 高于背景层，照片盖在标签上 */
+                React.createElement(AnimatePresence, null,
+                    !isExpanded && React.createElement(motion.div, {
+                        key: `stack-${folder.id}`,
+                        initial: { opacity: 0 },
+                        animate: { opacity: 1 },
+                        exit: { opacity: 0 },
+                        transition: { duration: 0.2 },
+                        style: {
+                            position: 'absolute',
+                            top: '-24px',
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            borderRadius: '0 0 12px 12px',
+                            zIndex: 2
+                        }
+                    },
+                        folder.photos.slice(0, 4).map((p, i) =>
+                            React.createElement(motion.div, {
+                                key: p.name,
+                                initial: { scale: 0, y: 20, rotate: 0 },
+                                animate: {
+                                    scale: 1,
+                                    y: 0,
+                                    rotate: `${seededRandom(folder.id.charCodeAt(0) + i * 3) * 26 - 13}deg`
+                                },
+                                exit: { scale: 0, y: 10, opacity: 0 },
+                                transition: { type: 'spring', bounce: 0.2, delay: i * 0.04 },
+                                style: {
+                                    position: 'absolute',
+                                    /* 相对堆叠层顶 10px = 文件夹顶边上方 14px：
+                                       照片整齐探出顶边、压住凸起标签（标签 top:-10px） */
+                                    top: '10px',
+                                    width: '72px',
+                                    zIndex: 2 + i
+                                }
+                            },
+                                React.createElement("div", {
+                                    style: {
+                                        aspectRatio: '4/5',
+                                        backgroundColor: '#f5f5dc',
+                                        padding: '4px',
+                                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                                        borderRadius: '2px',
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }
+                                },
+                                    // 窗口内才加载真实图片；窗口外渲染空白照片纸（米白卡 + 照片名），
+                                    // 窗口扩到该文件夹时图片才会开始请求
+                                    showStack && React.createElement("img", {
+                                        src: p.src,
+                                        alt: p.name,
+                                        style: {
+                                            width: '100%',
+                                            height: '68%',
+                                            objectFit: 'contain',
+                                            display: 'block',
+                                            backgroundColor: '#e8e4d9'
+                                        },
+                                        onError: (e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.parentElement.style.backgroundColor = '#d4cfc4';
+                                        }
+                                    }),
+                                    React.createElement("div", {
+                                        style: {
+                                            marginTop: '2px',
+                                            fontSize: '8px',
+                                            textAlign: 'center',
+                                            fontFamily: '"IM Fell DW Pica SC", serif',
+                                            color: '#666',
+                                            lineHeight: 1.2,
+                                            minHeight: '20px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }
+                                    }, p.name)
+                                )
+                            )
+                        )
+                    )
+                ),
+
                 /* 文件夹背景 */
                 React.createElement("div", {
                     style: {
@@ -764,94 +857,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         overflow: 'hidden',
                         transition: 'box-shadow 0.3s ease'
                     }
-                },
-                    /* 文件夹内照片堆叠 */
-                    React.createElement(AnimatePresence, null,
-                        !isExpanded && React.createElement(motion.div, {
-                            key: `stack-${folder.id}`,
-                            initial: { opacity: 0 },
-                            animate: { opacity: 1 },
-                            exit: { opacity: 0 },
-                            transition: { duration: 0.2 },
-                            style: {
-                                position: 'absolute',
-                                inset: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: '6px',
-                                /* 照片卡是 absolute 且本层就是它的包含块；裁剪必须发生在
-                                   包含块链上才生效——背景层的 overflow:hidden 对这些
-                                   absolute 后代无效（CSS 规范），照片会探出文件夹顶部 */
-                                overflow: 'hidden',
-                                borderRadius: '12px'
-                            }
-                        },
-                            folder.photos.slice(0, 4).map((p, i) =>
-                                React.createElement(motion.div, {
-                                    key: p.name,
-                                    initial: { scale: 0, y: 20, rotate: 0 },
-                                    animate: {
-                                        scale: 1,
-                                        y: 0,
-                                        rotate: `${seededRandom(folder.id.charCodeAt(0) + i * 3) * 26 - 13}deg`
-                                    },
-                                    exit: { scale: 0, y: 10, opacity: 0 },
-                                    transition: { type: 'spring', bounce: 0.2, delay: i * 0.04 },
-                                    style: {
-                                        position: 'absolute',
-                                        width: '72px',
-                                        zIndex: 2 + i
-                                    }
-                                },
-                                    React.createElement("div", {
-                                        style: {
-                                            aspectRatio: '4/5',
-                                            backgroundColor: '#f5f5dc',
-                                            padding: '4px',
-                                            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                                            borderRadius: '2px',
-                                            display: 'flex',
-                                            flexDirection: 'column'
-                                        }
-                                    },
-                                        // 窗口内才加载真实图片；窗口外渲染空白照片纸（米白卡 + 照片名），
-                                        // 窗口扩到该文件夹时图片才会开始请求
-                                        showStack && React.createElement("img", {
-                                            src: p.src,
-                                            alt: p.name,
-                                            style: {
-                                                width: '100%',
-                                                height: '68%',
-                                                objectFit: 'contain',
-                                                display: 'block',
-                                                backgroundColor: '#e8e4d9'
-                                            },
-                                            onError: (e) => {
-                                                e.target.style.display = 'none';
-                                                e.target.parentElement.style.backgroundColor = '#d4cfc4';
-                                            }
-                                        }),
-                                        React.createElement("div", {
-                                            style: {
-                                                marginTop: '2px',
-                                                fontSize: '8px',
-                                                textAlign: 'center',
-                                                fontFamily: '"IM Fell DW Pica SC", serif',
-                                                color: '#666',
-                                                lineHeight: 1.2,
-                                                minHeight: '20px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }
-                                        }, p.name)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ),
+                }),
 
                 /* 文件夹封面 */
                 React.createElement(motion.div, {
