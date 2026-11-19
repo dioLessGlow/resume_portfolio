@@ -68,7 +68,17 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>陈少辉 | 荣誉墙</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<link href="https://fonts.bunny.net/css?family=just-me-again-down-here:400" rel="stylesheet">
+    <!-- 手写体自托管：原先走 fonts.bunny.net 外链，国内网络连接被重置导致
+         字体回退；本地 woff2 仅 17.5KB，随站内其它字体一起走同源缓存 -->
+    <style>
+        @font-face {
+            font-family: 'Just Me Again Down Here';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('../fonts/just-me-again-down-here-latin-400-normal.woff2') format('woff2');
+        }
+    </style>
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
