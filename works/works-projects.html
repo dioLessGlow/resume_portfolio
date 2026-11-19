@@ -737,9 +737,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             }
 
             preload(idx) {
-                // 仅预载当前 + 下一个项目的首图，其余按浏览进度按需加载
+                // 滑动窗口：预载 n-1 / n / n+1 三个项目的首图，其余按浏览进度按需加载。
+                // 轮播是环形（左右切换用 mod 回绕），窗口越界同样回绕
                 const start = idx === undefined ? this.current : idx;
-                [start, this.mod(start + 1)].forEach((i) => {
+                [start - 1, start, start + 1].forEach((i) => {
                     const p = PROJECTS[this.mod(i)];
                     if (!p) return;
                     const first = this.imgsOf(p)[0];
@@ -1210,7 +1211,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         this.animating = false;
                         this.updateFrontClass();
                         this.startImageLoop();
-                        this.preload(nextIdx); // 提前备好下一个项目的首图
+                        this.preload(nextIdx); // 滑动窗口：备好 n-1/n/n+1 三个项目的首图
                     }
                 });
 
