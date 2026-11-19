@@ -779,7 +779,12 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                padding: '6px'
+                                padding: '6px',
+                                /* 照片卡是 absolute 且本层就是它的包含块；裁剪必须发生在
+                                   包含块链上才生效——背景层的 overflow:hidden 对这些
+                                   absolute 后代无效（CSS 规范），照片会探出文件夹顶部 */
+                                overflow: 'hidden',
+                                borderRadius: '12px'
                             }
                         },
                             folder.photos.slice(0, 4).map((p, i) =>
