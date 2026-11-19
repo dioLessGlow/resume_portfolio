@@ -930,6 +930,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 if (expandedFolder === null) return;
                 const idx = FOLDERS.findIndex(f => f.id === expandedFolder);
                 if (idx === -1) return;
+                warmFolder(idx);      // 自己：收起后折叠态要显示真实缩略图
                 warmFolder(idx - 1); // 左邻
                 warmFolder(idx + 1); // 右邻
             }, [expandedFolder]);
