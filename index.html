@@ -4,7 +4,7 @@
 <head>
 <script>/*pull-to-refresh-v2*/(function(){
 try{if(sessionStorage.getItem('__prNoAnim')==='1'){sessionStorage.removeItem('__prNoAnim');document.documentElement.setAttribute('data-pr-noanim','1');}}catch(e){}
-if(document.documentElement.getAttribute('data-pr-noanim')==='1'){try{if(history.scrollRestoration)history.scrollRestoration='manual';window.addEventListener('load',function(){window.scrollTo(0,0);});document.addEventListener('DOMContentLoaded',function(){window.scrollTo(0,0);});}catch(e){}var __st=document.createElement('style');__st.textContent='html[data-pr-noanim] .welcome-text,html[data-pr-noanim] .welcome-text::after,html[data-pr-noanim] .sub-text,html[data-pr-noanim] .hint{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}html[data-pr-noanim] .welcome-text::after{width:clamp(100px,20vw,200px)!important}html[data-pr-noanim] .loader{display:none!important}@keyframes __prBounceIn{0%{opacity:0;transform:translateY(42px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}html[data-pr-noanim] body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style){animation:__prBounceIn .62s cubic-bezier(.34,1.42,.64,1) backwards}';document.head.appendChild(__st);}
+if(document.documentElement.getAttribute('data-pr-noanim')==='1'){try{if(history.scrollRestoration)history.scrollRestoration='manual';window.addEventListener('load',function(){window.scrollTo(0,0);});document.addEventListener('DOMContentLoaded',function(){window.scrollTo(0,0);});}catch(e){}var __st=document.createElement('style');__st.textContent='html[data-pr-noanim] .welcome-text,html[data-pr-noanim] .line,html[data-pr-noanim] .sub-text,html[data-pr-noanim] .hint,html[data-pr-noanim] .enter-btn,html[data-pr-noanim] .decoration,html[data-pr-noanim] .bg{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}html[data-pr-noanim] .loader{display:none!important}@keyframes __prBounceIn{0%{opacity:0;transform:translateY(42px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}html[data-pr-noanim] body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style){animation:__prBounceIn .62s cubic-bezier(.34,1.42,.64,1) backwards}';document.head.appendChild(__st);}
 var sy=0,sx=0,dragging=false,pull=0,clr=null,ui=null,ico=null,txt=null,loading=false;
 var MAX=90,TH=56;
 function body(){return document.body;}
@@ -64,6 +64,15 @@ document.addEventListener('touchend',function(){if(!dragging)return;dragging=fal
 document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=false;if(pull)spring();},{passive:true});
 })();</script>
 <style>html,body{overscroll-behavior:none;overscroll-behavior-y:none}</style>
+    <!-- 入场动画闸门：首帧前先隐藏，等字体就绪后再统一揭幕，避免字形替换瞬间跳一下 -->
+    <script>(function(){
+    var root=document.documentElement;
+    try{
+        if(root.getAttribute('data-pr-noanim')==='1')return;
+        if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+        root.className+=' anim-armed';
+    }catch(e){}
+})();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>欢迎 | 陈少辉</title>
@@ -78,24 +87,28 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <!-- Loader 容器，由 components.js 统一加载 -->
     <div id="loader-container"></div>
     
-    <!-- 漂浮的彩色圆球 -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    
-    <div class="welcome-content">
-        <h1 class="welcome-text">欢迎来到我的</h1>
-        <h1 class="welcome-text">小世界<img src="images/icons/欢迎.webp" alt="欢迎" class="welcome-icon"></h1>
+    <!-- 漂浮的柔光层 -->
+    <div class="bg" aria-hidden="true">
+        <span class="bg-glow bg-glow--a"></span>
+        <span class="bg-glow bg-glow--b"></span>
+        <span class="bg-glow bg-glow--c"></span>
+    </div>
+
+    <main class="welcome-content">
+        <h1 class="welcome-text">
+            <span class="line">欢迎来到我的</span>
+            <span class="line">小世界<img src="images/icons/欢迎.webp" alt="" aria-hidden="true" class="welcome-icon"></span>
+        </h1>
         <p class="sub-text">这里记录了我的成长</p>
-        <p class="hint">Click below to enter →</p>
+        <p class="hint">Click below to enter<span class="hint-arrow" aria-hidden="true"><svg viewBox="0 0 16 10" fill="none"><path d="M1 5h13M11 1.5 14.5 5 11 8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></p>
 
         <a href="home.html" class="enter-btn" target="_self" onclick="sessionStorage.setItem('visited', 'true');">
             <span>请进</span>
-            <span class="arrow">→</span>
+            <span class="arrow" aria-hidden="true"><svg viewBox="0 0 20 10" fill="none"><path d="M1 5h17M14.5 1.2 18.5 5l-4 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </a>
-    </div>
+    </main>
 
-    <div class="decoration">
+    <div class="decoration" aria-hidden="true">
         <span class="dot"></span>
         <span class="dot"></span>
         <span class="dot"></span>
@@ -104,6 +117,32 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <script type="module" src="js/components.js"></script>
 
     <script>
+        // 入场：字体就绪后再揭幕，动画从头到尾都在最终字形上跑（否则会先用系统字跳一下）
+        (function () {
+            const root = document.documentElement;
+            if (!root.classList.contains('anim-armed')) return;
+            let started = false;
+            const start = () => {
+                if (started) return;
+                started = true;
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    root.classList.add('anim-go');
+                    // 动画全部结束后撤掉闸门，让 hover / active 的 transform 重新生效
+                    setTimeout(() => root.classList.remove('anim-armed', 'anim-go'), 1350);
+                }));
+            };
+            // 显式点名要用到的字体子集：fonts.ready 有时只等到已用到的，标题字可能晚一步
+            const fontsApi = document.fonts;
+            const waits = [];
+            if (fontsApi && fontsApi.ready) waits.push(fontsApi.ready);
+            if (fontsApi && fontsApi.load) {
+                waits.push(fontsApi.load('400 1em "ZCOOL KuaiLe"', '欢迎来到我的小世界这里记录了我的成长请进').catch(() => {}));
+                waits.push(fontsApi.load('500 1em "Space Grotesk"', 'CLICK BELOW TO ENTER').catch(() => {}));
+            }
+            Promise.all(waits).then(() => setTimeout(start, 60)).catch(start);
+            setTimeout(start, 700); // 字体迟迟不返回时的兜底
+        })();
+
         // 空闲时预取首页全套资源：访客在欢迎页停留的几秒足够拉完 ~1.1MB，
         // 点「请进」时全部缓存命中，进入近乎瞬时。fetch 失败静默忽略，不影响任何现有行为
         const warmHome = () => {
