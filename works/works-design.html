@@ -64,7 +64,7 @@ document.addEventListener('touchmove',function(e){
   if(Math.abs(dy)<=Math.abs(dx)){if(pull)setPull(0);return;}
   var se=scroller||document.scrollingElement||document.documentElement;
   var max=se.scrollHeight-(se===document.documentElement?window.innerHeight:se.clientHeight);
-  if(max<=0)return;
+  if(max<=0&&location.pathname.indexOf('/public/')!==-1)return;
   var y=se.scrollTop;
   if(dy>0&&y<=0){e.preventDefault();setPull(Math.min(MAX,dy*0.55));}
   else if(dy<0&&y>=max-1){e.preventDefault();setPull(-Math.min(40,(-dy)*0.3));}
