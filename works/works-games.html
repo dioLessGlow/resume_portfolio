@@ -8,7 +8,7 @@ if(document.documentElement.getAttribute('data-pr-noanim')==='1'){try{if(history
 var sy=0,sx=0,dragging=false,pull=0,clr=null,ui=null,ico=null,txt=null,loading=false;
 var MAX=90,TH=56;
 function body(){return document.body;}
-var SEL='body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style)';function movers(){return document.querySelectorAll(SEL);}function setMoveY(p,trans){var els=movers();for(var i=0;i<els.length;i++){els[i].style.transition=trans||'none';els[i].style.transform=p?('translateY('+p+'px)'):'';}return els;}
+var SEL='body>:not(#loader-container):not(#header-container):not(#footer-container):not(#back-loader):not(script):not(style)';function movers(){return document.querySelectorAll(SEL);}var prFx=null;function prScan(){prFx=[];var a=movers();for(var i=0;i<a.length;i++){var f=false,d=a[i].querySelectorAll('*');for(var j=0;j<d.length;j++){if(getComputedStyle(d[j]).position==='fixed'){f=true;break;}}prFx.push(f);}}function setMoveY(p,trans){var els=movers();if(prFx===null)prScan();for(var i=0;i<els.length;i++){if(getComputedStyle(els[i]).position==='fixed'||prFx[i])continue;els[i].style.transition=trans||'none';els[i].style.translate=p?('0 '+p+'px'):'';}return els;}
 function ensureUI(){
   if(ui)return ui;
   var b=body();if(!b)return null;
@@ -33,7 +33,7 @@ function setPull(p){
   setUI(p);
 }
 function spring(){
-  var els=setMoveY(0,'transform .4s cubic-bezier(.34,1.4,.64,1)');
+  var els=setMoveY(0,'translate .4s cubic-bezier(.34,1.4,.64,1)');
   pull=0;
   if(ui)ui.style.transform='translateY(-60px)';
   if(clr)clearTimeout(clr);
@@ -43,7 +43,7 @@ function doRefresh(){
   loading=true;
   if(!document.getElementById('__prkf')){var st=document.createElement('style');st.id='__prkf';st.textContent='@keyframes __prspin{to{transform:rotate(360deg)}}';document.head.appendChild(st);}
   txt.textContent='刷新中…';ico.style.animation='__prspin .7s linear infinite';ico.style.transform='';
-  setMoveY(52,'transform .2s');
+  setMoveY(52,'translate .2s');
   if(ui)ui.style.transform='translateY(48px)';
   try{sessionStorage.setItem('__prNoAnim','1');}catch(e){}
   setTimeout(function(){location.reload();},450);
@@ -63,7 +63,7 @@ document.addEventListener('touchmove',function(e){
 document.addEventListener('touchend',function(){if(!dragging)return;dragging=false;if(pull>=TH)doRefresh();else if(pull)spring();},{passive:true});
 document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=false;if(pull)spring();},{passive:true});
 })();</script>
-<style>html,body{overscroll-behavior:none;overscroll-behavior-y:none}</style>
+<style>html{overscroll-behavior:none;overscroll-behavior-y:none;overflow-x:clip}body{overscroll-behavior:none;overscroll-behavior-y:none}</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>陈少辉 | 益智小游戏</title>
