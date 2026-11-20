@@ -19,24 +19,31 @@
 
         * { box-sizing: border-box; }
 
-        html, body { margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; height: 100%; }
 
         body {
             position: relative;
-            min-height: 100vh;
-            min-height: 100dvh;
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 32px 20px 48px;
+            padding: 24px 20px;
             background: var(--bg);
             color: var(--deep);
             font-family: 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            overflow-x: hidden;
+            overflow: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 柔光背景，呼应欢迎页 */
+        /* 柔光背景固定在视口内并裁切，负定位的光晕不会撑出滚动条 */
+        .bg {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
         .glow {
             position: absolute;
             border-radius: 50%;
@@ -192,9 +199,11 @@
 </head>
 
 <body>
-    <div class="glow glow-a" aria-hidden="true"></div>
-    <div class="glow glow-b" aria-hidden="true"></div>
-    <div class="glow glow-c" aria-hidden="true"></div>
+    <div class="bg" aria-hidden="true">
+        <div class="glow glow-a"></div>
+        <div class="glow glow-b"></div>
+        <div class="glow glow-c"></div>
+    </div>
 
     <main class="panel">
         <div class="compass" aria-hidden="true">
