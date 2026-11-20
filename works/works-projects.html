@@ -164,9 +164,15 @@
             pointer-events: auto; /* 父容器在移动端是 none，卡片需自己恢复点击/手势 */
             will-change: transform;
             contain: layout style;
-            /* 白底截图在奶油色背景上没有轮廓：边框描边 + 阴影把卡片托起来 */
+            /* 白底截图在奶油色背景上没有轮廓：明暗边框 + 三层阴影塑造立体浮起感 */
             border: 2px solid rgba(0, 0, 0, 0.18);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+            border-top-color: rgba(255, 255, 255, 0.75);
+            border-left-color: rgba(255, 255, 255, 0.55);
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.14),
+                0 10px 20px rgba(0, 0, 0, 0.14),
+                0 24px 48px rgba(0, 0, 0, 0.13),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
         .project-slider__slide img {
