@@ -164,6 +164,9 @@
             pointer-events: auto; /* 父容器在移动端是 none，卡片需自己恢复点击/手势 */
             will-change: transform;
             contain: layout style;
+            /* 白底截图在奶油色背景上没有轮廓：细边框描边 + 淡阴影把卡片托起来 */
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
         }
 
         .project-slider__slide img {
@@ -468,9 +471,9 @@
                 pointer-events: auto;
             }
 
-            /* 桌面：卡片放大并在图片区内垂直居中，消除右上悬空、中部留白 */
+            /* 桌面：卡片放大并略高于图片区中心，消除右上悬空、中部留白 */
             .project-slider__slide {
-                top: 50%;
+                top: 45%;
                 width: 92%;
             }
 
