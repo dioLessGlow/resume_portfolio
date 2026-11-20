@@ -417,7 +417,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <script type="module">
         import React, { useState, useEffect, useRef } from "https://esm.sh/react@19";
         import { createRoot } from "https://esm.sh/react-dom@19/client";
-        import { motion, AnimatePresence } from "https://esm.sh/framer-motion@11";
+        // ?bundle 把 framer-motion 的 80+ 个子模块压成单个 bundle.mjs，弱网下请求数从 220+ 降到 ~40
+        import { motion, AnimatePresence } from "https://esm.sh/framer-motion@11?bundle";
 
         const FOLDERS = [
             {

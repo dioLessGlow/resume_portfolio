@@ -379,7 +379,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             </div>
 
             <div class="pudgy-container">
-                <img id="pudgy" alt="胖吉正在判断">
+                <!-- 初始 src + fetchpriority=high：让浏览器 HTML 预加载器在解析阶段就下载首屏企鹅（LCP 元素），
+                     不再等 DOMContentLoaded 后的 JS。URL 与 showIdle(PUDGY_VB) 完全一致 → 命中同一请求缓存，不重复下载。
+                     ready 类让图片直接可见（opacity:1），避免 LCP 卡在 JS 加类时机。 -->
+                <img id="pudgy" class="ready" src="../images/pudgy/idle.webp?v=20261113b" fetchpriority="high" alt="胖吉正在判断">
                 <div class="reaction" id="reactionText"></div>
             </div>
         </div>

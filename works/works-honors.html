@@ -82,11 +82,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
-    <!-- 滑动窗口思路：只预热首屏可见的前 3 张，其余交给 loading="lazy" 按需加载，
-         避免高优先级请求与首屏 LCP 抢带宽（曾 8 张 preload 516KB 全量插队） -->
-    <link rel="preload" as="image" href="../images/honors/1.webp">
-    <link rel="preload" as="image" href="../images/honors/2.webp">
-    <link rel="preload" as="image" href="../images/honors/3.webp">
+    <!-- 预热首屏真正可见的主图：中间卡 11.webp 是 LCP 元素（此前误预热 1/2/3，与主图错位导致 LCP 10s+）。
+         只预热首屏 3D 堆叠中可见的 3 张，其余交给 loading="lazy" 按需加载，避免高优先级请求抢带宽。 -->
+    <link rel="preload" as="image" href="../images/honors/11.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="../images/honors/7.webp">
+    <link rel="preload" as="image" href="../images/honors/8.webp">
     <base target="_blank">
 
     <style>
