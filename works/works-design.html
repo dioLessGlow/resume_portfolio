@@ -160,8 +160,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         }
         @media (min-width: 769px) {
             .pc-folder-wrap {
+                /* 宽度随内容收缩并居中，两侧留出空间给箭头，避免探出被 #app 的 overflow:hidden 裁掉 */
+                width: fit-content;
                 max-width: 1100px;
-                --folder-w: 140px; /* 固定宽度：6 个一排，不再随视口缩放 */
+                --folder-w: 116px; /* 固定宽度：6 个一排，不再随视口缩放 */
             }
         }
         .pc-folders {
