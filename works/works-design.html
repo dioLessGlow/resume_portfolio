@@ -904,31 +904,81 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             const [lightboxIdx, setLightboxIdx] = useState(null);
             const gridWrapRef = useRef(null);
             const foldersRef = useRef(null);
-            // 桌面端文件夹行交互：滚轮竖滚映射为横滚 + 按住拖拽滚动（移动端触摸横滑不受影响）
+            // 桌面端文件夹行交互：对齐手机手感——滚轮平滑缓动、拖拽带惯性释放、停下后就近吸附。
+            //（移动端触摸横滑走浏览器原生滚动，不受影响）
             useEffect(() => {
                 const el = foldersRef.current;
                 if (!el) return;
                 const canScroll = () => el.scrollWidth > el.clientWidth + 1;
+                const maxScroll = () => el.scrollWidth - el.clientWidth;
+                const clamp = (v) => Math.max(0, Math.min(maxScroll(), v));
+                // 吸附点：每个文件夹居中对齐时的 scrollLeft
+                const snapPoints = () => Array.from(el.children).map((c) => {
+                    const r = c.getBoundingClientRect(), er = el.getBoundingClientRect();
+                    return el.scrollLeft + (r.left - er.left) + r.width / 2 - el.clientWidth / 2;
+                });
+                const nearestSnap = () => {
+                    const cur = el.scrollLeft;
+                    let best = null, bd = Infinity;
+                    for (const p of snapPoints()) {
+                        const d = Math.abs(p - cur);
+                        if (d < bd) { bd = d; best = p; }
+                    }
+                    return (best !== null && bd <= 80) ? best : null;
+                };
+                let anim = null;
+                const stopAnim = () => { if (anim) { cancelAnimationFrame(anim); anim = null; } };
+                // 统一缓动：每帧向目标靠近 18%，getTarget 返回 null 时结束并回调
+                const glide = (getTarget, done) => {
+                    stopAnim();
+                    const step = () => {
+                        const to = getTarget();
+                        if (to === null) { anim = null; if (done) done(); return; }
+                        const cur = el.scrollLeft, diff = to - cur;
+                        if (Math.abs(diff) < 0.6) { el.scrollLeft = to; anim = null; if (done) done(); return; }
+                        el.scrollLeft = cur + diff * 0.18;
+                        anim = requestAnimationFrame(step);
+                    };
+                    anim = requestAnimationFrame(step);
+                };
+                // ---- 滚轮：增量累积成目标值，平滑滑过去（不再一格一跳） ----
+                let wheelTarget = null;
                 const onWheel = (e) => {
                     if (!canScroll()) return;
-                    const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-                    if (!d) return;
+                    const raw = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+                    if (!raw) return;
                     e.preventDefault();
-                    el.scrollLeft += d;
+                    if (wheelTarget === null) wheelTarget = el.scrollLeft;
+                    wheelTarget = clamp(wheelTarget + (e.deltaMode === 1 ? raw * 16 : raw));
+                    glide(() => wheelTarget, () => { wheelTarget = null; const s = nearestSnap(); if (s !== null) glide(() => s); });
                 };
-                let down = false, moved = false, sx = 0, sl = 0;
+                // ---- 拖拽：1:1 跟手，松手按最后速度惯性滑行，再就近吸附 ----
+                let down = false, moved = false, sx = 0, sl = 0, lastX = 0, lastT = 0, vel = 0, momTarget = null;
                 const onDown = (e) => {
                     if (e.button !== 0 || !canScroll()) return;
+                    stopAnim(); wheelTarget = null;
                     down = true; moved = false; sx = e.clientX; sl = el.scrollLeft;
+                    lastX = e.clientX; lastT = performance.now(); vel = 0;
                     e.preventDefault(); // 拖拽时避免选中文字/触发图片原生拖拽
                 };
                 const onMove = (e) => {
                     if (!down) return;
                     const dx = e.clientX - sx;
                     if (Math.abs(dx) > 4) moved = true;
-                    el.scrollLeft = sl - dx;
+                    el.scrollLeft = clamp(sl - dx);
+                    const now = performance.now();
+                    const dt = Math.max(1, now - lastT);
+                    vel = vel * 0.8 + ((lastX - e.clientX) / dt) * 0.2; // px/ms，向近期速度收敛
+                    lastX = e.clientX; lastT = now;
                 };
-                const onUp = () => { down = false; setTimeout(() => { moved = false; }, 0); };
+                const onUp = () => {
+                    if (!down) return;
+                    down = false;
+                    if (!moved) return;
+                    momTarget = clamp(el.scrollLeft + vel * 220);
+                    glide(() => momTarget, () => { momTarget = null; const s = nearestSnap(); if (s !== null) glide(() => s); });
+                    setTimeout(() => { moved = false; }, 0);
+                };
                 // 拖拽超过阈值后抑制误触 click，避免拖完松手正好点开文件夹
                 const onClickCap = (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); } };
                 el.addEventListener('wheel', onWheel, { passive: false });
@@ -937,6 +987,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 window.addEventListener('mouseup', onUp);
                 el.addEventListener('click', onClickCap, true);
                 return () => {
+                    stopAnim();
                     el.removeEventListener('wheel', onWheel);
                     el.removeEventListener('mousedown', onDown);
                     window.removeEventListener('mousemove', onMove);
