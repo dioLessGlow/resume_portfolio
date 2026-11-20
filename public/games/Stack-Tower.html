@@ -55,8 +55,8 @@ document.addEventListener('touchmove',function(e){
   var se=document.scrollingElement||document.documentElement,max=se.scrollHeight-window.innerHeight;
   if(max<=0)return;
   var y=se.scrollTop;
-  if(dy>0&&y<=0){e.preventDefault();setPull(Math.min(MAX,dy*0.55));}
-  else if(max>0&&dy<0&&y>=max-1){e.preventDefault();setPull(-Math.min(40,(-dy)*0.3));}
+  if(dy>0&&y<=0){if(e.cancelable)e.preventDefault();setPull(Math.min(MAX,dy*0.55));}
+  else if(max>0&&dy<0&&y>=max-1){if(e.cancelable)e.preventDefault();setPull(-Math.min(40,(-dy)*0.3));}
   else if(pull){setPull(0);}
 },{passive:false});
 document.addEventListener('touchend',function(){if(!dragging)return;dragging=false;if(pull>=TH)doRefresh();else if(pull)spring();},{passive:true});
