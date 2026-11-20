@@ -943,17 +943,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             const [lightboxIdx, setLightboxIdx] = useState(null);
             const gridWrapRef = useRef(null);
             const foldersRef = useRef(null);
-            // 文件夹排是否溢出（放不下时两侧出左右箭头；宽屏全放下则自动隐藏）
-            const [rowOverflow, setRowOverflow] = useState(false);
-            useEffect(() => {
-                const measure = () => {
-                    const el = foldersRef.current;
-                    if (el) setRowOverflow(el.scrollWidth > el.clientWidth + 1);
-                };
-                measure();
-                window.addEventListener('resize', measure);
-                return () => window.removeEventListener('resize', measure);
-            }, []);
             // 左右箭头/键盘共用：一次滚过一个文件夹
             const scrollRow = (dir) => {
                 const el = foldersRef.current;
@@ -1115,9 +1104,9 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
                 /* ===== 三个文件夹（外层包裹：溢出时两侧出左右箭头） ===== */
                 React.createElement("div", { className: "pc-folder-wrap" },
-                    rowOverflow && React.createElement("div", { className: "pc-kbd-hint" },
+                    React.createElement("div", { className: "pc-kbd-hint" },
                         "可以键盘左右滚动"),
-                    rowOverflow && React.createElement("button", {
+                    React.createElement("button", {
                         type: "button",
                         className: "lb-arrow lb-arrow--prev pc-folder-arrow",
                         onClick: () => scrollRow(-1),
@@ -1150,7 +1139,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                             })
                         )
                     ),
-                    rowOverflow && React.createElement("button", {
+                    React.createElement("button", {
                         type: "button",
                         className: "lb-arrow lb-arrow--next pc-folder-arrow",
                         onClick: () => scrollRow(1),
