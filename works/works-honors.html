@@ -212,6 +212,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 border-radius: inherit;
             }
 
+            /* 时间维度懒加载：未赋 src 的图先用浅绿渐变占位，避免空白闪烁 */
+            .wrapper>div>img[data-src] {
+                background: linear-gradient(135deg, #eef5ec, #dcebd8);
+            }
+
             /* 徽章覆盖层 */
             .wrapper>div .badge {
                 position: absolute;
@@ -670,7 +675,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="优秀AI创意作品">
-                <img src="../images/honors/7.webp" loading="lazy" decoding="async" alt="优秀作品">
+                <img data-src="../images/honors/7.webp" decoding="async" alt="优秀作品">
                 <span class="badge default">校级</span>
                 <div>
                     <div class="year">2025</div>
@@ -678,7 +683,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="优秀干事">
-                <img src="../images/honors/6.webp" loading="lazy" decoding="async" alt="优秀干事">
+                <img data-src="../images/honors/6.webp" decoding="async" alt="优秀干事">
                 <span class="badge default">学生工作</span>
                 <div>
                     <div class="year">2025</div>
@@ -686,7 +691,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="三灶鹤舞">
-                <img src="../images/honors/5.webp" loading="lazy" decoding="async" alt="三灶鹤舞">
+                <img data-src="../images/honors/5.webp" decoding="async" alt="三灶鹤舞">
                 <span class="badge default">校级三等奖</span>
                 <div>
                     <div class="year">2024</div>
@@ -694,7 +699,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="一等奖">
-                <img src="../images/honors/4.webp" loading="lazy" decoding="async" alt="东方财富杯一等奖">
+                <img data-src="../images/honors/4.webp" decoding="async" alt="东方财富杯一等奖">
                 <span class="badge default">校级一等奖</span>
                 <div>
                     <div class="year">2025</div>
@@ -702,7 +707,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="最佳人气奖">
-                <img src="../images/honors/3.webp" loading="lazy" decoding="async" alt="最佳人气奖">
+                <img data-src="../images/honors/3.webp" decoding="async" alt="最佳人气奖">
                 <span class="badge default">省级奖项</span>
                 <div>
                     <div class="year">2025</div>
@@ -710,7 +715,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="优秀AI创意作品">
-                <img src="../images/honors/2.webp" loading="lazy" decoding="async" alt="优秀AI创意作品">
+                <img data-src="../images/honors/2.webp" decoding="async" alt="优秀AI创意作品">
                 <span class="badge default">国家级</span>
                 <div>
                     <div class="year">2025</div>
@@ -718,7 +723,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="银翼奖">
-                <img src="../images/honors/1.webp" loading="lazy" decoding="async" alt="银翼奖">
+                <img data-src="../images/honors/1.webp" decoding="async" alt="银翼奖">
                 <span class="badge default">全国第二</span>
                 <div>
                     <div class="year">2025</div>
@@ -726,7 +731,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 </div>
             </div>
             <div data-title="创意奖">
-                <img src="../images/honors/8.webp" loading="lazy" decoding="async" alt="汴河四叠创意奖">
+                <img data-src="../images/honors/8.webp" decoding="async" alt="汴河四叠创意奖">
                 <span class="badge default">设计赛事</span>
                 <div>
                     <div class="year">2026</div>
@@ -918,6 +923,32 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             syncCaption();
             updateHint(); // 初始化
 
+            /* ===== 时间维度懒加载 =====
+               3D 圆环上的卡片虽标 lazy，但都在视口内，浏览器会一次性请求全部，
+               弱网下 8 张图抢走主图带宽导致 LCP 波动到十几秒。
+               这里首屏只保留 11.webp（已 preload），其余等首屏稳定后每批 2 张补齐。 */
+            const restImgs = cards
+                .map(c => c.querySelector('img[data-src]'))
+                .filter(Boolean);
+            function loadRestImgs() {
+                let i = 0;
+                (function batch() {
+                    for (let k = 0; k < 2 && i < restImgs.length; k++, i++) {
+                        const im = restImgs[i];
+                        im.src = im.dataset.src;
+                        delete im.dataset.src;
+                    }
+                    if (i < restImgs.length) {
+                        (window.requestIdleCallback || (cb => setTimeout(cb, 250)))(batch, { timeout: 2000 });
+                    }
+                })();
+            }
+            window.addEventListener('load', () => {
+                window.requestIdleCallback
+                    ? requestIdleCallback(loadRestImgs, { timeout: 2000 })
+                    : setTimeout(loadRestImgs, 300);
+            }, { once: true });
+
             /* ============ 点击放大 ============ */
             const lb = document.getElementById('honor-lb');
             if (lb) {
@@ -940,6 +971,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     const year = card.querySelector('.year');
                     const category = card.querySelector('.category');
 
+                    // 秒点尚未加载的卡片时，从 data-src 兜底，保证放大图有内容
+                    if (!img.src && img.dataset.src) {
+                        img.src = img.dataset.src;
+                        delete img.dataset.src;
+                    }
                     lbImg.src = img.currentSrc || img.src;
                     lbImg.alt = img.alt || card.getAttribute('data-title') || '';
                     lbTitle.textContent = card.getAttribute('data-title') || '';
