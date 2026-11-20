@@ -148,18 +148,44 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             margin: 0 auto;
         }
 
-        /* 文件夹一排横向滚动：隐藏滚动条但保留滑动手感 */
+        /* 文件夹一排横向滚动：桌面端显示细滚动条可直接拖动（类似表格），移动端仍隐藏 */
         .pc-folders {
             flex: 0 0 auto;
             /* 永远钉在容器底部：墙不足一屏时留白落在墙与文件夹之间 */
             margin-top: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-x: contain;
         }
-        .pc-folders::-webkit-scrollbar {
-            display: none;
+        @media (min-width: 769px) {
+            .pc-folders {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(47, 125, 50, 0.45) rgba(0, 0, 0, 0.05);
+            }
+            .pc-folders::-webkit-scrollbar {
+                display: block;
+                height: 7px;
+            }
+            .pc-folders::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 4px;
+                margin: 0 12px;
+            }
+            .pc-folders::-webkit-scrollbar-thumb {
+                background: rgba(47, 125, 50, 0.45);
+                border-radius: 4px;
+            }
+            .pc-folders::-webkit-scrollbar-thumb:hover {
+                background: rgba(47, 125, 50, 0.7);
+            }
+        }
+        @media (max-width: 768px) {
+            .pc-folders {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .pc-folders::-webkit-scrollbar {
+                display: none;
+            }
         }
 
         #app {
