@@ -12,6 +12,7 @@ body {
     font-size: 16px;
     line-height: 1.6;
     min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
     /* 内容少的页面不滚动：header/footer 之外的空间全给主体 */
     display: flex;

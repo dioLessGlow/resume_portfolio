@@ -32,6 +32,7 @@ body {
     font-size: var(--fs-base);
     line-height: 1.6;
     min-height: 100vh;
+    min-height: 100dvh;
 }
     background: var(--color-bg);
     color: var(--color-text);
@@ -43,6 +44,7 @@ body {
 .main-wrapper {
     padding-top: clamp(60px, 10vw, 80px);
     min-height: 100vh;
+    min-height: 100dvh;
     padding-bottom: clamp(80px, 15vw, 120px);
 }
 
