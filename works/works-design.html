@@ -903,6 +903,47 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             const [expandedFolder, setExpandedFolder] = useState(null);
             const [lightboxIdx, setLightboxIdx] = useState(null);
             const gridWrapRef = useRef(null);
+            const foldersRef = useRef(null);
+            // 桌面端文件夹行交互：滚轮竖滚映射为横滚 + 按住拖拽滚动（移动端触摸横滑不受影响）
+            useEffect(() => {
+                const el = foldersRef.current;
+                if (!el) return;
+                const canScroll = () => el.scrollWidth > el.clientWidth + 1;
+                const onWheel = (e) => {
+                    if (!canScroll()) return;
+                    const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+                    if (!d) return;
+                    e.preventDefault();
+                    el.scrollLeft += d;
+                };
+                let down = false, moved = false, sx = 0, sl = 0;
+                const onDown = (e) => {
+                    if (e.button !== 0 || !canScroll()) return;
+                    down = true; moved = false; sx = e.clientX; sl = el.scrollLeft;
+                    e.preventDefault(); // 拖拽时避免选中文字/触发图片原生拖拽
+                };
+                const onMove = (e) => {
+                    if (!down) return;
+                    const dx = e.clientX - sx;
+                    if (Math.abs(dx) > 4) moved = true;
+                    el.scrollLeft = sl - dx;
+                };
+                const onUp = () => { down = false; setTimeout(() => { moved = false; }, 0); };
+                // 拖拽超过阈值后抑制误触 click，避免拖完松手正好点开文件夹
+                const onClickCap = (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); } };
+                el.addEventListener('wheel', onWheel, { passive: false });
+                el.addEventListener('mousedown', onDown);
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+                el.addEventListener('click', onClickCap, true);
+                return () => {
+                    el.removeEventListener('wheel', onWheel);
+                    el.removeEventListener('mousedown', onDown);
+                    window.removeEventListener('mousemove', onMove);
+                    window.removeEventListener('mouseup', onUp);
+                    el.removeEventListener('click', onClickCap, true);
+                };
+            }, []);
             // 标题只在文件夹视图显示：打开照片墙时挂 body.folder-open，由 CSS 隐藏标题并压缩布局
             useEffect(() => {
                 document.body.classList.toggle('folder-open', !!expandedFolder);
@@ -1027,6 +1068,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 /* ===== 三个文件夹 ===== */
                 React.createElement("div", {
                     className: "pc-folders",
+                    ref: foldersRef,
                     style: {
                         display: 'flex',
                         flexWrap: 'nowrap',
