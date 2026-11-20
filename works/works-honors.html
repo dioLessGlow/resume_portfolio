@@ -133,7 +133,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 /* 半径足够大，防止卡片重叠 */
                 --radius: calc(var(--card-width) * var(--cards) / (2 * 3.1416));
 
-                font-family: 'Just Me Again Down Here', 'ZCOOL KuaiLe', handwriting;
+                font-family: 'Just Me Again Down Here', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
                 position: fixed;
                 width: calc(var(--radius) * 2);
                 height: calc(var(--radius) * 2);
@@ -202,7 +202,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 transition: opacity 300ms ease-in-out, translate 300ms ease-in-out;
                 color: var(--color-text);
                 white-space: nowrap;
-                font-family: 'ZCOOL KuaiLe', 'Just Me Again Down Here', cursive;
+                font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
             }
 
             .wrapper>div>img {
@@ -226,7 +226,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 border-radius: 50%;
                 font-size: 8px;
                 font-weight: 600;
-                font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+                font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
                 z-index: 10;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             }
@@ -314,7 +314,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 min-height: 100svh;
                 margin: 0;
                 padding: 0;
-                font-family: 'Space Grotesk', 'ZCOOL KuaiLe', sans-serif;
+                font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
                 font-size: 1rem;
                 line-height: 1.5;
                 -webkit-font-smoothing: antialiased;
@@ -385,7 +385,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 color: var(--color-text-muted);
                 opacity: 0.7;
                 z-index: 100;
-                font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+                font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
                 pointer-events: none;
                 animation: hint-pulse 2s infinite;
             }
@@ -643,7 +643,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/back-btn.css">
     <link rel="stylesheet" href="../css/lightbox-arrows.css">
-    <link rel="stylesheet" href="../fonts/fonts.css">
+    <!-- 不引入 fonts.css：中文字体分片（站酷/思源）在弱网下会抢首图带宽。
+         中文改用系统字体栈，英文手写体 Just Me Again Down Here 单独引入保留。 -->
 </head>
 
 <body>
