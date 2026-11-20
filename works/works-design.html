@@ -970,6 +970,24 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     el.removeEventListener('click', onClickCap, true);
                 };
             }, []);
+            // 桌面端键盘：← → 一次滚动一个文件夹（Lightbox 打开时让路给图片切换）
+            useEffect(() => {
+                if (lightboxIdx !== null) return;
+                const onKey = (e) => {
+                    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                    const el = foldersRef.current;
+                    if (!el || el.scrollWidth <= el.clientWidth + 1) return;
+                    const first = el.children[0];
+                    const step = first
+                        ? first.getBoundingClientRect().width + parseFloat(getComputedStyle(el).columnGap || 36)
+                        : 160;
+                    if (e.key === 'ArrowLeft') el.scrollLeft -= step;
+                    else el.scrollLeft += step;
+                    e.preventDefault();
+                };
+                window.addEventListener('keydown', onKey);
+                return () => window.removeEventListener('keydown', onKey);
+            }, [lightboxIdx]);
             // 标题只在文件夹视图显示：打开照片墙时挂 body.folder-open，由 CSS 隐藏标题并压缩布局
             useEffect(() => {
                 document.body.classList.toggle('folder-open', !!expandedFolder);
