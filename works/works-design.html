@@ -148,8 +148,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             margin: 0 auto;
         }
 
-        /* 文件夹一排横向滚动：隐藏滚动条，桌面端用滚轮/拖拽/方向键/左右箭头。
-           桌面端放大容器并按视口微缩文件夹，宽屏 6 个全放下（放不下时两侧出箭头） */
+        /* 文件夹一排：6 个固定宽度一排放下，隐藏滚动条，不提供拖拽；
+           窄窗口放不下时两侧出统一箭头 + 键盘 ← → 滚动 */
         .pc-folder-wrap {
             flex: 0 0 auto;
             /* 永远钉在容器底部：墙不足一屏时留白落在墙与文件夹之间 */
@@ -161,7 +161,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         @media (min-width: 769px) {
             .pc-folder-wrap {
                 max-width: 1100px;
-                --folder-w: clamp(96px, 12vw, 144px);
+                --folder-w: 140px; /* 固定宽度：6 个一排，不再随视口缩放 */
             }
         }
         .pc-folders {
@@ -173,34 +173,17 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         .pc-folders::-webkit-scrollbar {
             display: none;
         }
-        /* 左右箭头：放不下时出现在文件夹排两侧（移动端隐藏，靠手指横滑） */
-        .pc-arrow {
-            display: none;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 1px solid rgba(47, 125, 50, 0.35);
-            background: rgba(255, 255, 255, 0.9);
-            color: #2f7d32;
-            font-size: 20px;
-            line-height: 1;
-            cursor: pointer;
+        /* 文件夹排两侧箭头：复用全站统一箭头造型（.lb-arrow 黄色笑脸牌），
+           这里只调定位（探出排两侧）与显隐（移动端隐藏，靠手指横滑） */
+        .pc-folder-arrow {
+            display: none !important; /* 外部 lightbox-arrows.css 在后面会把 .lb-arrow 设为 block，需锁死移动端隐藏 */
             z-index: 6;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
         }
-        .pc-arrow:hover {
-            background: #fff;
-            border-color: rgba(47, 125, 50, 0.7);
-        }
-        .pc-arrow--l { left: -16px; }
-        .pc-arrow--r { right: -16px; }
         @media (min-width: 769px) {
-            .pc-arrow { display: flex; }
+            .pc-folder-arrow.lb-arrow--prev,
+            .pc-folder-arrow.lb-arrow--next { display: block !important; }
+            .pc-folder-arrow.lb-arrow--prev { left: -16px; right: auto; }
+            .pc-folder-arrow.lb-arrow--next { right: -16px; left: auto; }
         }
         /* 方向键提示：仅在文件夹排溢出（可滚动）时随箭头一起出现 */
         .pc-kbd-hint {
@@ -981,7 +964,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     : 160;
                 el.scrollLeft += dir * step;
             };
-            // 桌面端文件夹行交互：滚轮直接 1:1 横滚 + 按住拖拽（1:1 跟手，无动画）
+            // 桌面端文件夹行交互：滚轮 1:1 横滚（拖拽已去掉，改为箭头/键盘滚动）
             useEffect(() => {
                 const el = foldersRef.current;
                 if (!el) return;
@@ -993,33 +976,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     e.preventDefault();
                     el.scrollLeft += (e.deltaMode === 1 ? d * 16 : d);
                 };
-                let down = false, moved = false, sx = 0, sl = 0;
-                const onDown = (e) => {
-                    if (e.button !== 0 || !canScroll()) return;
-                    down = true; moved = false; sx = e.clientX; sl = el.scrollLeft;
-                    e.preventDefault(); // 拖拽时避免选中文字/触发图片原生拖拽
-                };
-                const onMove = (e) => {
-                    if (!down) return;
-                    const dx = e.clientX - sx;
-                    if (Math.abs(dx) > 4) moved = true;
-                    el.scrollLeft = sl - dx;
-                };
-                const onUp = () => { down = false; setTimeout(() => { moved = false; }, 0); };
-                // 拖拽超过阈值后抑制误触 click，避免拖完松手正好点开文件夹
-                const onClickCap = (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); } };
                 el.addEventListener('wheel', onWheel, { passive: false });
-                el.addEventListener('mousedown', onDown);
-                window.addEventListener('mousemove', onMove);
-                window.addEventListener('mouseup', onUp);
-                el.addEventListener('click', onClickCap, true);
-                return () => {
-                    el.removeEventListener('wheel', onWheel);
-                    el.removeEventListener('mousedown', onDown);
-                    window.removeEventListener('mousemove', onMove);
-                    window.removeEventListener('mouseup', onUp);
-                    el.removeEventListener('click', onClickCap, true);
-                };
+                return () => el.removeEventListener('wheel', onWheel);
             }, []);
             // 桌面端键盘：← → 一次滚动一个文件夹（Lightbox 打开时让路给图片切换）
             useEffect(() => {
@@ -1158,12 +1116,13 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 /* ===== 三个文件夹（外层包裹：溢出时两侧出左右箭头） ===== */
                 React.createElement("div", { className: "pc-folder-wrap" },
                     rowOverflow && React.createElement("div", { className: "pc-kbd-hint" },
-                        "← → 方向键，或点击两侧箭头"),
+                        "可以键盘左右滚动"),
                     rowOverflow && React.createElement("button", {
-                        className: "pc-arrow pc-arrow--l",
+                        type: "button",
+                        className: "lb-arrow lb-arrow--prev pc-folder-arrow",
                         onClick: () => scrollRow(-1),
                         "aria-label": "向左滚动文件夹"
-                    }, "‹"),
+                    }),
                     React.createElement("div", {
                     className: "pc-folders",
                     ref: foldersRef,
@@ -1192,10 +1151,11 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         )
                     ),
                     rowOverflow && React.createElement("button", {
-                        className: "pc-arrow pc-arrow--r",
+                        type: "button",
+                        className: "lb-arrow lb-arrow--next pc-folder-arrow",
                         onClick: () => scrollRow(1),
                         "aria-label": "向右滚动文件夹"
-                    }, "›")
+                    })
                 ),
 
                 /* ===== 点击放大 Lightbox（脱离 flex，固定全屏） ===== */
