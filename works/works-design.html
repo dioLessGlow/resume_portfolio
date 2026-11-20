@@ -177,13 +177,14 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
            这里只调定位（探出排两侧）与显隐（移动端隐藏，靠手指横滑） */
         .pc-folder-arrow {
             display: none !important; /* 外部 lightbox-arrows.css 在后面会把 .lb-arrow 设为 block，需锁死移动端隐藏 */
-            z-index: 6;
+            z-index: 9 !important; /* 高于外部 .lb-arrow 的 z-index:3，避免被文件夹压住 */
         }
         @media (min-width: 769px) {
             .pc-folder-arrow.lb-arrow--prev,
             .pc-folder-arrow.lb-arrow--next { display: block !important; }
-            .pc-folder-arrow.lb-arrow--prev { left: -16px; right: auto; }
-            .pc-folder-arrow.lb-arrow--next { right: -16px; left: auto; }
+            /* 箭头宽 58px，往外挪到文件夹排外侧完整露出，不再压住两端文件夹 */
+            .pc-folder-arrow.lb-arrow--prev { left: -52px; right: auto; }
+            .pc-folder-arrow.lb-arrow--next { right: -52px; left: auto; }
         }
         /* 方向键提示：仅在文件夹排溢出（可滚动）时随箭头一起出现 */
         .pc-kbd-hint {
