@@ -148,15 +148,23 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             margin: 0 auto;
         }
 
-        /* 文件夹一排横向滚动：隐藏滚动条，桌面端用滚轮/拖拽/方向键 */
+        /* 文件夹一排横向滚动：隐藏滚动条，桌面端用滚轮/拖拽/方向键。
+           桌面端放大容器并按视口微缩文件夹，让 6 个全部放进一排，无需滚动 */
         .pc-folders {
             flex: 0 0 auto;
             /* 永远钉在容器底部：墙不足一屏时留白落在墙与文件夹之间 */
             margin-top: auto;
+            max-width: 560px;
             scrollbar-width: none;
             -ms-overflow-style: none;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-x: contain;
+        }
+        @media (min-width: 769px) {
+            .pc-folders {
+                max-width: 1100px;
+                --folder-w: clamp(96px, 12vw, 144px);
+            }
         }
         .pc-folders::-webkit-scrollbar {
             display: none;
@@ -720,7 +728,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 style: {
                     position: 'relative',
                     flex: '0 0 auto',
-                    width: 'clamp(96px, 25vw, 160px)',
+                    width: 'var(--folder-w, clamp(96px, 25vw, 160px))',
                     aspectRatio: '5/4',
                     borderRadius: '12px',
                     cursor: 'pointer',
@@ -1092,7 +1100,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                         flexWrap: 'nowrap',
                         gap: 'clamp(16px, 4vw, 36px)',
                         width: '100%',
-                        maxWidth: '560px',
                         padding: '34px 20px 12px',
                         overflowX: 'auto',
                         overflowY: 'hidden',
