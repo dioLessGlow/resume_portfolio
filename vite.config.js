@@ -11,6 +11,7 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       input: {
+        '404': resolve(__dirname, '404.html'),
         index: resolve(__dirname, 'index.html'),
         home: resolve(__dirname, 'home.html'),
         intro: resolve(__dirname, 'intro.html'),

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>页面走丢了 · 陈少辉</title>
+    <link rel="icon" type="image/svg+xml" href="/resume_portfolio/favicon.svg">
+    <link rel="stylesheet" href="/resume_portfolio/fonts/fonts.css">
+    <style>
+        :root {
+            --primary: #2d7a2d;
+            --deep: #1a5f1a;
+            --light: #35934a;
+            --bg: #fdfbf7;
+            --muted: #3f7a3f;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { margin: 0; padding: 0; }
+
+        body {
+            position: relative;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px 48px;
+            background: var(--bg);
+            color: var(--deep);
+            font-family: 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 柔光背景，呼应欢迎页 */
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: .4;
+            pointer-events: none;
+        }
+        .glow-a {
+            width: min(46vw, 460px); height: min(46vw, 460px);
+            background: #bfe6c2; top: -10%; left: -6%;
+            animation: drift 16s ease-in-out infinite;
+        }
+        .glow-b {
+            width: min(40vw, 400px); height: min(40vw, 400px);
+            background: #d8ecc8; bottom: -12%; right: -8%;
+            animation: drift 19s ease-in-out infinite reverse;
+        }
+        .glow-c {
+            width: min(28vw, 280px); height: min(28vw, 280px);
+            background: #e7f0d9; top: 45%; left: 55%;
+            animation: drift 22s ease-in-out infinite;
+        }
+
+        .panel {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 520px);
+            text-align: center;
+            animation: rise .7s cubic-bezier(.22, .86, .24, 1) both;
+        }
+
+        /* 迷路的指南针 */
+        .compass {
+            width: 92px; height: 92px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .72);
+            border: 2px dashed rgba(45, 122, 45, .35);
+            box-shadow: 0 10px 30px rgba(45, 122, 45, .12), inset 0 0 0 6px rgba(45, 122, 45, .05);
+            display: grid; place-items: center;
+            animation: bob 4s ease-in-out infinite;
+        }
+        .compass svg { width: 46px; height: 46px; overflow: visible; }
+        .needle { transform-origin: 24px 24px; animation: swing 3.6s ease-in-out infinite; }
+        .sparkle { animation: twinkle 2.4s ease-in-out infinite; }
+        .sparkle-2 { animation-delay: .8s; }
+
+        .code {
+            margin: 0;
+            font-size: clamp(88px, 20vw, 152px);
+            line-height: .95;
+            letter-spacing: .04em;
+            background: linear-gradient(135deg, #276b2a 0%, #2d7a2d 48%, #35934a 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 8px 24px rgba(45, 122, 45, .12);
+            user-select: none;
+        }
+
+        .title {
+            margin: 14px 0 10px;
+            font-size: clamp(22px, 5vw, 30px);
+            color: var(--deep);
+            letter-spacing: .04em;
+        }
+
+        .desc {
+            margin: 0 auto;
+            max-width: 34em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-size: clamp(13px, 2.6vw, 15px);
+            line-height: 1.9;
+            color: var(--muted);
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 132px;
+            padding: 13px 22px;
+            border-radius: 999px;
+            font-size: 15px;
+            text-decoration: none;
+            transition: transform .25s cubic-bezier(.22, .86, .24, 1), box-shadow .25s ease, filter .25s ease;
+        }
+        .btn:hover { transform: translateY(-3px); }
+        .btn:active { transform: translateY(0); }
+        .btn svg { width: 18px; height: 10px; flex: none; }
+
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, #276b2a 0%, #2d7a2d 48%, #35934a 100%);
+            box-shadow: 0 10px 24px rgba(45, 122, 45, .25);
+        }
+        .btn-primary:hover { box-shadow: 0 14px 30px rgba(45, 122, 45, .32); filter: brightness(1.05); }
+
+        .btn-ghost {
+            color: var(--primary);
+            background: rgba(255, 255, 255, .8);
+            border: 1.5px solid rgba(45, 122, 45, .28);
+        }
+        .btn-ghost:hover { box-shadow: 0 10px 22px rgba(45, 122, 45, .12); background: #fff; }
+
+        .nav {
+            margin-top: 38px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-size: 13px;
+        }
+        .nav a { color: var(--muted); text-decoration: none; padding: 4px 2px; transition: color .2s ease; }
+        .nav a:hover { color: var(--primary); }
+        .nav span { color: rgba(45, 122, 45, .3); }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(22px, -18px) scale(1.08); }
+        }
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+        @keyframes swing {
+            0%, 100% { transform: rotate(-16deg); }
+            50% { transform: rotate(16deg); }
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: .35; transform: scale(.8); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(22px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glow, .compass, .needle, .sparkle, .panel { animation: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow glow-a" aria-hidden="true"></div>
+    <div class="glow glow-b" aria-hidden="true"></div>
+    <div class="glow glow-c" aria-hidden="true"></div>
+
+    <main class="panel">
+        <div class="compass" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="20" stroke="#2d7a2d" stroke-width="2" />
+                <circle cx="24" cy="24" r="15.5" stroke="#2d7a2d" stroke-opacity=".28" stroke-width="1" />
+                <g class="needle">
+                    <path d="M24 12 28 24 24 21 20 24 24 12Z" fill="#35934a" />
+                    <path d="M24 36 20 24 24 27 28 24 24 36Z" fill="#2d7a2d" fill-opacity=".35" />
+                </g>
+                <circle cx="24" cy="24" r="2.4" fill="#2d7a2d" />
+                <g class="sparkle" fill="#35934a">
+                    <path d="M41 9l1.1 2.9L45 13l-2.9 1.1L41 17l-1.1-2.9L37 13l2.9-1.1L41 9Z" />
+                </g>
+                <g class="sparkle sparkle-2" fill="#35934a" fill-opacity=".7">
+                    <circle cx="7" cy="14" r="1.8" />
+                </g>
+            </svg>
+        </div>
+
+        <h1 class="code" aria-label="404">404</h1>
+        <p class="title">哎呀，页面走丢了</p>
+        <p class="desc">你访问的地址也许搬了家、改了名字，或者从来就不存在。<br>别慌，跟着指南针回到有地图的地方吧。</p>
+
+        <div class="actions">
+            <a class="btn btn-primary" href="/resume_portfolio/home.html" target="_self">
+                回到首页
+                <svg viewBox="0 0 20 10" fill="none" aria-hidden="true"><path d="M1 5h17M14.5 1.2 18.5 5l-4 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </a>
+            <a class="btn btn-ghost" href="/resume_portfolio/home.html" id="back-btn" target="_self">
+                <svg viewBox="0 0 20 10" fill="none" aria-hidden="true" style="transform:rotate(180deg)"><path d="M1 5h17M14.5 1.2 18.5 5l-4 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                返回上一页
+            </a>
+        </div>
+
+        <nav class="nav" aria-label="快捷导航">
+            <a href="/resume_portfolio/home.html" target="_self">首页</a>
+            <span aria-hidden="true">·</span>
+            <a href="/resume_portfolio/intro.html" target="_self">个人简介</a>
+            <span aria-hidden="true">·</span>
+            <a href="/resume_portfolio/works.html" target="_self">作品集</a>
+        </nav>
+    </main>
+
+    <script>
+        // 有历史记录就真的返回上一页，否则走 href 兜底回首页
+        document.getElementById('back-btn').addEventListener('click', function (e) {
+            if (history.length > 1) {
+                e.preventDefault();
+                history.back();
+            }
+        });
+    </script>
+</body>
+
+</html>
