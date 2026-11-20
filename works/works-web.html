@@ -208,14 +208,18 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             aspect-ratio: 1 / 1;
             object-fit: contain;
             border-radius: 12px;
-            /* 动画未就绪时用占位底色撑住空间（配合 aspect-ratio 常驻），就绪后淡入 */
+            /* 默认可见：图片由 HTML 初始 src + fetchpriority=high 预加载，下载完即绘制，
+               LCP 不再等 JS 加 ready 类。占位底色仅在无 src 时兜底（aspect-ratio 常驻不跳动）。 */
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.07));
+            opacity: 1;
+            transition: filter 0.3s ease;
+        }
+
+        #pudgy:not([src]) {
             opacity: 0;
-            transition: filter 0.3s ease, opacity 0.35s ease;
         }
 
         #pudgy.ready {
-            opacity: 1;
             background: none;
         }
 

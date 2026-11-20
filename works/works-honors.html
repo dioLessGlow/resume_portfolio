@@ -82,11 +82,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <link rel="stylesheet" href="../css/header.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/intro.css">
-    <!-- 预热首屏真正可见的主图：中间卡 11.webp 是 LCP 元素（此前误预热 1/2/3，与主图错位导致 LCP 10s+）。
-         只预热首屏 3D 堆叠中可见的 3 张，其余交给 loading="lazy" 按需加载，避免高优先级请求抢带宽。 -->
+    <!-- 只预热首屏 LCP 主图（中间卡 11.webp），独占带宽最快出图。
+         此前误预热 1/2/3（与主图错位，LCP 10s+）；预热 3 张又因 7/8 抢带宽致 8s 波动。
+         其余一律交给 loading="lazy" 按需加载。 -->
     <link rel="preload" as="image" href="../images/honors/11.webp" fetchpriority="high">
-    <link rel="preload" as="image" href="../images/honors/7.webp">
-    <link rel="preload" as="image" href="../images/honors/8.webp">
     <base target="_blank">
 
     <style>
