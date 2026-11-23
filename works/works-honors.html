@@ -222,27 +222,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 background: linear-gradient(135deg, #eef5ec, #dcebd8);
             }
 
-            /* 徽章覆盖层：胶囊标签，保证短文案也清晰可读 */
-            .wrapper>div .badge {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                padding: 5px 11px;
-                border-radius: 999px;
-                font-size: 11px;
-                font-weight: 700;
-                line-height: 1.2;
-                letter-spacing: .5px;
-                white-space: nowrap;
-                font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
-                z-index: 10;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .badge.default {
-                background: linear-gradient(135deg, var(--color-primary), #3d9a3d);
-                color: white;
-            }
+            /* 角标已去掉，级别文案保留在 data-badge，供副标题与灯箱使用 */
         }
 
         /* ========================================
@@ -540,12 +520,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             cursor: zoom-in;
         }
 
-        /* intro.css 的全局 *{padding:0} 未分层，优先级高于 @layer 内的徽章规则，
-           会吃掉徽章内边距；在 layer 外补回，保证胶囊标签有留白 */
-        .wrapper>div .badge {
-            padding: 4px 10px;
-        }
-
         /* 键盘聚焦时给出可见轮廓（卡片本身是 div，需要手动加） */
         .wrapper>div:focus-visible {
             outline: 3px solid var(--color-primary);
@@ -752,73 +726,64 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <!-- 滚动驱动区域 -->
     <div class="scroll-body">
         <section class="wrapper">
-            <div data-title="省技能大赛二等奖">
+            <div data-title="省技能大赛二等奖" data-badge="省级">
                 <img src="../images/honors/11.webp" alt="广东省职业院校学生专业技能大赛二等奖">
-                <span class="badge default">省级</span>
                 <div>
                     <div class="year">2026</div>
                     <div class="category">应用软件系统开发</div>
                 </div>
             </div>
-            <div data-title="优秀AI创意作品">
+            <div data-title="优秀AI创意作品" data-badge="校级">
                 <img data-src="../images/honors/7.webp" decoding="async" alt="优秀作品">
-                <span class="badge default">校级</span>
                 <div>
                     <div class="year">2025</div>
                     <div class="category">文化节比赛</div>
                 </div>
             </div>
-            <div data-title="优秀干事">
+            <div data-title="优秀干事" data-badge="学生工作">
                 <img data-src="../images/honors/6.webp" decoding="async" alt="优秀干事">
-                <span class="badge default">学生工作</span>
                 <div>
                     <div class="year">2025</div>
                     <div class="category">校易班工作站</div>
                 </div>
             </div>
-            <div data-title="三灶鹤舞">
+            <div data-title="三灶鹤舞" data-badge="校级三等奖">
                 <img data-src="../images/honors/5.webp" decoding="async" alt="三灶鹤舞">
-                <span class="badge default">校级三等奖</span>
                 <div>
                     <div class="year">2024</div>
                     <div class="category">校级文化比赛</div>
                 </div>
             </div>
-            <div data-title="一等奖">
+            <div data-title="一等奖" data-badge="校级一等奖">
                 <img data-src="../images/honors/4.webp" decoding="async" alt="东方财富杯一等奖">
-                <span class="badge default">校级一等奖</span>
                 <div>
                     <div class="year">2025</div>
                     <div class="category">金融挑战赛</div>
                 </div>
             </div>
-            <div data-title="最佳人气奖">
+            <div data-title="最佳人气奖" data-badge="省级奖项">
                 <img data-src="../images/honors/3.webp" decoding="async" alt="最佳人气奖">
-                <span class="badge default">省级奖项</span>
                 <div>
                     <div class="year">2025</div>
                     <div class="category">广东省简历创意设计大赛</div>
                 </div>
             </div>
-            <div data-title="优秀AI创意作品">
+            <div data-title="优秀AI创意作品" data-badge="国家级">
                 <img data-src="../images/honors/2.webp" decoding="async" alt="优秀AI创意作品">
-                <span class="badge default">国家级</span>
                 <div>
                     <div class="year">2025</div>
                     <div class="category">绿色出行公益宣传</div>
                 </div>
             </div>
-            <div data-title="银翼奖">
+            <div data-title="银翼奖" data-badge="全国第二">
                 <img data-src="../images/honors/1.webp" decoding="async" alt="银翼奖">
-                <span class="badge default">全国第二</span>
                 <div>
                     <div class="year">2025</div>
                     <div class="category">智慧书海全国赛</div>
                 </div>
             </div>
-            <div data-title="创意奖">
+            <div data-title="创意奖" data-badge="设计赛事">
                 <img data-src="../images/honors/8.webp" decoding="async" alt="汴河四叠创意奖">
-                <span class="badge default">设计赛事</span>
                 <div>
                     <div class="year">2026</div>
                     <div class="category">冬日灵感图像创作赛</div>
@@ -1036,11 +1001,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 const card = cards[idx];
                 if (!card) return;
 
-                const badge = card.querySelector('.badge');
+                const badgeText = card.getAttribute('data-badge') || '';
                 const year = card.querySelector('.year');
                 const category = card.querySelector('.category');
 
-                const badgeText = badge ? badge.textContent.trim() : '';
                 const info = [year ? year.textContent.trim() : '', category ? category.textContent.trim() : '']
                     .filter(Boolean).join(' · ');
 
@@ -1127,7 +1091,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     const card = cards[i];
                     if (!card) return;
                     const img = card.querySelector('img');
-                    const badge = card.querySelector('.badge');
+                    const badgeText = card.getAttribute('data-badge') || '';
                     const year = card.querySelector('.year');
                     const category = card.querySelector('.category');
 
@@ -1140,7 +1104,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                     lbImg.alt = img.alt || card.getAttribute('data-title') || '';
                     lbTitle.textContent = card.getAttribute('data-title') || '';
                     lbMeta.textContent = [
-                        badge ? badge.textContent.trim() : '',
+                        badgeText,
                         year ? year.textContent.trim() : '',
                         category ? category.textContent.trim() : ''
                     ].filter(Boolean).join(' · ');
