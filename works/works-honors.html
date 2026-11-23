@@ -53,7 +53,10 @@ document.addEventListener('touchmove',function(e){
   var t=e.touches[0];if(!t)return;
   var dy=t.clientY-sy,dx=t.clientX-sx;
   if(Math.abs(dy)<=Math.abs(dx)){if(pull)setPull(0);return;}
-  var se=document.scrollingElement||document.documentElement,max=se.scrollHeight-window.innerHeight;
+  var de=document.documentElement;
+  // 荣誉墙等内容在 body 内部滚动（html 被锁一屏），此时 scrollingElement 恒为 0，要改用 body 判断，否则中间下拉会被误判为「在顶部」触发刷新
+  var se=(de.scrollHeight<=de.clientHeight+1&&document.body.scrollHeight>document.body.clientHeight+1)?document.body:(document.scrollingElement||de);
+  var max=se.scrollHeight-window.innerHeight;
   if(max<=0&&location.pathname.indexOf('/public/')!==-1)return;
   var y=se.scrollTop;
   if(dy>0&&y<=0){if(e.cancelable)e.preventDefault();setPull(Math.min(MAX,dy*0.55));}
