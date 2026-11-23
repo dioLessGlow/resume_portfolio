@@ -421,7 +421,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 z-index: 100;
                 font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
                 color: var(--color-primary);
-                pointer-events: none;
+                pointer-events: auto;
                 white-space: nowrap;
             }
 
@@ -429,6 +429,47 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 font-size: 16px;
                 font-weight: 700;
                 font-variant-numeric: tabular-nums;
+                appearance: none;
+                border: 0;
+                border-bottom: 1px dashed currentColor;
+                padding: 0 2px 1px;
+                margin: 0;
+                background: none;
+                color: inherit;
+                font-family: inherit;
+                cursor: pointer;
+                line-height: 1.2;
+                transition: opacity 0.2s;
+            }
+
+            .page-count .cur:hover {
+                opacity: 0.65;
+            }
+
+            .page-count .cur-input {
+                width: 44px;
+                font-size: 16px;
+                font-weight: 700;
+                font-variant-numeric: tabular-nums;
+                text-align: center;
+                color: var(--color-primary);
+                background: rgba(255, 255, 255, 0.95);
+                border: 1px solid var(--color-primary);
+                border-radius: 6px;
+                padding: 1px 2px;
+                font-family: inherit;
+                outline: none;
+                -moz-appearance: textfield;
+            }
+
+            .page-count .cur-input::-webkit-inner-spin-button,
+            .page-count .cur-input::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            .page-count .cur-input[hidden] {
+                display: none;
             }
 
             .page-count .sep,
@@ -785,8 +826,12 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <!-- 滚动提示 -->
     <div class="scroll-hint-text" id="scroll-hint">向下滚动浏览荣誉</div>
 
-    <!-- 页码指示 -->
-    <div class="page-count" aria-hidden="true"><span class="cur" id="page-cur">01</span><span class="sep">/</span><span class="total" id="page-total">09</span></div>
+    <!-- 页码指示（点击当前页可输入跳转） -->
+    <div class="page-count">
+        <button type="button" class="cur" id="page-cur" title="点击输入页数跳转" aria-label="点击输入页数跳转">01</button>
+        <input type="number" class="cur-input" id="page-input" min="1" max="9" step="1" inputmode="numeric" hidden aria-label="输入要跳转的页数">
+        <span class="sep">/</span><span class="total" id="page-total">09</span>
+    </div>
 
     <div class="icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 40" fill="none"
@@ -907,6 +952,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
             const pageCurEl = document.getElementById('page-cur');
             const pageTotalEl = document.getElementById('page-total');
+            const pageInput = document.getElementById('page-input');
             if (pageTotalEl) pageTotalEl.textContent = String(N).padStart(2, '0');
 
             /* 实际滚动容器：本页 html 被锁一屏、内容在 body 内滚动，
@@ -918,6 +964,54 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 const deMax = Math.max(0, de.scrollHeight - de.clientHeight);
                 const el = bdMax >= deMax ? bd : de;
                 return { top: el.scrollTop, max: Math.max(0, el.scrollHeight - el.clientHeight), el: el };
+            }
+
+            /* 页码点击输入跳转 */
+            function jumpToPage(n) {
+                if (!Number.isFinite(n)) return;
+                const idx = Math.min(N - 1, Math.max(0, Math.round(n) - 1)); // 输入 1..N → 索引 0..N-1
+                const m = scrollMetrics();
+                if (m.max <= 0) return;
+                // 目标格中心：把该格放在 steps(N) 的区间中点，避免落在边界被算到相邻格
+                const targetTop = (idx + 0.5) / N * m.max;
+                m.el.scrollTo({ top: targetTop, behavior: 'smooth' });
+            }
+
+            if (pageCurEl && pageInput) {
+                // 点击当前页码 → 切成输入框
+                pageCurEl.addEventListener('click', () => {
+                    pageCurEl.hidden = true;
+                    pageInput.hidden = false;
+                    pageInput.value = currentIndex >= 0 ? String(currentIndex + 1) : '1';
+                    pageInput.focus();
+                    pageInput.select();
+                });
+
+                const commit = () => {
+                    const n = parseInt(pageInput.value, 10);
+                    pageInput.hidden = true;
+                    pageCurEl.hidden = false;
+                    if (!Number.isNaN(n)) {
+                        const clamped = Math.min(N, Math.max(1, n));
+                        jumpToPage(clamped);
+                        pageCurEl.textContent = String(clamped).padStart(2, '0');
+                    }
+                };
+
+                // 回车跳转；Esc 取消；失焦按提交处理
+                pageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        commit();
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        pageInput.hidden = true;
+                        pageCurEl.hidden = false;
+                    }
+                });
+                pageInput.addEventListener('blur', () => {
+                    if (!pageInput.hidden) commit();
+                });
             }
 
             /* 标题跟随圆环焦点。
