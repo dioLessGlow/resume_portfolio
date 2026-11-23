@@ -409,6 +409,35 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 }
             }
 
+            /* 页码指示器：当前第几张 / 共几张 */
+            .page-count {
+                position: fixed;
+                bottom: 146px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
+                z-index: 100;
+                font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+                color: var(--color-primary);
+                pointer-events: none;
+                white-space: nowrap;
+            }
+
+            .page-count .cur {
+                font-size: 16px;
+                font-weight: 700;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .page-count .sep,
+            .page-count .total {
+                font-size: 12px;
+                opacity: 0.6;
+                font-variant-numeric: tabular-nums;
+            }
+
             /* 浏览器不支持提示 */
             @supports not (animation-timeline: scroll()) {
                 body::before {
@@ -450,6 +479,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 .scroll-hint-text {
                     font-size: 11px;
                     bottom: 100px;
+                }
+
+                .page-count {
+                    bottom: 132px;
                 }
             }
 
@@ -752,6 +785,9 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
     <!-- 滚动提示 -->
     <div class="scroll-hint-text" id="scroll-hint">向下滚动浏览荣誉</div>
 
+    <!-- 页码指示 -->
+    <div class="page-count" aria-hidden="true"><span class="cur" id="page-cur">01</span><span class="sep">/</span><span class="total" id="page-total">09</span></div>
+
     <div class="icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 40" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mouse">
@@ -869,6 +905,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             const N = cards.length;
             let currentIndex = -1;
 
+            const pageCurEl = document.getElementById('page-cur');
+            const pageTotalEl = document.getElementById('page-total');
+            if (pageTotalEl) pageTotalEl.textContent = String(N).padStart(2, '0');
+
             /* 实际滚动容器：本页 html 被锁一屏、内容在 body 内滚动，
                document.scrollingElement(window) 的 scrollTop 恒为 0。
                与 CSS animation-timeline: scroll(nearest block) 保持一致，统一从这里取滚动量。 */
@@ -892,6 +932,8 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
 
                 if (idx === currentIndex) return;
                 currentIndex = idx;
+
+                if (pageCurEl) pageCurEl.textContent = String(idx + 1).padStart(2, '0');
 
                 const card = cards[idx];
                 if (!card) return;
