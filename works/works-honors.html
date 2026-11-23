@@ -108,8 +108,10 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             }
 
             .scroll-body {
-                /* 9 张卡片，每张一格，滚满 9 步正好转一圈回到起始 */
-                height: 800svh;
+                /* 9 张卡片，每张一格，滚满 9 步正好转一圈回到起始。
+                   400svh ≈ 每格 281px，手机上一次正常幅度的上滑就能切一张，
+                   800svh 时每格 656px（近一屏）要滑好几次才转，手感像没反应 */
+                height: 400svh;
                 margin: 0;
 
                 animation: --page-rotate 1s linear;
