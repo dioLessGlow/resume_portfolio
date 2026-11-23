@@ -15,12 +15,12 @@
 | 页面 | 说明 |
 |---|---|
 | [欢迎页](https://diolessglow.github.io/resume_portfolio/) | 字体揭幕 + 逐字弹入动画的入口仪式感 |
-| 首页 / 个人简介 | 个人信息、教育背景、技能与经历 |
-| 作品集菜单 | 五个作品分类的入口导航 |
-| 项目实战 | 项目轮播 + 放大镜，n-1/n/n+1 首图滑动窗口预热 |
-| 设计作品 | 文件夹卡片式导航，照片探出压住标签的拟物交互，滑动窗口预热 |
-| 荣誉奖项 | 3D 圆形证书墙 + 灯箱放大 |
-| 小游戏 / 网页互动 | 作品导航，网页互动页含「胖吉判定」投喂零食彩蛋 |
+| [首页 / 个人简介](https://diolessglow.github.io/resume_portfolio/intro.html) | 个人信息、教育背景、技能与经历 |
+| [作品集菜单](https://diolessglow.github.io/resume_portfolio/works.html) | 五个作品分类的入口导航 |
+| [项目实战](https://diolessglow.github.io/resume_portfolio/works/works-projects.html) | 项目轮播 + 放大镜，n-1/n/n+1 首图滑动窗口预热 |
+| [设计作品](https://diolessglow.github.io/resume_portfolio/works/works-design.html) | 文件夹卡片式导航，照片探出压住标签的拟物交互，滑动窗口预热 |
+| [荣誉奖项](https://diolessglow.github.io/resume_portfolio/works/works-honors.html) | 3D 圆形证书墙 + 灯箱放大 |
+| [小游戏 / 网页互动](https://diolessglow.github.io/resume_portfolio/works/works-games.html) | 作品导航，网页互动页含「胖吉判定」投喂零食彩蛋 |
 | [小游戏合集](https://diolessglow.github.io/resume_portfolio/public/games/Bird-Watch.html) | Bird-Watch / CubSpin / Mirror-Chase / Stack-Tower 四个可玩小游戏 |
 
 ## 🛠️ 技术栈
