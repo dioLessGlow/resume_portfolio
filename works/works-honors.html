@@ -222,15 +222,18 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
                 background: linear-gradient(135deg, #eef5ec, #dcebd8);
             }
 
-            /* 徽章覆盖层 */
+            /* 徽章覆盖层：胶囊标签，保证短文案也清晰可读 */
             .wrapper>div .badge {
                 position: absolute;
-                top: 15px;
+                top: 10px;
                 right: 10px;
-                padding: 4px 12px;
-                border-radius: 50%;
-                font-size: 8px;
-                font-weight: 600;
+                padding: 5px 11px;
+                border-radius: 999px;
+                font-size: 11px;
+                font-weight: 700;
+                line-height: 1.2;
+                letter-spacing: .5px;
+                white-space: nowrap;
                 font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
                 z-index: 10;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -535,6 +538,12 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         ======================================== */
         .wrapper>div {
             cursor: zoom-in;
+        }
+
+        /* intro.css 的全局 *{padding:0} 未分层，优先级高于 @layer 内的徽章规则，
+           会吃掉徽章内边距；在 layer 外补回，保证胶囊标签有留白 */
+        .wrapper>div .badge {
+            padding: 4px 10px;
         }
 
         /* 键盘聚焦时给出可见轮廓（卡片本身是 div，需要手动加） */
