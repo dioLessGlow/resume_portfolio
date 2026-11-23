@@ -701,7 +701,7 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
         }
 
         /* 手机竖屏：证书是横版，左右按钮会压在图边上，
-           所以把切换按钮移到图下方居中，计数器移到顶部 */
+           所以把切换按钮移到图下方居中；计数器保持在底部，与其它页统一 */
         @media (max-width: 640px) {
             .honor-lb {
                 padding: 76px 14px 120px;
@@ -710,11 +710,6 @@ document.addEventListener('touchcancel',function(){if(!dragging)return;dragging=
             .honor-lb__img {
                 max-width: 100%;
                 max-height: 56vh;
-            }
-
-            .honor-lb__counter {
-                top: 32px;
-                bottom: auto;
             }
         }
     </style>
